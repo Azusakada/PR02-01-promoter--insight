@@ -1,2 +1,11 @@
-# PR02-01-promoter--insight
+# PR02-01 Promoter Insight
+
+本仓库保存课程项目清洗后的启动子数据。
+
+## 数据
+
+- `data/01_Ecoli_strength/`：E. coli 50 bp strength 主表及 train/val/test 划分。
+- `data/02_reg_and_gen_six_species/`：六个物种的启动子二分类数据及原始划分文件。
+
+本仓库仅存放数据，不包含模型代码、校验代码或中间文件。
 Promoter strength prediction and key-site attribution with interpretable machine learning.
