@@ -1,0 +1,28 @@
+{
+  "module": "thermo",
+  "tool": "regseq2 Promoter_Calculator (open-source Salis 2022 thermodynamic model)",
+  "tool_source": "https://github.com/bnjenner/PromoterCalc_Comparison (ext/regseq2)",
+  "organism": "Escherichia coli str. K-12 substr. MG1655",
+  "sigma": "70",
+  "reference_genome": {
+    "accession": "GCF_000005845.2 ASM584v2 / NC_000913.3",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/005/845/GCF_000005845.2_ASM584v2/GCF_000005845.2_ASM584v2_genomic.fna.gz"
+  },
+  "context_flank": 50,
+  "tool_input_length": 150,
+  "tss_mode": "scan",
+  "min_upstream_for_valid_tss": 58,
+  "itr_length": 20,
+  "datasets": {
+    "data_v1": "data/01_Ecoli_strength/data_v1.tsv",
+    "split_manifest": "data/01_Ecoli_strength/split_manifest.tsv"
+  },
+  "run_id": "thermo_regseq2_ecoli50_v1",
+  "method_name": "thermo_regseq2",
+  "schema_version": "2.0.0",
+  "calibration": {
+    "kind": "log10_linear",
+    "fit_subset": "train",
+    "formula": "log10(strength) = 0.5341 * log10(Tx_rate) + 0.4890"
+  }
+}

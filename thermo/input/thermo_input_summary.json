@@ -1,0 +1,12 @@
+{
+  "input_version": "thermo_input_v1",
+  "schema_version": "2.0.0",
+  "data_version": "ecoli50_strength_v1",
+  "n_total": 11884,
+  "n_ready": 11883,
+  "n_blocked": 1,
+  "input_length_ready": 150,
+  "context_flank": 50,
+  "tool": "regseq2 Promoter_Calculator (MG1655 sigma70)",
+  "output": "thermo/input/calculator_inputs.tsv"
+}

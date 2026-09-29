@@ -1,0 +1,5 @@
+organism: Escherichia coli str. K-12 substr. MG1655 K=42.0 BETA=1.636217004872062
+
+original_50bp    len= 50  valid_TSS(fwd=0 rev=0)
+padded_100bp     len=100  valid_TSS(fwd=23 rev=23)  best_TSS=70 Tx_rate=2412
+padded_150bp     len=150  valid_TSS(fwd=73 rev=73)  best_TSS=95 Tx_rate=2412

@@ -1,0 +1,2 @@
+dataset_id,sample_id,run_id,thermo_mode,prediction_status,error_reason
+course_ecoli50_strength,ecoli50_r003290,thermo_regseq2_ecoli50_v1,scan,failed,no_exact_match_in_reference_genome_50bp_too_short_for_scan
