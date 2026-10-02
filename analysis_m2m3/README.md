@@ -10,14 +10,14 @@ Python 3.11，依赖见 requirements.txt。仓库根目录运行：
 uv venv --python 3.11 .venv
 uv pip install --python .venv/bin/python -r analysis_m2m3/requirements.txt
 .venv/bin/python -m unittest discover -s analysis_m2m3/tests -v
-.venv/bin/python analysis_m2m3/eda.py --output analysis_m2m3/runs/eda_m2_20261001_v1
+.venv/bin/python analysis_m2m3/eda.py --output analysis_m2m3/runs/eda_m2_20261001_v2
 .venv/bin/python analysis_m2m3/error_analysis.py \
   --predictions KNN/results/predictions_knn_ecoli_full_val.csv \
     analysis_m2m3/inputs/thermo_member_b_89fcc66/thermo_val.csv \
   --calibrated analysis_m2m3/inputs/thermo_member_b_89fcc66/thermo_val_calibrated.csv \
   --calibration analysis_m2m3/inputs/thermo_member_b_89fcc66/thermo_calibration.json \
   --calibration-train analysis_m2m3/inputs/thermo_member_b_89fcc66/thermo_train.csv \
-  --output analysis_m2m3/runs/error_m3_val_20261001_v1
+  --output analysis_m2m3/runs/error_m3_val_20261001_v2
 ```
 
 已发布 run 目录非空时程序拒绝覆盖。复现时将 `--output` 改为新的 run 名，例如 `eda_m2_reproduce_v1`，不要删除原产物。图表默认导出 PNG 和 SVG，并保存数值源表、逐图 manifest、运行 manifest 和简短中文报告。
@@ -56,9 +56,18 @@ Ridge 交接后把其正式 val predictions 路径加入 `--predictions`，创�
 
 ## 交付内容与证据边界
 
-- `runs/eda_m2_20261001_v1/eda_summary.md`：分布、特征关系和分析用归一化。
+- `runs/eda_m2_20261001_v2/eda_summary.md`：分布、特征关系和分析用归一化。
 - `reports/annotation_source_review.md`：当前证据、源头匹配、可靠注释缺口及需确认问题。
-- `runs/error_m3_val_20261001_v1/m3_error_analysis.md`：验证集公平比较、分组误差、案例与失败说明。
+- `runs/error_m3_val_20261001_v2/m3_error_analysis.md`：验证集公平比较、分组误差、案例与失败说明。
 - `reports/handoff.md`：交接、测试和剩余依赖。
 
 缺失注释不输出伪造区域框，相关性与计算预测不构成生物学因果证据。本模块遵守组长 pr02-team 2.1.0 接口包；Skill 原包未安装进共享仓库，避免多人同时改公共规则文件。
+
+只读核验已发布产物：
+
+```bash
+.venv/bin/python analysis_m2m3/verify_run.py analysis_m2m3/runs/eda_m2_20261001_v2
+.venv/bin/python analysis_m2m3/verify_run.py analysis_m2m3/runs/error_m3_val_20261001_v2
+```
+
+`--acknowledge-manually-reviewed` 仅用于实际逐张看过图之后填写视觉检查记录，不能由自动测试冒充人工检查。

@@ -115,6 +115,7 @@ def analyze(output, paths, calibrated=None, calibration=None, calibration_train=
     common = set.intersection(*success.values())
     run = Run(output,'M3','pr02-error-analysis-m3',data,inputs,{'subset':'val','group_threshold_source':'train log10 tertiles','thresholds_log10':thresholds.tolist(),'case_seed':SEED,'case_rules':'top5 absolute errors per method, top5 pairwise log10 disagreement, 5 random common IDs','required_missing_methods':['kmer Ridge','CNN optional'],'calibration_handling':'verify imported train-only parameters; do not fit on val'})
     run.meta['evaluation_subsets'] = ['val']
+    run.meta['execution_status'] = 'partial'  # Required Ridge comparison is not supplied in this delivery.
     if calibration_qc:
         write_json(run.output/'calibration_qc.json',calibration_qc)
     metrics,used_ids,coverage,errors,groups = [],[],[],[],[]

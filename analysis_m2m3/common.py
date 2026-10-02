@@ -5,7 +5,6 @@ import hashlib
 import importlib.metadata
 import json
 import platform
-import shlex
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -102,9 +101,9 @@ class Run:
             "method_name": "descriptive_analysis", "dataset_id": DATASET,
             "data_version": single(data, "data_version"), "schema_version": SCHEMA,
             "split_id": single(data, "split_id"), "evidence_level": "preliminary",
-            "execution_status": "completed", "seed": SEED,
+            "execution_status": "success", "seed": SEED,
             "created_at": datetime.now(timezone.utc).isoformat(),
-            "command": shlex.join(["python", *sys.argv]),
+            "command": [sys.executable, *sys.argv],
             "code_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
             "dirty_worktree": bool(subprocess.check_output(["git", "status", "--porcelain", "--untracked-files=no"], cwd=ROOT, text=True).strip()),
             "environment": {"python": platform.python_version(), "platform": platform.platform(),
@@ -142,6 +141,6 @@ class Run:
     def finish(self):
         write_json(self.output / "figure_manifest.json", self.figures)
         artifacts = [p for p in sorted(self.output.rglob('*')) if p.is_file() and p.name != "run_manifest.json"]
-        self.meta['artifacts'] = [{"kind": p.suffix.lstrip('.'), "path": relative(p), "sha256": sha256(p)} for p in artifacts]
+        self.meta['artifacts'] = [{"kind": "source_patch" if p.name == "source_patch.diff" else p.suffix.lstrip('.'), "path": relative(p), "sha256": sha256(p)} for p in artifacts]
         write_json(self.output / "run_manifest.json", self.meta)
         print(relative(self.output))
