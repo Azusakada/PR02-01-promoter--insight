@@ -1,0 +1,1337 @@
+{
+  "format": "pr02-table-contract",
+  "schema_version": "2.0.0",
+  "encoding": "UTF-8",
+  "null_representation": "empty string",
+  "boolean_representation": [
+    "true",
+    "false"
+  ],
+  "tables": {
+    "dataset": {
+      "description": "一行一个主回归样本；原文件没有ID，导入后固定。",
+      "delimiter": "\t",
+      "primary_key": [
+        "sample_id"
+      ],
+      "allow_extra_prefix": "extra_",
+      "columns": {
+        "dataset_id": {
+          "type": "str",
+          "nullable": false,
+          "description": "本契约适用于课程E.coli 50 bp强度数据",
+          "const": "course_ecoli50_strength"
+        },
+        "sample_id": {
+          "type": "str",
+          "nullable": false,
+          "description": "本数据对象内稳定ID；由不可变原始数据行映射，不依赖当前表行序"
+        },
+        "source_row": {
+          "type": "int",
+          "nullable": false,
+          "description": "原文本数据行号，从1开始，不含表头",
+          "min": 1
+        },
+        "sequence": {
+          "type": "str",
+          "nullable": false,
+          "description": "原始50 bp序列统一大写",
+          "pattern": "[ACGT]{50}"
+        },
+        "sequence_length": {
+          "type": "int",
+          "nullable": false,
+          "description": "固定50",
+          "const": 50
+        },
+        "strength": {
+          "type": "float",
+          "nullable": false,
+          "description": "原始连续strength；不补写MPRA单位",
+          "exclusive_min": 0
+        },
+        "target_log10": {
+          "type": "float",
+          "nullable": false,
+          "description": "log10(strength)，不含min-max"
+        },
+        "annotation_status": {
+          "type": "str",
+          "nullable": false,
+          "description": "注释证据状态；missing是未知而非阴性",
+          "enum": [
+            "missing",
+            "partial",
+            "reliable_external",
+            "tool_inferred"
+          ]
+        },
+        "schema_version": {
+          "type": "str",
+          "nullable": false,
+          "description": "公共schema版本",
+          "const": "2.0.0"
+        },
+        "data_version": {
+          "type": "str",
+          "nullable": false,
+          "description": "实际输出数据版本；示例以synthetic标记"
+        }
+      }
+    },
+    "splits": {
+      "description": "每个split覆盖主表一次，train/val/test互斥；不含旧background字段。",
+      "delimiter": "\t",
+      "primary_key": [
+        "split_id",
+        "sample_id"
+      ],
+      "allow_extra_prefix": "extra_",
+      "columns": {
+        "dataset_id": {
+          "type": "str",
+          "nullable": false,
+          "description": "本契约适用于课程E.coli 50 bp强度数据",
+          "const": "course_ecoli50_strength"
+        },
+        "split_id": {
+          "type": "str",
+          "nullable": false,
+          "description": "固定划分ID"
+        },
+        "sample_id": {
+          "type": "str",
+          "nullable": false,
+          "description": "本数据对象内稳定ID；由不可变原始数据行映射，不依赖当前表行序"
+        },
+        "split": {
+          "type": "str",
+          "nullable": false,
+          "description": "集合",
+          "enum": [
+            "train",
+            "val",
+            "test"
+          ]
+        },
+        "group_id": {
+          "type": "str",
+          "nullable": true,
+          "description": "random可空；sequence_group为可追溯序列分组"
+        },
+        "split_strategy": {
+          "type": "str",
+          "nullable": false,
+          "description": "当前主策略random；分组为可选",
+          "enum": [
+            "random",
+            "sequence_group"
+          ]
+        },
+        "seed": {
+          "type": "int",
+          "nullable": false,
+          "description": "实际种子",
+          "min": 0
+        },
+        "schema_version": {
+          "type": "str",
+          "nullable": false,
+          "description": "公共schema版本",
+          "const": "2.0.0"
+        },
+        "data_version": {
+          "type": "str",
+          "nullable": false,
+          "description": "实际输出数据版本；示例以synthetic标记"
+        }
+      }
+    },
+    "targets": {
+      "description": "min-max是split相关产物，不能放全局主表中。",
+      "delimiter": "\t",
+      "primary_key": [
+        "split_id",
+        "sample_id"
+      ],
+      "allow_extra_prefix": "extra_",
+      "columns": {
+        "dataset_id": {
+          "type": "str",
+          "nullable": false,
+          "description": "本契约适用于课程E.coli 50 bp强度数据",
+          "const": "course_ecoli50_strength"
+        },
+        "split_id": {
+          "type": "str",
+          "nullable": false,
+          "description": "对应划分"
+        },
+        "sample_id": {
+          "type": "str",
+          "nullable": false,
+          "description": "本数据对象内稳定ID；由不可变原始数据行映射，不依赖当前表行序"
+        },
+        "target_log10": {
+          "type": "float",
+          "nullable": false,
+          "description": "与主表同一log10标签"
+        },
+        "target_normalized": {
+          "type": "float",
+          "nullable": false,
+          "description": "(z-a)/(b-a)，允许val/test超[0,1]"
+        },
+        "transform_id": {
+          "type": "str",
+          "nullable": false,
+          "description": "train-only标签变换ID"
+        },
+        "schema_version": {
+          "type": "str",
+          "nullable": false,
+          "description": "公共schema版本",
+          "const": "2.0.0"
+        },
+        "data_version": {
+          "type": "str",
+          "nullable": false,
+          "description": "实际输出数据版本；示例以synthetic标记"
+        }
+      }
+    },
+    "feature_index": {
+      "description": "矩阵的行映射，0..N-1。",
+      "delimiter": "\t",
+      "primary_key": [
+        "sample_id"
+      ],
+      "allow_extra_prefix": "extra_",
+      "columns": {
+        "dataset_id": {
+          "type": "str",
+          "nullable": false,
+          "description": "本契约适用于课程E.coli 50 bp强度数据",
+          "const": "course_ecoli50_strength"
+        },
+        "row_index": {
+          "type": "int",
+          "nullable": false,
+          "description": "矩阵行号",
+          "min": 0
+        },
+        "sample_id": {
+          "type": "str",
+          "nullable": false,
+          "description": "本数据对象内稳定ID；由不可变原始数据行映射，不依赖当前表行序"
+        },
+        "feature_version": {
+          "type": "str",
+          "nullable": false,
+          "description": "特征定义、列序和处理版本"
+        },
+        "schema_version": {
+          "type": "str",
+          "nullable": false,
+          "description": "公共schema版本",
+          "const": "2.0.0"
+        },
+        "data_version": {
+          "type": "str",
+          "nullable": false,
+          "description": "实际输出数据版本；示例以synthetic标记"
+        }
+      }
+    },
+    "annotations": {
+      "description": "一条区域证据一行；未知区间必须为空，不输出旧固定坐标。",
+      "delimiter": "\t",
+      "primary_key": [
+        "sample_id",
+        "region_type",
+        "annotation_id"
+      ],
+      "allow_extra_prefix": "extra_",
+      "columns": {
+        "dataset_id": {
+          "type": "str",
+          "nullable": false,
+          "description": "本契约适用于课程E.coli 50 bp强度数据",
+          "const": "course_ecoli50_strength"
+        },
+        "sample_id": {
+          "type": "str",
+          "nullable": false,
+          "description": "本数据对象内稳定ID；由不可变原始数据行映射，不依赖当前表行序"
+        },
+        "region_type": {
+          "type": "str",
+          "nullable": false,
+          "description": "拟比较的生物学区域",
+          "enum": [
+            "minus10",
+            "minus35",
+            "spacer",
+            "UP_element",
+            "TSS"
+          ]
+        },
+        "annotation_id": {
+          "type": "str",
+          "nullable": false,
+          "description": "证据版本/记录ID；缺失可用missing"
+        },
+        "start_0index": {
+          "type": "int",
+          "nullable": true,
+          "description": "本地左闭起点",
+          "min": 0,
+          "max": 49
+        },
+        "end_0index_exclusive": {
+          "type": "int",
+          "nullable": true,
+          "description": "本地右开终点",
+          "min": 1,
+          "max": 50
+        },
+        "strand": {
+          "type": "str",
+          "nullable": false,
+          "description": "相对所存序列方向",
+          "enum": [
+            "forward",
+            "reverse",
+            "unknown"
+          ]
+        },
+        "annotation_status": {
+          "type": "str",
+          "nullable": false,
+          "description": "本区域证据状态",
+          "enum": [
+            "missing",
+            "reliable_external",
+            "tool_inferred",
+            "not_applicable"
+          ]
+        },
+        "evidence_ref": {
+          "type": "str",
+          "nullable": true,
+          "description": "对应序列的可追溯来源/运行记录"
+        },
+        "score": {
+          "type": "float",
+          "nullable": true,
+          "description": "工具分数；来源有时才填写"
+        },
+        "annotation_version": {
+          "type": "str",
+          "nullable": false,
+          "description": "注释规则版本"
+        },
+        "schema_version": {
+          "type": "str",
+          "nullable": false,
+          "description": "公共schema版本",
+          "const": "2.0.0"
+        },
+        "data_version": {
+          "type": "str",
+          "nullable": false,
+          "description": "实际输出数据版本；示例以synthetic标记"
+        }
+      }
+    },
+    "calculator_inputs": {
+      "description": "一条请求一个模式；不能假定TSS或随意延长输入。",
+      "delimiter": "\t",
+      "primary_key": [
+        "sample_id",
+        "tss_mode"
+      ],
+      "allow_extra_prefix": "extra_",
+      "columns": {
+        "dataset_id": {
+          "type": "str",
+          "nullable": false,
+          "description": "本契约适用于课程E.coli 50 bp强度数据",
+          "const": "course_ecoli50_strength"
+        },
+        "sample_id": {
+          "type": "str",
+          "nullable": false,
+          "description": "本数据对象内稳定ID；由不可变原始数据行映射，不依赖当前表行序"
+        },
+        "sequence": {
+          "type": "str",
+          "nullable": false,
+          "description": "工具实际输入；仅允许原50 bp或来源可追溯上下文",
+          "pattern": "[ACGT]+"
+        },
+        "sequence_length": {
+          "type": "int",
+          "nullable": false,
+          "description": "实际工具输入长度",
+          "min": 50
+        },
+        "input_origin": {
+          "type": "str",
+          "nullable": false,
+          "description": "输入来源",
+          "enum": [
+            "original50",
+            "recovered_context"
+          ]
+        },
+        "source_sequence_start_0index": {
+          "type": "int",
+          "nullable": false,
+          "description": "工具方向转换前，原50 bp在输入中的起点",
+          "min": 0
+        },
+        "context_source_ref": {
+          "type": "str",
+          "nullable": true,
+          "description": "补取上下文的来源；原50bp可空"
+        },
+        "tss_mode": {
+          "type": "str",
+          "nullable": false,
+          "description": "核验后选择，不预设能扫描",
+          "enum": [
+            "fixed_tss",
+            "scan"
+          ]
+        },
+        "tss_position_1index": {
+          "type": "int",
+          "nullable": true,
+          "description": "相对所交输入的1起始TSS位置",
+          "min": 1
+        },
+        "tss_evidence_ref": {
+          "type": "str",
+          "nullable": true,
+          "description": "固定TSS的独立依据"
+        },
+        "orientation_policy": {
+          "type": "str",
+          "nullable": false,
+          "description": "实际执行方案",
+          "enum": [
+            "as_provided",
+            "reverse_complement",
+            "both_strands"
+          ]
+        },
+        "feasibility_ref": {
+          "type": "str",
+          "nullable": false,
+          "description": "适用性检查的记录路径/标识"
+        },
+        "input_status": {
+          "type": "str",
+          "nullable": false,
+          "description": "不具备条件保留blocked",
+          "enum": [
+            "ready",
+            "blocked"
+          ]
+        },
+        "error_reason": {
+          "type": "str",
+          "nullable": true,
+          "description": "blocked原因"
+        },
+        "input_version": {
+          "type": "str",
+          "nullable": false,
+          "description": "工具输入协议版本"
+        },
+        "schema_version": {
+          "type": "str",
+          "nullable": false,
+          "description": "公共schema版本",
+          "const": "2.0.0"
+        },
+        "data_version": {
+          "type": "str",
+          "nullable": false,
+          "description": "实际输出数据版本；示例以synthetic标记"
+        }
+      }
+    },
+    "predictions": {
+      "description": "每个请求ID均有成功/失败行；失败数值空，不用0。",
+      "delimiter": ",",
+      "primary_key": [
+        "run_id",
+        "sample_id"
+      ],
+      "allow_extra_prefix": "extra_",
+      "columns": {
+        "dataset_id": {
+          "type": "str",
+          "nullable": false,
+          "description": "本契约适用于课程E.coli 50 bp强度数据",
+          "const": "course_ecoli50_strength"
+        },
+        "sample_id": {
+          "type": "str",
+          "nullable": false,
+          "description": "原始样本ID，按原值连接；不可直接拼路径"
+        },
+        "true_value": {
+          "type": "float",
+          "nullable": true,
+          "description": "原strength尺度真实标签；未测突变体留空",
+          "exclusive_min": 0
+        },
+        "predicted_value": {
+          "type": "float",
+          "nullable": true,
+          "description": "还原到原strength尺度的预测；不是RNA/DNA读出",
+          "exclusive_min": 0
+        },
+        "predicted_value_log10": {
+          "type": "float",
+          "nullable": true,
+          "description": "log10尺度预测"
+        },
+        "method_name": {
+          "type": "str",
+          "nullable": false,
+          "description": "方法标识，继承已有名称",
+          "pattern": "[a-z][a-z0-9_]*"
+        },
+        "target_scale_model": {
+          "type": "str",
+          "nullable": false,
+          "description": "内部模型尺度",
+          "enum": [
+            "log10_minmax",
+            "log10",
+            "tool_raw"
+          ]
+        },
+        "model_checkpoint": {
+          "type": "str",
+          "nullable": true,
+          "description": "模型/参数的相对路径；非热力学成功行必须给出"
+        },
+        "predicted_tx_rate": {
+          "type": "float",
+          "nullable": true,
+          "description": "未经标尺映射的原始工具输出",
+          "exclusive_min": 0
+        },
+        "thermo_mode": {
+          "type": "str",
+          "nullable": true,
+          "description": "仅热力学有值",
+          "enum": [
+            "fixed_tss",
+            "scan"
+          ]
+        },
+        "calibration_id": {
+          "type": "str",
+          "nullable": true,
+          "description": "有校准时记录实际校准产物ID"
+        },
+        "run_id": {
+          "type": "str",
+          "nullable": false,
+          "description": "同一次运行唯一标识"
+        },
+        "split_id": {
+          "type": "str",
+          "nullable": false,
+          "description": "预测所属的固定划分"
+        },
+        "subset": {
+          "type": "str",
+          "nullable": false,
+          "description": "集合/用途",
+          "enum": [
+            "train",
+            "val",
+            "test",
+            "mutation"
+          ]
+        },
+        "seed": {
+          "type": "int",
+          "nullable": true,
+          "description": "实际模型种子；确定性工具可空",
+          "min": 0
+        },
+        "prediction_status": {
+          "type": "str",
+          "nullable": false,
+          "description": "成功或失败",
+          "enum": [
+            "ok",
+            "failed"
+          ]
+        },
+        "error_reason": {
+          "type": "str",
+          "nullable": true,
+          "description": "失败时必须给出原因"
+        },
+        "predicted_value_normalized": {
+          "type": "float",
+          "nullable": true,
+          "description": "模型归一化预测；不clip"
+        },
+        "label_transform_id": {
+          "type": "str",
+          "nullable": true,
+          "description": "预测绑定的train-only min-max变换ID"
+        },
+        "schema_version": {
+          "type": "str",
+          "nullable": false,
+          "description": "公共schema版本",
+          "const": "2.0.0"
+        },
+        "data_version": {
+          "type": "str",
+          "nullable": false,
+          "description": "实际输出数据版本；示例以synthetic标记"
+        }
+      }
+    },
+    "attributions": {
+      "description": "每样本50行；生物学区域另查annotations。",
+      "delimiter": ",",
+      "primary_key": [
+        "run_id",
+        "sample_id",
+        "position_0index"
+      ],
+      "allow_extra_prefix": "extra_",
+      "columns": {
+        "dataset_id": {
+          "type": "str",
+          "nullable": false,
+          "description": "本契约适用于课程E.coli 50 bp强度数据",
+          "const": "course_ecoli50_strength"
+        },
+        "sample_id": {
+          "type": "str",
+          "nullable": false,
+          "description": "原始样本ID，按原值连接；不可直接拼路径"
+        },
+        "position_0index": {
+          "type": "int",
+          "nullable": false,
+          "description": "0..49",
+          "min": 0,
+          "max": 49
+        },
+        "position_1index": {
+          "type": "int",
+          "nullable": false,
+          "description": "1..50",
+          "min": 1,
+          "max": 50
+        },
+        "nucleotide": {
+          "type": "str",
+          "nullable": false,
+          "description": "该位置真实碱基",
+          "enum": [
+            "A",
+            "C",
+            "G",
+            "T"
+          ]
+        },
+        "contribution_signed": {
+          "type": "float",
+          "nullable": false,
+          "description": "四通道IG相加"
+        },
+        "contribution_abs": {
+          "type": "float",
+          "nullable": false,
+          "description": "abs(signed)",
+          "min": 0
+        },
+        "rank_abs": {
+          "type": "int",
+          "nullable": false,
+          "description": "绝对值降序；平局位置升序",
+          "min": 1,
+          "max": 50
+        },
+        "method_name": {
+          "type": "str",
+          "nullable": false,
+          "description": "当前主模型",
+          "const": "cnn_1d"
+        },
+        "attribution_method": {
+          "type": "str",
+          "nullable": false,
+          "description": "当前主归因",
+          "const": "integrated_gradients"
+        },
+        "baseline_type": {
+          "type": "str",
+          "nullable": false,
+          "description": "明确基线",
+          "enum": [
+            "zero",
+            "gc_neutral"
+          ]
+        },
+        "n_steps": {
+          "type": "int",
+          "nullable": false,
+          "description": "实际积分步数",
+          "min": 1
+        },
+        "predicted_value_log10": {
+          "type": "float",
+          "nullable": false,
+          "description": "F(x)"
+        },
+        "model_checkpoint": {
+          "type": "str",
+          "nullable": false,
+          "description": "实际模型相对路径"
+        },
+        "run_id": {
+          "type": "str",
+          "nullable": false,
+          "description": "同一次运行唯一标识"
+        },
+        "split_id": {
+          "type": "str",
+          "nullable": false,
+          "description": "对应划分"
+        },
+        "coordinate_version": {
+          "type": "str",
+          "nullable": false,
+          "description": "仅局部序列坐标",
+          "const": "ecoli50_local_v1"
+        },
+        "sequence_length": {
+          "type": "int",
+          "nullable": false,
+          "description": "每个成功样本50位",
+          "const": 50
+        },
+        "annotation_status": {
+          "type": "str",
+          "nullable": false,
+          "description": "注释证据状态；missing是未知而非阴性",
+          "enum": [
+            "missing",
+            "partial",
+            "reliable_external",
+            "tool_inferred"
+          ]
+        },
+        "label_transform_id": {
+          "type": "str",
+          "nullable": true,
+          "description": "log10包装绑定的标签变换；直接log10模型可空"
+        },
+        "explanation_scale": {
+          "type": "str",
+          "nullable": false,
+          "description": "主解释尺度",
+          "const": "log10"
+        },
+        "schema_version": {
+          "type": "str",
+          "nullable": false,
+          "description": "公共schema版本",
+          "const": "2.0.0"
+        },
+        "data_version": {
+          "type": "str",
+          "nullable": false,
+          "description": "实际输出数据版本；示例以synthetic标记"
+        }
+      }
+    },
+    "attribution_qc": {
+      "description": "每个归因成功样本一行；阈值未定不得写pass。",
+      "delimiter": ",",
+      "primary_key": [
+        "run_id",
+        "sample_id"
+      ],
+      "allow_extra_prefix": "extra_",
+      "columns": {
+        "dataset_id": {
+          "type": "str",
+          "nullable": false,
+          "description": "本契约适用于课程E.coli 50 bp强度数据",
+          "const": "course_ecoli50_strength"
+        },
+        "run_id": {
+          "type": "str",
+          "nullable": false,
+          "description": "同一次运行唯一标识"
+        },
+        "sample_id": {
+          "type": "str",
+          "nullable": false,
+          "description": "原始样本ID，按原值连接；不可直接拼路径"
+        },
+        "predicted_value_log10": {
+          "type": "float",
+          "nullable": false,
+          "description": "F(x)"
+        },
+        "baseline_value_log10": {
+          "type": "float",
+          "nullable": false,
+          "description": "F(x0)"
+        },
+        "contribution_sum": {
+          "type": "float",
+          "nullable": false,
+          "description": "sum signed"
+        },
+        "completeness_error": {
+          "type": "float",
+          "nullable": false,
+          "description": "abs(sum-[F(x)-F(x0)])",
+          "min": 0
+        },
+        "n_steps": {
+          "type": "int",
+          "nullable": false,
+          "description": "实际步数",
+          "min": 1
+        },
+        "baseline_type": {
+          "type": "str",
+          "nullable": false,
+          "description": "基线",
+          "enum": [
+            "zero",
+            "gc_neutral"
+          ]
+        },
+        "qc_status": {
+          "type": "str",
+          "nullable": false,
+          "description": "阈值是否已冻结并核查",
+          "enum": [
+            "unassessed",
+            "pass",
+            "fail"
+          ]
+        },
+        "tolerance_abs": {
+          "type": "float",
+          "nullable": true,
+          "description": "冻结的绝对阈值；未定空",
+          "min": 0
+        },
+        "explanation_scale": {
+          "type": "str",
+          "nullable": false,
+          "description": "完备性比较的统一尺度",
+          "const": "log10"
+        },
+        "schema_version": {
+          "type": "str",
+          "nullable": false,
+          "description": "公共schema版本",
+          "const": "2.0.0"
+        },
+        "data_version": {
+          "type": "str",
+          "nullable": false,
+          "description": "实际输出数据版本；示例以synthetic标记"
+        }
+      }
+    },
+    "mutation_design": {
+      "description": "预测前冻结，不携带真实标签或预测值。",
+      "delimiter": ",",
+      "primary_key": [
+        "design_id",
+        "sample_id"
+      ],
+      "allow_extra_prefix": "extra_",
+      "columns": {
+        "dataset_id": {
+          "type": "str",
+          "nullable": false,
+          "description": "本契约适用于课程E.coli 50 bp强度数据",
+          "const": "course_ecoli50_strength"
+        },
+        "sample_id": {
+          "type": "str",
+          "nullable": false,
+          "description": "未测突变体ID，不能与真实主表ID冲突"
+        },
+        "parent_id": {
+          "type": "str",
+          "nullable": false,
+          "description": "母本ID独立保存"
+        },
+        "design_id": {
+          "type": "str",
+          "nullable": false,
+          "description": "预测前冻结的设计ID"
+        },
+        "split_id": {
+          "type": "str",
+          "nullable": false,
+          "description": "母本所属划分"
+        },
+        "group": {
+          "type": "str",
+          "nullable": false,
+          "description": "组别",
+          "enum": [
+            "High",
+            "Low",
+            "Random"
+          ]
+        },
+        "k": {
+          "type": "int",
+          "nullable": false,
+          "description": "互斥三组各k位，3k≤50",
+          "min": 1,
+          "max": 16
+        },
+        "position_1index": {
+          "type": "int",
+          "nullable": false,
+          "description": "1..50位置",
+          "min": 1,
+          "max": 50
+        },
+        "original_base": {
+          "type": "str",
+          "nullable": false,
+          "description": "原碱基",
+          "enum": [
+            "A",
+            "C",
+            "G",
+            "T"
+          ]
+        },
+        "mutant_base": {
+          "type": "str",
+          "nullable": false,
+          "description": "替换碱基",
+          "enum": [
+            "A",
+            "C",
+            "G",
+            "T"
+          ]
+        },
+        "sequence": {
+          "type": "str",
+          "nullable": false,
+          "description": "替换后的50bp",
+          "pattern": "[ACGT]{50}"
+        },
+        "replacement_rule": {
+          "type": "str",
+          "nullable": false,
+          "description": "默认幅度与方向规则分开设计",
+          "enum": [
+            "random_other",
+            "toward_consensus",
+            "away_from_consensus"
+          ]
+        },
+        "annotation_status": {
+          "type": "str",
+          "nullable": false,
+          "description": "注释证据状态；missing是未知而非阴性",
+          "enum": [
+            "missing",
+            "partial",
+            "reliable_external",
+            "tool_inferred"
+          ]
+        },
+        "has_direction_expectation": {
+          "type": "bool",
+          "nullable": false,
+          "description": "是否已有事先依据"
+        },
+        "expected_direction": {
+          "type": "str",
+          "nullable": false,
+          "description": "不得根据突变预测反填",
+          "enum": [
+            "up",
+            "down",
+            "none"
+          ]
+        },
+        "direction_basis": {
+          "type": "str",
+          "nullable": true,
+          "description": "明确来源/假设记录；不是仅用IG正负号"
+        },
+        "coordinate_version": {
+          "type": "str",
+          "nullable": false,
+          "description": "仅本地位置",
+          "const": "ecoli50_local_v1"
+        },
+        "schema_version": {
+          "type": "str",
+          "nullable": false,
+          "description": "公共schema版本",
+          "const": "2.0.0"
+        },
+        "data_version": {
+          "type": "str",
+          "nullable": false,
+          "description": "实际输出数据版本；示例以synthetic标记"
+        }
+      }
+    },
+    "mutations": {
+      "description": "已成功预测的突变分析表；失败保留在predictions/QC中。",
+      "delimiter": ",",
+      "primary_key": [
+        "run_id",
+        "design_id",
+        "sample_id"
+      ],
+      "allow_extra_prefix": "extra_",
+      "columns": {
+        "dataset_id": {
+          "type": "str",
+          "nullable": false,
+          "description": "本契约适用于课程E.coli 50 bp强度数据",
+          "const": "course_ecoli50_strength"
+        },
+        "sample_id": {
+          "type": "str",
+          "nullable": false,
+          "description": "未测突变体ID，不能与真实主表ID冲突"
+        },
+        "parent_id": {
+          "type": "str",
+          "nullable": false,
+          "description": "母本ID独立保存"
+        },
+        "design_id": {
+          "type": "str",
+          "nullable": false,
+          "description": "预测前冻结的设计ID"
+        },
+        "split_id": {
+          "type": "str",
+          "nullable": false,
+          "description": "母本所属划分"
+        },
+        "group": {
+          "type": "str",
+          "nullable": false,
+          "description": "组别",
+          "enum": [
+            "High",
+            "Low",
+            "Random"
+          ]
+        },
+        "k": {
+          "type": "int",
+          "nullable": false,
+          "description": "互斥三组各k位，3k≤50",
+          "min": 1,
+          "max": 16
+        },
+        "position_1index": {
+          "type": "int",
+          "nullable": false,
+          "description": "1..50位置",
+          "min": 1,
+          "max": 50
+        },
+        "original_base": {
+          "type": "str",
+          "nullable": false,
+          "description": "原碱基",
+          "enum": [
+            "A",
+            "C",
+            "G",
+            "T"
+          ]
+        },
+        "mutant_base": {
+          "type": "str",
+          "nullable": false,
+          "description": "替换碱基",
+          "enum": [
+            "A",
+            "C",
+            "G",
+            "T"
+          ]
+        },
+        "sequence": {
+          "type": "str",
+          "nullable": false,
+          "description": "替换后的50bp",
+          "pattern": "[ACGT]{50}"
+        },
+        "replacement_rule": {
+          "type": "str",
+          "nullable": false,
+          "description": "默认幅度与方向规则分开设计",
+          "enum": [
+            "random_other",
+            "toward_consensus",
+            "away_from_consensus"
+          ]
+        },
+        "annotation_status": {
+          "type": "str",
+          "nullable": false,
+          "description": "注释证据状态；missing是未知而非阴性",
+          "enum": [
+            "missing",
+            "partial",
+            "reliable_external",
+            "tool_inferred"
+          ]
+        },
+        "has_direction_expectation": {
+          "type": "bool",
+          "nullable": false,
+          "description": "是否已有事先依据"
+        },
+        "expected_direction": {
+          "type": "str",
+          "nullable": false,
+          "description": "不得根据突变预测反填",
+          "enum": [
+            "up",
+            "down",
+            "none"
+          ]
+        },
+        "direction_basis": {
+          "type": "str",
+          "nullable": true,
+          "description": "明确来源/假设记录；不是仅用IG正负号"
+        },
+        "coordinate_version": {
+          "type": "str",
+          "nullable": false,
+          "description": "仅本地位置",
+          "const": "ecoli50_local_v1"
+        },
+        "predicted_value_log10_original": {
+          "type": "float",
+          "nullable": false,
+          "description": "母本log10预测"
+        },
+        "predicted_value_log10_mutant": {
+          "type": "float",
+          "nullable": false,
+          "description": "突变体log10预测"
+        },
+        "delta_log10": {
+          "type": "float",
+          "nullable": false,
+          "description": "mutant-parent"
+        },
+        "abs_delta_log10": {
+          "type": "float",
+          "nullable": false,
+          "description": "绝对变化",
+          "min": 0
+        },
+        "direction_match": {
+          "type": "bool",
+          "nullable": true,
+          "description": "无方向预期时空"
+        },
+        "direction_epsilon_log10": {
+          "type": "float",
+          "nullable": true,
+          "description": "预测前确定的近零阈值",
+          "min": 0
+        },
+        "model_checkpoint": {
+          "type": "str",
+          "nullable": false,
+          "description": "父/子共用的模型路径"
+        },
+        "label_transform_id": {
+          "type": "str",
+          "nullable": true,
+          "description": "父/子共用的变换；直接log10模型可空"
+        },
+        "method_name": {
+          "type": "str",
+          "nullable": false,
+          "description": "主归因模型",
+          "const": "cnn_1d"
+        },
+        "run_id": {
+          "type": "str",
+          "nullable": false,
+          "description": "本次预测/分析run"
+        },
+        "schema_version": {
+          "type": "str",
+          "nullable": false,
+          "description": "公共schema版本",
+          "const": "2.0.0"
+        },
+        "data_version": {
+          "type": "str",
+          "nullable": false,
+          "description": "实际输出数据版本；示例以synthetic标记"
+        }
+      }
+    },
+    "metrics": {
+      "description": "主评价log10、raw辅助、未经校准热力学仅tool_rank。",
+      "delimiter": ",",
+      "primary_key": [
+        "run_id",
+        "metric_name",
+        "target_scale",
+        "evaluation_subset",
+        "comparison_set_id"
+      ],
+      "allow_extra_prefix": "extra_",
+      "columns": {
+        "dataset_id": {
+          "type": "str",
+          "nullable": false,
+          "description": "本契约适用于课程E.coli 50 bp强度数据",
+          "const": "course_ecoli50_strength"
+        },
+        "run_id": {
+          "type": "str",
+          "nullable": false,
+          "description": "同一次运行唯一标识"
+        },
+        "method_name": {
+          "type": "str",
+          "nullable": false,
+          "description": "方法标识，继承已有名称",
+          "pattern": "[a-z][a-z0-9_]*"
+        },
+        "split_id": {
+          "type": "str",
+          "nullable": false,
+          "description": "划分"
+        },
+        "evaluation_subset": {
+          "type": "str",
+          "nullable": false,
+          "description": "如val_all/val_common；注明筛选ID文件"
+        },
+        "metric_name": {
+          "type": "str",
+          "nullable": false,
+          "description": "指标",
+          "enum": [
+            "r2",
+            "spearman",
+            "mae"
+          ]
+        },
+        "target_scale": {
+          "type": "str",
+          "nullable": false,
+          "description": "指标标签/预测尺度",
+          "enum": [
+            "raw",
+            "log10",
+            "tool_rank"
+          ]
+        },
+        "value": {
+          "type": "float",
+          "nullable": true,
+          "description": "指标值；undefined时空"
+        },
+        "n_requested": {
+          "type": "int",
+          "nullable": false,
+          "description": "请求预测样本数",
+          "min": 1
+        },
+        "n_success": {
+          "type": "int",
+          "nullable": false,
+          "description": "成功预测数",
+          "min": 0
+        },
+        "n_used": {
+          "type": "int",
+          "nullable": false,
+          "description": "该指标真正参与数",
+          "min": 0
+        },
+        "metric_status": {
+          "type": "str",
+          "nullable": false,
+          "description": "是否有数学定义",
+          "enum": [
+            "ok",
+            "undefined"
+          ]
+        },
+        "reason": {
+          "type": "str",
+          "nullable": true,
+          "description": "undefined必须说明"
+        },
+        "evidence_level": {
+          "type": "str",
+          "nullable": false,
+          "description": "结果类型",
+          "enum": [
+            "synthetic",
+            "smoke",
+            "preliminary",
+            "final"
+          ]
+        },
+        "comparison_set_id": {
+          "type": "str",
+          "nullable": false,
+          "description": "对应确切used_ids清单，区分共同有效子集"
+        },
+        "schema_version": {
+          "type": "str",
+          "nullable": false,
+          "description": "公共schema版本",
+          "const": "2.0.0"
+        },
+        "data_version": {
+          "type": "str",
+          "nullable": false,
+          "description": "实际输出数据版本；示例以synthetic标记"
+        }
+      }
+    }
+  }
+}

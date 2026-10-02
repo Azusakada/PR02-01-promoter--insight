@@ -1,0 +1,21 @@
+{
+  "schema_version": "2.0.0",
+  "status": "planned",
+  "sequence_length": 50,
+  "k": 10,
+  "groups": [
+    "High",
+    "Low",
+    "Random"
+  ],
+  "random_group_excludes_high_low": true,
+  "replacement_rule": "random_other",
+  "seed": 42,
+  "one_base_per_variant": true,
+  "analysis_scale": "log10",
+  "direction_enabled": false,
+  "direction_status": "blocked_pending_annotation_and_prior",
+  "direction_epsilon_log10": null,
+  "analysis_unit": "parent_sequence",
+  "notes": "k10 is a new protocol proposal, not an existing experiment result. Validate 3*k<=sequence_length."
+}

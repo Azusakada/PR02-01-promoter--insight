@@ -1,0 +1,18 @@
+{
+  "schema_version": "2.0.0",
+  "dataset_id": "course_ecoli50_strength",
+  "data_version": "synthetic_ecoli50_v1",
+  "split_id": "demo_random42",
+  "transform_id": "log10mm_f15e58471a228d18",
+  "kind": "log10_minmax",
+  "fit_subset": "train",
+  "train_ids": [
+    "demo_ecoli50_r000001",
+    "demo_ecoli50_r000002"
+  ],
+  "train_ids_sha256": "b8bb8ab55a9a8c2dd5e3bdfffcb2486a353c84fb39a4ffaeb005cea6a1dcf989",
+  "samples_sha256": "70a7320c78fdc61523ab530392804fe3df88069c4c4ef49737a60bbd9eb2fa70",
+  "min_log10": 2.0,
+  "max_log10": 4.0,
+  "clip": false
+}

@@ -1,0 +1,5 @@
+dataset_id	sample_id	source_row	sequence	sequence_length	strength	target_log10	annotation_status	schema_version	data_version
+course_ecoli50_strength	demo_ecoli50_r000001	1	AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA	50	100.0	2.0	missing	2.0.0	synthetic_ecoli50_v1
+course_ecoli50_strength	demo_ecoli50_r000002	2	CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC	50	10000.0	4.0	missing	2.0.0	synthetic_ecoli50_v1
+course_ecoli50_strength	demo_ecoli50_r000003	3	GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG	50	10.0	1.0	missing	2.0.0	synthetic_ecoli50_v1
+course_ecoli50_strength	demo_ecoli50_r000004	4	TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT	50	1000000.0	6.0	missing	2.0.0	synthetic_ecoli50_v1

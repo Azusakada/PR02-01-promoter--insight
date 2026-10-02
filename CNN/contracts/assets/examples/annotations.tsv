@@ -1,0 +1,6 @@
+dataset_id	sample_id	region_type	annotation_id	start_0index	end_0index_exclusive	strand	annotation_status	evidence_ref	score	annotation_version	schema_version	data_version
+course_ecoli50_strength	demo_ecoli50_r000004	TSS	missing			unknown	missing			demo_missing	2.0.0	synthetic_ecoli50_v1
+course_ecoli50_strength	demo_ecoli50_r000004	minus10	missing			unknown	missing			demo_missing	2.0.0	synthetic_ecoli50_v1
+course_ecoli50_strength	demo_ecoli50_r000004	minus35	missing			unknown	missing			demo_missing	2.0.0	synthetic_ecoli50_v1
+course_ecoli50_strength	demo_ecoli50_r000004	spacer	missing			unknown	missing			demo_missing	2.0.0	synthetic_ecoli50_v1
+course_ecoli50_strength	demo_ecoli50_r000004	UP_element	missing			unknown	missing			demo_missing	2.0.0	synthetic_ecoli50_v1

@@ -1,0 +1,5 @@
+dataset_id	split_id	sample_id	target_log10	target_normalized	transform_id	schema_version	data_version
+course_ecoli50_strength	demo_random42	demo_ecoli50_r000001	2.0	0.0	log10mm_f15e58471a228d18	2.0.0	synthetic_ecoli50_v1
+course_ecoli50_strength	demo_random42	demo_ecoli50_r000002	4.0	1.0	log10mm_f15e58471a228d18	2.0.0	synthetic_ecoli50_v1
+course_ecoli50_strength	demo_random42	demo_ecoli50_r000003	1.0	-0.5	log10mm_f15e58471a228d18	2.0.0	synthetic_ecoli50_v1
+course_ecoli50_strength	demo_random42	demo_ecoli50_r000004	6.0	2.0	log10mm_f15e58471a228d18	2.0.0	synthetic_ecoli50_v1

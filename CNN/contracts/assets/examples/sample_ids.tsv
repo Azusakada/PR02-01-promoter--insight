@@ -1,0 +1,5 @@
+dataset_id	row_index	sample_id	feature_version	schema_version	data_version
+course_ecoli50_strength	0	demo_ecoli50_r000001	demo_k4	2.0.0	synthetic_ecoli50_v1
+course_ecoli50_strength	1	demo_ecoli50_r000002	demo_k4	2.0.0	synthetic_ecoli50_v1
+course_ecoli50_strength	2	demo_ecoli50_r000003	demo_k4	2.0.0	synthetic_ecoli50_v1
+course_ecoli50_strength	3	demo_ecoli50_r000004	demo_k4	2.0.0	synthetic_ecoli50_v1

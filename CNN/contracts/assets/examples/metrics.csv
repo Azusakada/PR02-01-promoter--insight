@@ -1,0 +1,2 @@
+dataset_id,run_id,method_name,split_id,evaluation_subset,metric_name,target_scale,value,n_requested,n_success,n_used,metric_status,reason,evidence_level,comparison_set_id,schema_version,data_version
+course_ecoli50_strength,demo_metric,kmer4_ridge,demo_random42,val_synthetic,r2,log10,-0.2,4,4,4,ok,,synthetic,demo_set,2.0.0,synthetic_ecoli50_v1

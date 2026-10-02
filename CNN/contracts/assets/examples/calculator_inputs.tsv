@@ -1,0 +1,2 @@
+dataset_id	sample_id	sequence	sequence_length	input_origin	source_sequence_start_0index	context_source_ref	tss_mode	tss_position_1index	tss_evidence_ref	orientation_policy	feasibility_ref	input_status	error_reason	input_version	schema_version	data_version
+course_ecoli50_strength	demo_ecoli50_r000004	TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT	50	original50	0		scan			as_provided	synthetic-format-only	ready		demo_input	2.0.0	synthetic_ecoli50_v1

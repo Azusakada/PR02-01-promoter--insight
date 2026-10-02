@@ -1,0 +1,38 @@
+{
+  "schema_version": "2.0.0",
+  "dataset_id": "course_ecoli50_strength",
+  "data_version": "synthetic_ecoli50_v1",
+  "run_id": "demo_cnn",
+  "stage": "M3",
+  "task_id": "FORMAT-TEST",
+  "method_name": "cnn_1d",
+  "split_id": "demo_random42",
+  "evidence_level": "synthetic",
+  "execution_status": "success",
+  "seed": 42,
+  "created_at": "2000-01-01T00:00:00Z",
+  "command": [
+    "python",
+    "make_examples.py"
+  ],
+  "code_commit": null,
+  "dirty_worktree": false,
+  "environment": {
+    "python": "fixture",
+    "platform": "fixture",
+    "packages": {}
+  },
+  "parameters": {},
+  "fit_subsets": [],
+  "selection_subsets": [],
+  "evaluation_subsets": [
+    "test"
+  ],
+  "artifacts": [
+    {
+      "kind": "predictions",
+      "path": "predictions.csv",
+      "sha256": "fd9d227cd111d0cb4823a4750e174a4f4024fc4355eaca1474ebf76ee73b9ebd"
+    }
+  ]
+}

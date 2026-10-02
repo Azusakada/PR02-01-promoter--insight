@@ -1,0 +1,2 @@
+dataset_id,run_id,sample_id,predicted_value_log10,baseline_value_log10,contribution_sum,completeness_error,n_steps,baseline_type,qc_status,tolerance_abs,explanation_scale,schema_version,data_version
+course_ecoli50_strength,demo_ig,demo_ecoli50_r000004,5.0,3.725,1.275,0.0,32,zero,unassessed,,log10,2.0.0,synthetic_ecoli50_v1

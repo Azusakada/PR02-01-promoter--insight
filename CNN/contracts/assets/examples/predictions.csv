@@ -1,0 +1,2 @@
+dataset_id,sample_id,true_value,predicted_value,predicted_value_log10,method_name,target_scale_model,model_checkpoint,predicted_tx_rate,thermo_mode,calibration_id,run_id,split_id,subset,seed,prediction_status,error_reason,predicted_value_normalized,label_transform_id,schema_version,data_version
+course_ecoli50_strength,demo_ecoli50_r000004,1000000.0,100000.0,5.0,cnn_1d,log10_minmax,synthetic-not-a-model.json,,,,demo_cnn,demo_random42,test,42,ok,,1.5,log10mm_f15e58471a228d18,2.0.0,synthetic_ecoli50_v1

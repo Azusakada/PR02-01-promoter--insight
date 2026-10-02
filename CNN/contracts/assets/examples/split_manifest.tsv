@@ -1,0 +1,5 @@
+dataset_id	split_id	sample_id	split	group_id	split_strategy	seed	schema_version	data_version
+course_ecoli50_strength	demo_random42	demo_ecoli50_r000001	train		random	42	2.0.0	synthetic_ecoli50_v1
+course_ecoli50_strength	demo_random42	demo_ecoli50_r000002	train		random	42	2.0.0	synthetic_ecoli50_v1
+course_ecoli50_strength	demo_random42	demo_ecoli50_r000003	val		random	42	2.0.0	synthetic_ecoli50_v1
+course_ecoli50_strength	demo_random42	demo_ecoli50_r000004	test		random	42	2.0.0	synthetic_ecoli50_v1
