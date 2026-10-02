@@ -1,0 +1,21 @@
+*.py text eol=lf
+*.md text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+.gitignore text eol=lf
+project_config.json text eol=lf
+data/01_Ecoli_strength/*.tsv text eol=lf
+data/01_Ecoli_strength/*.json text eol=lf
+history/** -text
+CNN/runs/** -text
+analysis_m2m3/runs/** -text
+analysis_m2m3/inputs/** -text
+KNN/results/** -text
+thermo/results/** -text
+contracts/** -text
+*.joblib -text
+*.pt -text
+*.npy -text
+*.npz -text
+*.png -text
+*.zip -text

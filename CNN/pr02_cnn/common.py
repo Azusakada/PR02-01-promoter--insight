@@ -18,7 +18,7 @@ import torch
 import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
-CONTRACT_DIR = ROOT / "CNN" / "contracts" / "scripts"
+CONTRACT_DIR = ROOT / "contracts" / "scripts"
 # Keep the supplied validator byte-identical; import it by its file path.
 spec = importlib.util.spec_from_file_location("pr02_contract_validator", CONTRACT_DIR / "validate.py")
 v = importlib.util.module_from_spec(spec)
@@ -43,7 +43,7 @@ def write_json(path: Path, value: dict):
 def write_table(path: Path, rows: list[dict], columns=None, delimiter=","):
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=columns or list(rows[0]), delimiter=delimiter)
+        writer = csv.DictWriter(f, fieldnames=columns or list(rows[0]), delimiter=delimiter, lineterminator="\n")
         writer.writeheader()
         for row in rows:
             writer.writerow({k: "" if val is None else str(val).lower() if isinstance(val, bool) else val for k, val in row.items()})

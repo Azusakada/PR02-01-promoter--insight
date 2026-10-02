@@ -90,7 +90,7 @@ class IntegrationTests(unittest.TestCase):
         write_table(cls.split_file, splits, delimiter="\t")
         cfg = config(ROOT / "CNN/configs/cnn_run_config.yaml")
         cfg.update(evidence_level="smoke", run_id="synthetic_cnn_test")
-        cfg["data"].update(samples=relative(cls.samples), splits=relative(cls.split_file), split_id="synthetic_fixed", expected_samples=30)
+        cfg["data"].update(samples=relative(cls.samples), splits=relative(cls.split_file), split_id="synthetic_fixed", expected_samples=30, transform=None)
         cfg["training"].update(max_epochs=3, patience=2, batch_size=8, num_threads=2)
         cfg["model"].update(conv_channels=[4, 8], hidden_dim=8, dropout=0.0)
         cls.cfg = cfg

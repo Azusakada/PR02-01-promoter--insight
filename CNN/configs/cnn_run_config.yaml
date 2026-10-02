@@ -1,15 +1,14 @@
 schema_version: "2.0.0"
 task_id: cnn_ecoli50_m2_m3
-run_id: cnn_ecoli50_preliminary_20261002_v1
+run_id: cnn_ecoli50_integrated_20261002_v2
 evidence_level: preliminary
 data:
   samples: data/01_Ecoli_strength/data_v1.tsv
   splits: data/01_Ecoli_strength/split_manifest.tsv
   split_id: ecoli50_random_20260928_v1
   expected_samples: 11884
-  # null: create the official contract transform using train only in this run.
-  # A supplied transform must match the frozen data hash and train IDs exactly.
-  transform: null
+  # Frozen shared transform; checked against data bytes and train IDs.
+  transform: data/01_Ecoli_strength/label_transform.json
 model:
   sequence_length: 50
   channels: [A, C, G, T]
@@ -33,4 +32,4 @@ training:
 prediction:
   subset: val
   allow_test: false
-output_dir: CNN/runs/cnn_ecoli50_preliminary_20261002_v1
+output_dir: CNN/runs/cnn_ecoli50_integrated_20261002_v2
