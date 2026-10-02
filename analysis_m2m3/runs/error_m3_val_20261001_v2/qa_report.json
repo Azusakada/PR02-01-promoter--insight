@@ -1,0 +1,18 @@
+{
+  "checked_at": "2026-10-02T03:40:12.384242+00:00",
+  "checks": {
+    "input_and_artifact_hashes": "pass",
+    "figure_source_and_image_hashes": "pass",
+    "metric_recomputation": "pass",
+    "requested_ids": 1783,
+    "common_ids": 1782,
+    "metrics_checked": 26
+  },
+  "manually_reviewed_figure_ids": [
+    "m3_prediction_scatter",
+    "m3_residuals",
+    "m3_group_errors",
+    "m3_model_disagreement"
+  ],
+  "limitations": "Does not prove model training or biological causality."
+}

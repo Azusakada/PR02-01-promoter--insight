@@ -1,0 +1,8 @@
+{
+  "calibration_id": "thermo_regseq2_train_lin_log_v1",
+  "n_fit": 8318,
+  "coef_a_recomputed": 0.5340882953711888,
+  "intercept_b_recomputed": 0.4889973372779885,
+  "status": "pass",
+  "failure_adapter": "success-only calibrated table joined onto full raw request table; failed request retained"
+}

@@ -1,0 +1,168 @@
+{
+  "stage": "M2",
+  "task_id": "pr02-eda-annotation-m2",
+  "run_id": "eda_m2_20261001_v2",
+  "method_name": "descriptive_analysis",
+  "dataset_id": "course_ecoli50_strength",
+  "data_version": "ecoli50_strength_v1",
+  "schema_version": "2.0.0",
+  "split_id": "ecoli50_random_20260928_v1",
+  "evidence_level": "preliminary",
+  "execution_status": "success",
+  "seed": 20260928,
+  "created_at": "2026-10-02T03:39:25.330316+00:00",
+  "command": [
+    "/Users/huhaoming/Desktop/大二下/机器学习综合实践/PR02-01-promoter--insight/.venv/bin/python",
+    "analysis_m2m3/eda.py",
+    "--output",
+    "analysis_m2m3/runs/eda_m2_20261001_v2"
+  ],
+  "code_commit": "1039b9b2ce12c2322b678f9d38aa141fa7ba15c6",
+  "dirty_worktree": false,
+  "environment": {
+    "python": "3.11.15",
+    "platform": "macOS-26.5.2-arm64-arm-64bit",
+    "packages": {
+      "numpy": "2.4.6",
+      "pandas": "3.0.6",
+      "scipy": "1.17.1",
+      "matplotlib": "3.11.2",
+      "scikit-learn": "1.9.1"
+    }
+  },
+  "parameters": {
+    "normalization_scope": "analysis_only_pending_team_adoption",
+    "transform_id": "log10mm_7de0d5ad3d8a00c1",
+    "binning": "fixed descriptive bins",
+    "feature_source": "computed_from_sequence",
+    "inference": "descriptive correlations only"
+  },
+  "fit_subsets": [
+    "train"
+  ],
+  "selection_subsets": [],
+  "evaluation_subsets": [],
+  "inputs": [
+    {
+      "path": "data/01_Ecoli_strength/data_v1.tsv",
+      "sha256": "0599c5b29198c78c481d035bf32596a53411310f401463a62e160bfdbe93ca7e"
+    },
+    {
+      "path": "data/01_Ecoli_strength/split_manifest.tsv",
+      "sha256": "5d162f64e68a305749033e5f9e7f4d5bdfeb6b28af757883446f75682f9fd9b0"
+    }
+  ],
+  "label_transform_id": "log10mm_7de0d5ad3d8a00c1",
+  "artifacts": [
+    {
+      "kind": "md",
+      "path": "analysis_m2m3/runs/eda_m2_20261001_v2/eda_summary.md",
+      "sha256": "bc95c2b82c465ac8e0c0a28095d1374cd40c45fb9bb10ffb5809a97878dfae8e"
+    },
+    {
+      "kind": "json",
+      "path": "analysis_m2m3/runs/eda_m2_20261001_v2/figure_manifest.json",
+      "sha256": "2cea2835006acf892145bb1136f9c9a8bf8506bb7e56059439af20fa05ca8529"
+    },
+    {
+      "kind": "png",
+      "path": "analysis_m2m3/runs/eda_m2_20261001_v2/figures/m2_base_frequencies.png",
+      "sha256": "8676c92d89d283c619e791c206d75386cb334ac9c38359f40f13fb9eb5e554c1"
+    },
+    {
+      "kind": "svg",
+      "path": "analysis_m2m3/runs/eda_m2_20261001_v2/figures/m2_base_frequencies.svg",
+      "sha256": "253265034476ebe2e3a015eccf137549d2ae7587d5706ab8519d3e05c7a3e289"
+    },
+    {
+      "kind": "png",
+      "path": "analysis_m2m3/runs/eda_m2_20261001_v2/figures/m2_feature_relationships.png",
+      "sha256": "140da278e17a310033133dafae72e43bb4021cb811a617681927001dde8a834e"
+    },
+    {
+      "kind": "svg",
+      "path": "analysis_m2m3/runs/eda_m2_20261001_v2/figures/m2_feature_relationships.svg",
+      "sha256": "e50db98f280a40cd748933df26a6cd9907f69ae4404dcfc047f23aa5de7b1e6d"
+    },
+    {
+      "kind": "png",
+      "path": "analysis_m2m3/runs/eda_m2_20261001_v2/figures/m2_gc_binned.png",
+      "sha256": "5b0a11724679e31430c07ee856500d189af0641d2decb073c66d5f105dd612b2"
+    },
+    {
+      "kind": "svg",
+      "path": "analysis_m2m3/runs/eda_m2_20261001_v2/figures/m2_gc_binned.svg",
+      "sha256": "201e6239d9e6cc618fb6a0c266b1ae8d404ecb9fdb73aea6ac920c47c914ff4a"
+    },
+    {
+      "kind": "png",
+      "path": "analysis_m2m3/runs/eda_m2_20261001_v2/figures/m2_split_distributions.png",
+      "sha256": "001e6a06d3ca080e99c3ede5c45a98d6777203011b7e0b2cab241b11cbbcf502"
+    },
+    {
+      "kind": "svg",
+      "path": "analysis_m2m3/runs/eda_m2_20261001_v2/figures/m2_split_distributions.svg",
+      "sha256": "f7612365453ac3fa89d9078e6eaeaf54fd91919f765bb1a468c681d7870a0844"
+    },
+    {
+      "kind": "png",
+      "path": "analysis_m2m3/runs/eda_m2_20261001_v2/figures/m2_strength_distributions.png",
+      "sha256": "e9a69ce558c52dd00aaeca76500cf868f22cd1f246aec2642a8d1c7b92b460de"
+    },
+    {
+      "kind": "svg",
+      "path": "analysis_m2m3/runs/eda_m2_20261001_v2/figures/m2_strength_distributions.svg",
+      "sha256": "394c3c590dbd387547318c5be4037a9db056cbf19956ac5c1ddaa9b58d78cd49"
+    },
+    {
+      "kind": "json",
+      "path": "analysis_m2m3/runs/eda_m2_20261001_v2/label_transform.analysis.json",
+      "sha256": "d5c1f185d3ec286cefeca4ba87d3289ead59c56b64417d0f7614cfa49c56b10c"
+    },
+    {
+      "kind": "json",
+      "path": "analysis_m2m3/runs/eda_m2_20261001_v2/qa_report.json",
+      "sha256": "b9ebe3ef15884770521de2d0cb4d87efa9fefab02e7e202ac6b5ad87577ce662"
+    },
+    {
+      "kind": "csv",
+      "path": "analysis_m2m3/runs/eda_m2_20261001_v2/source_tables/distribution_summary.csv",
+      "sha256": "ddd799498f9c8800e95be51a22a6f67518be830bcfb5d6ff209e5800c15fdca7"
+    },
+    {
+      "kind": "tsv",
+      "path": "analysis_m2m3/runs/eda_m2_20261001_v2/source_tables/eda_samples.tsv",
+      "sha256": "d63f661b7d6e4443a7bcadd1adfb96904b6c7546a6bf9f4b490a6a7c0c1488c7"
+    },
+    {
+      "kind": "csv",
+      "path": "analysis_m2m3/runs/eda_m2_20261001_v2/source_tables/feature_correlations.csv",
+      "sha256": "9c9a1b7df55177d7defd97ee751cb0ebea9043b2788b65fff5f8ea69e3a1a645"
+    },
+    {
+      "kind": "csv",
+      "path": "analysis_m2m3/runs/eda_m2_20261001_v2/source_tables/gc_binned_summary.csv",
+      "sha256": "42300abcfb3220ab8f223c4103cbd9c922371297a2b772bb8b05b632753e5fe3"
+    },
+    {
+      "kind": "csv",
+      "path": "analysis_m2m3/runs/eda_m2_20261001_v2/source_tables/histogram_bins.csv",
+      "sha256": "82c1e3e98b9e1b49270cf1f2f5b62b726cbefece5880ac6f6f7c8b3631a88ab1"
+    },
+    {
+      "kind": "csv",
+      "path": "analysis_m2m3/runs/eda_m2_20261001_v2/source_tables/position_base_frequencies.csv",
+      "sha256": "25e75324a4f64e8c6ca0d7e6b8cb5fa603139b016c300f7b45891875289d7413"
+    },
+    {
+      "kind": "csv",
+      "path": "analysis_m2m3/runs/eda_m2_20261001_v2/source_tables/split_ecdf.csv",
+      "sha256": "3133c6475874e355a33f7d666f56c13385a2aeeb21279d9f50e552f63c456ec3"
+    },
+    {
+      "kind": "tsv",
+      "path": "analysis_m2m3/runs/eda_m2_20261001_v2/source_tables/targets.analysis.tsv",
+      "sha256": "4bdf6e3ad13d186ad419e2db32d16499e89d0afa1e481bdf3ceba83c8c6d8adb"
+    }
+  ]
+}
