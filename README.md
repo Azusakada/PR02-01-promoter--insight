@@ -27,3 +27,7 @@
 
 - `data/02_reg_and_gen_six_species/`：Bacillus subtilis、Baumanii、Bradyrhizobium、Diphtheria、Escherichia coli、Staphylococcus 六个独立二分类数据集，以及汇总表和清洗日志。
 - `KNN/six_species/`：六物种独立 KNN 分类的配置、模型、逐样本预测、指标、覆盖率、共同评估 ID 和冒烟日志。该结果证据级别为 `smoke`，不与 E. coli 连续 strength 回归混用。
+
+## 热力学基线
+
+`thermo/` 使用开源 regseq2，参考基因组上下文补取后运行；Tx_rate 与课程 strength 的标尺不同，未经校准只做排序比较。见 [thermo/README.md](thermo/README.md)。
