@@ -1,0 +1,2 @@
+sample_id,subset,error_reason
+ecoli50_r003290,val,ValueError: no_exact_match_in_reference_genome_50bp_too_short_for_scan

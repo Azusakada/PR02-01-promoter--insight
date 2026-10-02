@@ -22,6 +22,7 @@ def main(argv=None):
     args = parser.parse_args(argv)
     cfg = read_json(resolve(args.config))
     try:
+        v.require(cfg.get('schema_version')=='2.0.0','Unsupported project schema')
         _,_,identity = load_bundle()
         for name,path in [('samples',DATA),('splits',SPLITS),('label_transform',TRANSFORM)]:
             v.require(resolve(cfg[name])==path,f'Unsupported shared {name}; do not silently change frozen data')
@@ -64,7 +65,7 @@ def main(argv=None):
             evaluate([resolve(p) for p in cfg['validation_predictions']],cfg['runs']['comparison'])
             from .publish import publish
             publish(cfg)
-    except (v.ContractError,ValueError,OSError,RuntimeError) as exc:
+    except (v.ContractError,ValueError,OSError,RuntimeError,subprocess.CalledProcessError) as exc:
         parser.exit(2,f'PR02 failed: {exc}\n')
 
 

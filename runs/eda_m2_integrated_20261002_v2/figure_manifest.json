@@ -1,0 +1,224 @@
+[
+  {
+    "figure_id": "m2_strength_distributions",
+    "title": "Strength distributions",
+    "run_id": "eda_m2_integrated_20261002_v2",
+    "data_version": "ecoli50_strength_v1",
+    "split_id": "ecoli50_random_20260928_v1",
+    "subset": "all",
+    "target_scale": "raw/log10/normalized",
+    "n_samples": 11884,
+    "annotation_level": "missing",
+    "reliable_annotation_coverage": 0,
+    "parameters": {
+      "normalization_scope": "provided_shared_transform",
+      "transform_id": "log10mm_59711a1c2217859e",
+      "binning": "fixed descriptive bins",
+      "feature_source": "computed_from_sequence",
+      "inference": "descriptive correlations only"
+    },
+    "source_tables": [
+      {
+        "path": "runs/eda_m2_integrated_20261002_v2/source_tables/histogram_bins.csv",
+        "sha256": "bf20a505bb990d972198a42ff21b4f0b6b551f62eed3f5b48baaba933b5e166d"
+      },
+      {
+        "path": "runs/eda_m2_integrated_20261002_v2/source_tables/distribution_summary.csv",
+        "sha256": "85220a5cf0324d7ee98eac04718dc7e89b20387576aeb73048110844335a1909"
+      }
+    ],
+    "images": [
+      {
+        "path": "runs/eda_m2_integrated_20261002_v2/figures/m2_strength_distributions.png",
+        "sha256": "e9a69ce558c52dd00aaeca76500cf868f22cd1f246aec2642a8d1c7b92b460de"
+      },
+      {
+        "path": "runs/eda_m2_integrated_20261002_v2/figures/m2_strength_distributions.svg",
+        "sha256": "c2976be385a03ecb489e96f93fd3f08b1cfd5e8032f8ca27dbb84b31439acd5e"
+      }
+    ],
+    "caption": "Raw labels have a long right tail. Normalization uses only fixed train extrema, with no clipping; pending shared adoption.",
+    "visual_check_status": "pass",
+    "visual_check": {
+      "checked_at": "2026-10-02T08:00:10.670724+00:00",
+      "method": "manual inspection of rendered PNG: labels, clipping, scale, sample counts and caption",
+      "reviewer": "Codex (not a biological annotation review)"
+    }
+  },
+  {
+    "figure_id": "m2_split_distributions",
+    "title": "Fixed split distributions",
+    "run_id": "eda_m2_integrated_20261002_v2",
+    "data_version": "ecoli50_strength_v1",
+    "split_id": "ecoli50_random_20260928_v1",
+    "subset": "train/val/test",
+    "target_scale": "log10",
+    "n_samples": 11884,
+    "annotation_level": "missing",
+    "reliable_annotation_coverage": 0,
+    "parameters": {
+      "normalization_scope": "provided_shared_transform",
+      "transform_id": "log10mm_59711a1c2217859e",
+      "binning": "fixed descriptive bins",
+      "feature_source": "computed_from_sequence",
+      "inference": "descriptive correlations only"
+    },
+    "source_tables": [
+      {
+        "path": "runs/eda_m2_integrated_20261002_v2/source_tables/split_ecdf.csv",
+        "sha256": "b9739697a6a3683e99f3a1521d57b2df62ab1886a04345b85276fe88e7645d5b"
+      },
+      {
+        "path": "runs/eda_m2_integrated_20261002_v2/source_tables/eda_samples.tsv",
+        "sha256": "28787d854678cd07214bf29de3d20991fc9b91557530294d6abfd5221d10b110"
+      }
+    ],
+    "images": [
+      {
+        "path": "runs/eda_m2_integrated_20261002_v2/figures/m2_split_distributions.png",
+        "sha256": "13c9aec1520e9de0afefcf032e20811c6838283ee2e2b390ff586b09449e1d34"
+      },
+      {
+        "path": "runs/eda_m2_integrated_20261002_v2/figures/m2_split_distributions.svg",
+        "sha256": "81c887d96624fb6469cd7764f81df06040273b17d0b13ffbb3a02510c227ecf3"
+      }
+    ],
+    "caption": "Descriptive split QC; similar marginals do not prove absence of sequence-related leakage.",
+    "visual_check_status": "pass",
+    "visual_check": {
+      "checked_at": "2026-10-02T08:00:10.670724+00:00",
+      "method": "manual inspection of rendered PNG: labels, clipping, scale, sample counts and caption",
+      "reviewer": "Codex (not a biological annotation review)"
+    }
+  },
+  {
+    "figure_id": "m2_feature_relationships",
+    "title": "Sequence features vs strength",
+    "run_id": "eda_m2_integrated_20261002_v2",
+    "data_version": "ecoli50_strength_v1",
+    "split_id": "ecoli50_random_20260928_v1",
+    "subset": "all",
+    "target_scale": "log10",
+    "n_samples": 11884,
+    "annotation_level": "missing",
+    "reliable_annotation_coverage": 0,
+    "parameters": {
+      "normalization_scope": "provided_shared_transform",
+      "transform_id": "log10mm_59711a1c2217859e",
+      "binning": "fixed descriptive bins",
+      "feature_source": "computed_from_sequence",
+      "inference": "descriptive correlations only"
+    },
+    "source_tables": [
+      {
+        "path": "runs/eda_m2_integrated_20261002_v2/source_tables/eda_samples.tsv",
+        "sha256": "28787d854678cd07214bf29de3d20991fc9b91557530294d6abfd5221d10b110"
+      },
+      {
+        "path": "runs/eda_m2_integrated_20261002_v2/source_tables/feature_correlations.csv",
+        "sha256": "16c482dc725d18438a140c73dabef117a71bbaf977efa637e3b6438e3ffc2300"
+      }
+    ],
+    "images": [
+      {
+        "path": "runs/eda_m2_integrated_20261002_v2/figures/m2_feature_relationships.png",
+        "sha256": "140da278e17a310033133dafae72e43bb4021cb811a617681927001dde8a834e"
+      },
+      {
+        "path": "runs/eda_m2_integrated_20261002_v2/figures/m2_feature_relationships.svg",
+        "sha256": "b704498fd59c5f02e7bf9679d2c75bf79574fec6c448c5e5a3a7d8aa35f7b6d7"
+      }
+    ],
+    "caption": "Sequence-derived features, not independent measurements. GC and AT are redundant; correlations do not establish biological causality.",
+    "visual_check_status": "pass",
+    "visual_check": {
+      "checked_at": "2026-10-02T08:00:10.670724+00:00",
+      "method": "manual inspection of rendered PNG: labels, clipping, scale, sample counts and caption",
+      "reviewer": "Codex (not a biological annotation review)"
+    }
+  },
+  {
+    "figure_id": "m2_gc_binned",
+    "title": "GC binned strength",
+    "run_id": "eda_m2_integrated_20261002_v2",
+    "data_version": "ecoli50_strength_v1",
+    "split_id": "ecoli50_random_20260928_v1",
+    "subset": "all",
+    "target_scale": "log10",
+    "n_samples": 11884,
+    "annotation_level": "missing",
+    "reliable_annotation_coverage": 0,
+    "parameters": {
+      "normalization_scope": "provided_shared_transform",
+      "transform_id": "log10mm_59711a1c2217859e",
+      "binning": "fixed descriptive bins",
+      "feature_source": "computed_from_sequence",
+      "inference": "descriptive correlations only"
+    },
+    "source_tables": [
+      {
+        "path": "runs/eda_m2_integrated_20261002_v2/source_tables/gc_binned_summary.csv",
+        "sha256": "ef9843f601768e7b781a1fdceb3f458bafbbb653f33279bde086d8ce61631687"
+      }
+    ],
+    "images": [
+      {
+        "path": "runs/eda_m2_integrated_20261002_v2/figures/m2_gc_binned.png",
+        "sha256": "5b0a11724679e31430c07ee856500d189af0641d2decb073c66d5f105dd612b2"
+      },
+      {
+        "path": "runs/eda_m2_integrated_20261002_v2/figures/m2_gc_binned.svg",
+        "sha256": "4c9ba186253db8a9b4d65db74b306c99c155223429fc5c4070292b7a6826cdc9"
+      }
+    ],
+    "caption": "Bars show bin sizes; error bars are interquartile ranges, not confidence intervals.",
+    "visual_check_status": "pass",
+    "visual_check": {
+      "checked_at": "2026-10-02T08:00:10.670724+00:00",
+      "method": "manual inspection of rendered PNG: labels, clipping, scale, sample counts and caption",
+      "reviewer": "Codex (not a biological annotation review)"
+    }
+  },
+  {
+    "figure_id": "m2_base_frequencies",
+    "title": "Local base frequencies",
+    "run_id": "eda_m2_integrated_20261002_v2",
+    "data_version": "ecoli50_strength_v1",
+    "split_id": "ecoli50_random_20260928_v1",
+    "subset": "all",
+    "target_scale": "sequence",
+    "n_samples": 11884,
+    "annotation_level": "missing",
+    "reliable_annotation_coverage": 0,
+    "parameters": {
+      "normalization_scope": "provided_shared_transform",
+      "transform_id": "log10mm_59711a1c2217859e",
+      "binning": "fixed descriptive bins",
+      "feature_source": "computed_from_sequence",
+      "inference": "descriptive correlations only"
+    },
+    "source_tables": [
+      {
+        "path": "runs/eda_m2_integrated_20261002_v2/source_tables/position_base_frequencies.csv",
+        "sha256": "25e75324a4f64e8c6ca0d7e6b8cb5fa603139b016c300f7b45891875289d7413"
+      }
+    ],
+    "images": [
+      {
+        "path": "runs/eda_m2_integrated_20261002_v2/figures/m2_base_frequencies.png",
+        "sha256": "8676c92d89d283c619e791c206d75386cb334ac9c38359f40f13fb9eb5e554c1"
+      },
+      {
+        "path": "runs/eda_m2_integrated_20261002_v2/figures/m2_base_frequencies.svg",
+        "sha256": "a5939bd6f283b7138fee6cd258f8a422caef1e81b0e1761aa80f6cb599b93bb0"
+      }
+    ],
+    "caption": "Positions are local 1..50; no TSS, -10/-35 or UP region is inferred from this heatmap.",
+    "visual_check_status": "pass",
+    "visual_check": {
+      "checked_at": "2026-10-02T08:00:10.670724+00:00",
+      "method": "manual inspection of rendered PNG: labels, clipping, scale, sample counts and caption",
+      "reviewer": "Codex (not a biological annotation review)"
+    }
+  }
+]

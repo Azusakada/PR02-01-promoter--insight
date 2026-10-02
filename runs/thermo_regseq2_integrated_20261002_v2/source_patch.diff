@@ -1,0 +1,362 @@
+diff --git a/.gitattributes b/.gitattributes
+index c27efd4..416762f 100644
+--- a/.gitattributes
++++ b/.gitattributes
+@@ -4,6 +4,10 @@
+ *.yml text eol=lf
+ .gitignore text eol=lf
+ project_config.json text eol=lf
++.gitattributes text eol=lf
++runs/** -text
++results/** -text
++reports/** -text
+ data/01_Ecoli_strength/*.tsv text eol=lf
+ data/01_Ecoli_strength/*.json text eol=lf
+ history/** -text
+diff --git a/CNN/README.md b/CNN/README.md
+index cb686e5..20624ac 100644
+--- a/CNN/README.md
++++ b/CNN/README.md
+@@ -38,10 +38,9 @@ python -m venv .venv
+ sample_id，禁止用当前行号建立训练/预测对应关系。数据身份、完整主表 SHA256、
+ split 文件 SHA256、训练和验证 ID 集合分别绑定到模型元数据。
+ 
+-仓库 main 没有 `label_transform.json`。当配置的 `data.transform` 是 null 时，代码调用
+-附件提供的标准 helper，仅从当前 split 的 train 拟合 a 和 b，并把结果保存到运行目录。
+-一旦团队发布了正式 transform，将其路径填入 `data.transform`；代码会核对全部训练 ID、
+-完整主表哈希和 a/b，不会重新拟合或静默接受不同版本。
++集成配置显式使用 `data/01_Ecoli_strength/label_transform.json`。代码核对全部训练 ID、
++完整主表哈希和 a/b，不重新拟合或静默接受不同版本。主表和 split 的工作区字节统一为 LF，
++由 `.gitattributes` 固定，避免跨平台换行导致哈希冲突。`transform: null` 仅用于独立测试数据。
+ 
+ ```text
+ z = log10(strength)
+@@ -66,7 +65,8 @@ smoke test 使用独立模型副本验证 forward、loss、backward、参数更
+ 
+ ## 交付文件
+ 
+-正式运行默认位于 `CNN/runs/cnn_ecoli50_preliminary_20261002_v1/`：
++当前集成运行位于 `CNN/runs/cnn_ecoli50_integrated_20261002_v2/`。旧 v1 结果保留为历史实验，
++绑定的 CRLF 数据副本见 `history/data_bytes_before_lf_20261002_v1/`。当前产物：
+ 
+ | 文件 | 用途 |
+ |---|---|
+@@ -85,8 +85,8 @@ smoke test 使用独立模型副本验证 forward、loss、backward、参数更
+ | validation/common_eval_ids_cnn.tsv | 本次成功且参与指标计算的ID |
+ | validation/coverage_cnn.csv | 请求、成功、失败和实际参与样本数及coverage |
+ 
+-逐样本预测严格采用附件 schema 2.0.0 的所有公共列。校验器原件见 `contracts/README.md`。
+-本模块不生成全组共同有效子集，也不代替李宇飞的统一评价。
++逐样本预测采用 schema 2.0.0。全组校验器见仓库根 `contracts/README.md`。
++共同有效子集、覆盖率和性能表由 `python -m pr02 evaluate` 统一生成。
+ 
+ ## 独立加载和重复预测
+ 
+diff --git a/README.md b/README.md
+index 367edbe..16962f2 100644
+--- a/README.md
++++ b/README.md
+@@ -2,6 +2,41 @@
+ 
+ 本仓库保存 PR02-01 M2/M3 阶段的可复现数据与实验交付物。
+ 
++当前集成开发在 `csy`：接入 main、member-b 和 EDA 分支，统一代码与验收；不直接修改远端 main。
++当前有效配置是 [project_config.json](project_config.json)，共同结果见 `results/`，验证和任务状态见 `reports/`。
++
++## 统一入口
++
++建议 Python 3.12。使用 CPU PyTorch 的实际验证环境，依赖版本固定在 `requirements.txt`。
++
++```powershell
++python -m venv .venv
++.\.venv\Scripts\python.exe -m pip install torch==2.14.1 --index-url https://download.pytorch.org/whl/cpu
++.\.venv\Scripts\python.exe -m pip install -r requirements.txt
++.\.venv\Scripts\python.exe -m pr02 validate-data
++.\.venv\Scripts\python.exe -m pr02 verify
++```
++
++Git 须在 PATH，或设置环境变量 `PR02_GIT` 指向 Git 可执行文件。
++
++已有结果不可覆盖。新实验用一个新 tag 自动生成配套配置：
++
++```powershell
++python -m pr02 new-run --tag my_experiment_v1
++python -m pr02 --config configs/integration_my_experiment_v1.json run-all
++```
++
++单独步骤：`python -m pr02 run-knn`、`python -m pr02 run-thermo`、
++`python CNN/run_cnn.py train --config CNN/configs/cnn_run_config.yaml`、`python -m pr02 evaluate`。
++默认配置对应已交付运行；再次运行会拒绝覆盖，须先生成新 tag。
++
++```powershell
++python -m unittest discover -s tests -v
++python -m unittest discover -s CNN/tests -v
++python -m unittest discover -s analysis_m2m3/tests -v
++python contracts/scripts/validate.py self-test
++```
++
+ ## E. coli strength 数据
+ 
+ - `data/01_Ecoli_strength/data_v1.tsv`：统一的 50 bp E. coli strength 主表。
+@@ -17,7 +52,9 @@
+ - `predictions_knn.csv`
+ - `metrics.csv`、`common_eval_ids.tsv`、`coverage_summary.csv`
+ 
+-集成修复中的公共交付状态以统一验收报告为准。
++`predictions_knn.csv` 标准入口只包含 val；log10 模型不填写 normalized / label_transform_id。
++模型按 train 拟合并保存，val 用于原 k 的选择和初步评价，不做 train+val 重拟合。
++带 `ecoli_full_20260929` 后缀的文件是历史实验，不与当前默认结果混用。
+ 
+ ## E. coli CNN 回归
+ 
+@@ -31,3 +68,22 @@
+ ## 热力学基线
+ 
+ `thermo/` 使用开源 regseq2，参考基因组上下文补取后运行；Tx_rate 与课程 strength 的标尺不同，未经校准只做排序比较。见 [thermo/README.md](thermo/README.md)。
++
++## 统一评价和交接
++
++所有方法使用同一 data_v1 和 split。CNN/KNN 仅在 train 拟合，CNN 在 val 选 checkpoint，
++KNN 沿用已发布 val 搜索选出的 k=1501；热力学校准仅在 train 拟合。默认不输出 test 成绩。
++按 sample_id 对齐各方法成功预测的交集，主比较同样本、同尺度；完整请求的 coverage 单独报告。
++另报唯一参考基因组匹配子集的敏感性结果。热力学使用 150 bp 补取上下文，CNN 使用 50 bp，
++因此同样本比较不意味着输入信息量相同。
++
++- `results/current.json`：当前有效运行、文件路径和哈希索引。
++- `results/performance_summary.csv`、`metrics.csv`、`coverage_summary.csv`、`common_eval_ids.tsv`：统一成绩和精确评价集合。
++- `reports/integration_validation.json`：数据、运行、校准、模型重载及独立指标复算。
++- `reports/PROJECT_STATUS.md`：分工、验收与交接。
++- `reports/OPEN_ITEMS.md`：可靠注释、测量来源、Ridge 和 M4 待办。
++- `history/`、旧运行目录：历史版本，不能当作当前标准产物。
++
++团队修改共同数据 / split / transform 前须发布新版本；新增方法提交完整 val 预测、失败状态、
++train-only 模型及 run_manifest，再注册到统一配置。每次新增方法或数据版本都重新生成评价集合。
++提交前执行适用测试和 `python -m pr02 verify`；用自己的开发分支提交集成变更，验收后再通过 PR 进入 main。
+diff --git a/analysis_m2m3/common.py b/analysis_m2m3/common.py
+index 86ca28a..4e4b49a 100644
+--- a/analysis_m2m3/common.py
++++ b/analysis_m2m3/common.py
+@@ -5,6 +5,8 @@ import hashlib
+ import importlib.metadata
+ import json
+ import platform
++import os
++import shutil
+ import subprocess
+ import sys
+ from datetime import datetime, timezone
+@@ -25,6 +27,7 @@ SCHEMA = "2.0.0"
+ DATASET = "course_ecoli50_strength"
+ SEED = 20260928
+ COLORS = {"train": "#386CB0", "val": "#E18B35", "test": "#45A37A"}
++GIT = os.environ.get('PR02_GIT') or shutil.which('git')
+ 
+ 
+ def require(condition, message):
+@@ -87,6 +90,7 @@ def sequence_features(data):
+ 
+ class Run:
+     def __init__(self, output, stage, task_id, data, inputs, parameters):
++        require(bool(GIT), 'Set PR02_GIT or add Git to PATH')
+         self.output = Path(output).resolve()
+         relative(self.output)
+         require(not self.output.exists() or not any(self.output.iterdir()), f"Output already nonempty: {self.output}; choose a new run")
+@@ -104,14 +108,14 @@ class Run:
+             "execution_status": "success", "seed": SEED,
+             "created_at": datetime.now(timezone.utc).isoformat(),
+             "command": [sys.executable, *sys.argv],
+-            "code_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
+-            "dirty_worktree": bool(subprocess.check_output(["git", "status", "--porcelain", "--untracked-files=no"], cwd=ROOT, text=True).strip()),
++            "code_commit": subprocess.check_output([GIT, "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
++            "dirty_worktree": bool(subprocess.check_output([GIT, "status", "--porcelain", "--untracked-files=no"], cwd=ROOT, text=True).strip()),
+             "environment": {"python": platform.python_version(), "platform": platform.platform(),
+                             "packages": {x: importlib.metadata.version(x) for x in ["numpy", "pandas", "scipy", "matplotlib", "scikit-learn"]}},
+             "parameters": parameters, "fit_subsets": [], "selection_subsets": [], "evaluation_subsets": [],
+             "inputs": [{"path": relative(p), "sha256": sha256(p)} for p in inputs],
+         }
+-        patch = subprocess.check_output(["git", "diff", "HEAD", "--", "analysis_m2m3"], cwd=ROOT)
++        patch = subprocess.check_output([GIT, "diff", "HEAD", "--", "analysis_m2m3"], cwd=ROOT)
+         if patch:
+             (self.output / "source_patch.diff").write_bytes(patch)
+             self.meta['source_patch'] = relative(self.output / "source_patch.diff")
+diff --git a/analysis_m2m3/error_analysis.py b/analysis_m2m3/error_analysis.py
+index ce362c9..8cf3356 100644
+--- a/analysis_m2m3/error_analysis.py
++++ b/analysis_m2m3/error_analysis.py
+@@ -65,7 +65,13 @@ def attach_calibration(raw, calibrated_path, calibration_path, train_path, data)
+     require(single(cal,'method_name') == single(raw,'method_name') and single(cal,'run_id') == single(raw,'run_id'), 'Raw/calibrated method or run mismatch')
+     require(single(cal,'calibration_id') == meta.get('calibration_id'), 'Unknown calibration_id')
+     expected_ok = set(raw.loc[raw.prediction_status.eq('ok'),'sample_id'])
+-    require(set(cal.sample_id) == expected_ok and cal.prediction_status.eq('ok').all(), 'Calibrated table does not cover exact successful raw requests')
++    require(set(cal.loc[cal.prediction_status.eq('ok'),'sample_id']) == expected_ok, 'Calibrated table does not cover exact successful raw requests')
++    failed_cal = cal[cal.prediction_status.eq('failed')]
++    expected_failed = set(raw.loc[raw.prediction_status.eq('failed'),'sample_id'])
++    require(set(failed_cal.sample_id) <= expected_failed, 'Unexpected calibrated failures')
++    if len(failed_cal):
++        require(set(cal.sample_id)==set(raw.sample_id), 'Partially covered calibrated failures')
++    cal = cal[cal.prediction_status.eq('ok')].copy()
+     tr = train[train.prediction_status.eq('ok')]
+     x = np.log10(tr.predicted_tx_rate.to_numpy())
+     y = np.log10(tr.true_value.to_numpy())
+@@ -113,9 +119,9 @@ def analyze(output, paths, calibrated=None, calibration=None, calibration_train=
+     requested = set(data.loc[data['split'].eq('val'),'sample_id'])
+     success = {m:set(f.loc[f.prediction_status.eq('ok'),'sample_id']) for m,f in zip(methods,frames)}
+     common = set.intersection(*success.values())
+-    run = Run(output,'M3','pr02-error-analysis-m3',data,inputs,{'subset':'val','group_threshold_source':'train log10 tertiles','thresholds_log10':thresholds.tolist(),'case_seed':SEED,'case_rules':'top5 absolute errors per method, top5 pairwise log10 disagreement, 5 random common IDs','required_missing_methods':['kmer Ridge','CNN optional'],'calibration_handling':'verify imported train-only parameters; do not fit on val'})
++    run = Run(output,'M3','pr02-error-analysis-m3',data,inputs,{'subset':'val','group_threshold_source':'train log10 tertiles','thresholds_log10':thresholds.tolist(),'case_seed':SEED,'case_rules':'top5 absolute errors per method, top5 pairwise log10 disagreement, 5 random common IDs','team_plan_missing_methods':['kmer Ridge'] if not any('ridge' in m.lower() for m in methods) else [],'calibration_handling':'verify imported train-only parameters; do not fit on val'})
+     run.meta['evaluation_subsets'] = ['val']
+-    run.meta['execution_status'] = 'partial'  # Required Ridge comparison is not supplied in this delivery.
++    run.meta['execution_status'] = 'partial' if any(f.prediction_status.eq('failed').any() for f in frames) else 'success'
+     if calibration_qc:
+         write_json(run.output/'calibration_qc.json',calibration_qc)
+     metrics,used_ids,coverage,errors,groups = [],[],[],[],[]
+@@ -255,9 +261,9 @@ case_review.csv 包含每方法最大误差前5、方法分歧前5以及固定
+ 
+ ## 当前完成边界
+ 
+-KNN 与热力学的验证集图表、分组误差、覆盖和案例可交接；正式 k-mer Ridge 预测仍未提交，CNN 结果为可选。最低中期所要求的 Ridge+热力学比较仍待 Ridge 交接，不能把本轮标成全组 M3 已完成。
++本轮已接入方法的验证集图表、分组误差、覆盖和案例可交接。教师 M3 要求简单 ML 与热力学，Ridge/SVR 是建议架构；组内另外承诺的 k-mer Ridge 交付状态见统一任务表。不能以图表生成完成代替所有中期任务验收。
+ 
+-热力学校准表只保存成功记录，本模块用原始完整请求表承载失败记录后再按 ID 合并校准值，未修改队友文件。KNN val 预测来自 train-only 模型，但仓库只保存了 train+val 的 test 模型 checkpoint；不要用该 checkpoint 重新生成 val 预测。当前热力学上下文来自基因组恢复，测量上下文一致性、工具扫描位置和 assay 方向仍需生物学核实。两种模型使用的信息范围不同，应在汇报中说明。
++校准输入既支持历史成功记录表，也支持保留失败请求的新表；失败不参与性能计算，但参与 coverage。模型 checkpoint 与 train-only 校准的独立复现见统一验收程序。热力学输入为补取的 150 bp 参考基因组上下文，CNN 为原始 50 bp；信息范围不同，测量上下文一致性、工具扫描位置和 assay 方向仍需核实。
+ '''
+     (run.output/'m3_error_analysis.md').write_text(report,encoding='utf-8')
+     run.finish()
+diff --git a/analysis_m2m3/tests/test_analysis.py b/analysis_m2m3/tests/test_analysis.py
+index 9bc7239..2581d6c 100644
+--- a/analysis_m2m3/tests/test_analysis.py
++++ b/analysis_m2m3/tests/test_analysis.py
+@@ -93,6 +93,18 @@ class AnalysisTests(unittest.TestCase):
+         self.assertEqual(status,'undefined')
+         self.assertIn('constant',reason)
+ 
++    def test_calibration_accepts_new_full_request_table(self):
++        raw=checked_predictions(INPUTS/'thermo_val.csv',self.data)
++        success=pd.read_csv(INPUTS/'thermo_val_calibrated.csv')
++        failed=raw[raw.prediction_status.eq('failed')].copy()
++        failed['calibration_id']=success.calibration_id.iloc[0]
++        with tempfile.TemporaryDirectory() as tmp:
++            path=Path(tmp)/'full_calibrated.csv'
++            pd.concat([success,failed],ignore_index=True).to_csv(path,index=False)
++            joined,qc=attach_calibration(raw,path,INPUTS/'thermo_calibration.json',INPUTS/'thermo_train.csv',self.data)
++            self.assertEqual(len(joined),len(raw))
++            self.assertEqual(int(joined.prediction_status.eq('failed').sum()),1)
++
+ 
+ if __name__=='__main__':
+     unittest.main()
+diff --git a/contracts/README.md b/contracts/README.md
+index 0c97b0b..b2aa988 100644
+--- a/contracts/README.md
++++ b/contracts/README.md
+@@ -5,12 +5,12 @@
+ `PR02-01_团队协作接口Skills_v2.1_仅接口规范.zip`，保持字节不变。
+ 公共 schema 是 `2.0.0`，API 是 `2.0`，规范包版本是 `2.1`。
+ 
+-这些文件只提供表、标签变换和接口校验。实际 CNN 实现位于 `CNN/pr02_cnn/`。
++这些文件提供全组表、标签变换和接口校验。统一管理位于 `pr02/`，CNN 实现位于 `CNN/pr02_cnn/`。
+ 本目录不安装或修改仓库的 agent 配置。
+ 
+ 从仓库根目录执行：
+ 
+ ```bash
+-python CNN/contracts/scripts/validate.py self-test
+-python CNN/contracts/scripts/validate.py bundle --samples data/01_Ecoli_strength/data_v1.tsv --splits data/01_Ecoli_strength/split_manifest.tsv
++python contracts/scripts/validate.py self-test
++python contracts/scripts/validate.py bundle --samples data/01_Ecoli_strength/data_v1.tsv --splits data/01_Ecoli_strength/split_manifest.tsv --transform data/01_Ecoli_strength/label_transform.json
+ ```
+diff --git a/pr02/__main__.py b/pr02/__main__.py
+index ceea5b2..a6fe44a 100644
+--- a/pr02/__main__.py
++++ b/pr02/__main__.py
+@@ -16,11 +16,22 @@ def main(argv=None):
+     sub.add_parser('validate-data')
+     sub.add_parser('run-all')
+     sub.add_parser('verify')
++    sub.add_parser('publish')
++    cmd = sub.add_parser('new-run')
++    cmd.add_argument('--tag',required=True)
+     args = parser.parse_args(argv)
+     cfg = read_json(resolve(args.config))
+     try:
+-        load_bundle()
+-        if args.command=='validate-data':
++        _,_,identity = load_bundle()
++        for name,path in [('samples',DATA),('splits',SPLITS),('label_transform',TRANSFORM)]:
++            v.require(resolve(cfg[name])==path,f'Unsupported shared {name}; do not silently change frozen data')
++        for name in ['dataset_id','data_version','split_id']:
++            v.require(cfg[name]==identity[name],f'Project {name} mismatch')
++        v.require(cfg.get('test_metrics_enabled') is False,'This M3 entry point does not enable test model selection/evaluation')
++        if args.command=='new-run':
++            from .new_run import create
++            create(args.tag,resolve(args.config))
++        elif args.command=='validate-data':
+             print(v.bundle_check(DATA,SPLITS,transform=TRANSFORM))
+         elif args.command=='run-knn':
+             from .knn import run
+@@ -31,6 +42,9 @@ def main(argv=None):
+         elif args.command=='evaluate':
+             from .evaluate import run
+             run([resolve(p) for p in cfg['validation_predictions']],args.run_id or cfg['runs']['comparison'])
++        elif args.command=='publish':
++            from .publish import publish
++            publish(cfg)
+         elif args.command=='verify':
+             from .verify import verify
+             verify(cfg)
+diff --git a/pr02/evaluate.py b/pr02/evaluate.py
+index cafe14d..223b97d 100644
+--- a/pr02/evaluate.py
++++ b/pr02/evaluate.py
+@@ -1,7 +1,7 @@
+ """Strict ID alignment, full-request coverage and identical evaluation cohorts."""
+ from __future__ import annotations
+ import hashlib
+-from .common import (DATA, SPLITS, TRANSFORM, artifact, load_bundle, relative, run_dir,
++from .common import (ROOT, DATA, SPLITS, TRANSFORM, artifact, load_bundle, read_table, relative, run_dir,
+                      v, write_json, write_manifest, write_table)
+ from .metrics import metric_rows
+ 
+@@ -44,6 +44,12 @@ def run(paths,run_id='comparison_val_integrated_20261002_v2'):
+     write_table(output/'coverage_summary.csv',coverage)
+     write_table(output/'common_eval_ids.tsv',[{'sample_id':s} for s in common],delimiter='\t')
+     write_table(output/'comparison_predictions.csv',joined)
++    context_path = ROOT/'thermo/input/context_map.tsv'
++    unique = {r['sample_id'] for r in read_table(context_path,delimiter='\t') if r['match_status']=='found'} & common_set
++    unique_id = 'val_unique_context_'+hashlib.sha256(''.join(s+'\n' for s in sorted(unique)).encode()).hexdigest()[:16]
++    unique_metrics = [m for rows in frames for m in metric_rows(rows,'val',comparison_set_id=unique_id,common_ids=unique)]
++    write_table(output/'metrics_unique_context.csv',unique_metrics)
++    write_table(output/'unique_context_eval_ids.tsv',[{'sample_id':s} for s in sorted(unique)],delimiter='\t')
+     table = []
+     for c in coverage:
+         values = {m['metric_name']:m['value'] for m in metrics if m['method_name']==c['method_name'] and m['target_scale']=='log10'}
+@@ -51,10 +57,13 @@ def run(paths,run_id='comparison_val_integrated_20261002_v2'):
+                           n_requested=c['n_requested'],n_success=c['n_success'],n_common=c['n_used'],coverage=c['coverage']))
+     write_table(output/'performance_summary.csv',table)
+     write_json(output/'comparison_config.json',dict(subset='val',target_scale='log10',fit_protocol='train only for every method',
+-               comparison_set_id=comparison,n_common=len(common),prediction_files=[relative(p) for p in paths],test_metrics_enabled=False))
++               comparison_set_id=comparison,n_common=len(common),prediction_files=[relative(p) for p in paths],test_metrics_enabled=False,
++               information_scope={'cnn_1d':'provided 50bp','knn_physchem_full':'8 derived features from provided 50bp','thermo_regseq2':'150bp reference-genome recovered context'},
++               unique_context_sensitivity=dict(n_common=len(unique),comparison_set_id=unique_id)))
+     artifacts = [artifact(kind,output/name) for kind,name in [('comparison_metrics','metrics.csv'),('coverage','coverage_summary.csv'),
+                  ('common_eval_ids','common_eval_ids.tsv'),('comparison_predictions','comparison_predictions.csv'),
+-                 ('summary','performance_summary.csv'),('config','comparison_config.json')]]
++                 ('summary','performance_summary.csv'),('config','comparison_config.json'),
++                 ('sensitivity_metrics','metrics_unique_context.csv'),('sensitivity_ids','unique_context_eval_ids.tsv')]]
+     artifacts.extend(artifact('prediction_input',p) for p in paths)
+     artifacts.extend([artifact('dataset',DATA),artifact('splits',SPLITS),artifact('label_transform',TRANSFORM)])
+     # A method failing one request does not make the comparison computation fail.
+diff --git a/pr02/verify.py b/pr02/verify.py
+index 4da6194..efb0466 100644
+--- a/pr02/verify.py
++++ b/pr02/verify.py
+@@ -23,7 +23,8 @@ def verify(cfg):
+     knn_dir = ROOT/'runs'/cfg['runs']['knn']
+     thermo_dir = ROOT/'runs'/cfg['runs']['thermo']
+     comparison_dir = ROOT/'runs'/cfg['runs']['comparison']
+-    cnn_dir = paths[2].parent.parent
++    cnn_path = next(p for p,rows in zip(paths,frames) if rows[0]['method_name']=='cnn_1d')
++    cnn_dir = cnn_path.parent.parent
+     for directory in [knn_dir,thermo_dir,cnn_dir,cnn_dir/'validation',comparison_dir]:
+         record('run_manifest:'+directory.name,v.run_check(directory/'run_manifest.json',ROOT))
+     for path in paths: record('prediction_bundle:'+str(path.relative_to(ROOT)),v.bundle_check(DATA,SPLITS,transform=TRANSFORM,predictions=path))

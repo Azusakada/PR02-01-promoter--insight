@@ -1,0 +1,147 @@
+{
+  "schema_version": "2.0.0",
+  "published_at": "2026-10-02T15:54:36.592389+08:00",
+  "comparison_run_id": "comparison_val_integrated_20261002_v2",
+  "evidence_level": "preliminary",
+  "test_metrics_enabled": false,
+  "data": {
+    "kind": "dataset",
+    "path": "data/01_Ecoli_strength/data_v1.tsv",
+    "sha256": "0599c5b29198c78c481d035bf32596a53411310f401463a62e160bfdbe93ca7e"
+  },
+  "splits": {
+    "kind": "splits",
+    "path": "data/01_Ecoli_strength/split_manifest.tsv",
+    "sha256": "5d162f64e68a305749033e5f9e7f4d5bdfeb6b28af757883446f75682f9fd9b0"
+  },
+  "label_transform": {
+    "kind": "label_transform",
+    "path": "data/01_Ecoli_strength/label_transform.json",
+    "sha256": "1784286ed1f086c1f0d26e4b44f9cd170adc9d47a091c2cdf1f3635861b97557"
+  },
+  "transform_id": "log10mm_59711a1c2217859e",
+  "predictions": [
+    {
+      "method_name": "knn_physchem_full",
+      "run_id": "knn_physchem_integrated_20261002_v2",
+      "n_requested": 1783,
+      "n_success": 1783,
+      "original": {
+        "kind": "predictions",
+        "path": "runs/knn_physchem_integrated_20261002_v2/predictions_knn_val.csv",
+        "sha256": "885d22fbd464f83f35df2c80886bd9b801e3feffdda2a9548314c1b9769d9b99"
+      },
+      "current": {
+        "kind": "predictions",
+        "path": "results/predictions/knn_physchem_full_val.csv",
+        "sha256": "885d22fbd464f83f35df2c80886bd9b801e3feffdda2a9548314c1b9769d9b99"
+      }
+    },
+    {
+      "method_name": "thermo_regseq2",
+      "run_id": "thermo_regseq2_integrated_20261002_v2",
+      "n_requested": 1783,
+      "n_success": 1782,
+      "original": {
+        "kind": "predictions",
+        "path": "runs/thermo_regseq2_integrated_20261002_v2/predictions/thermo_val_calibrated.csv",
+        "sha256": "9539011545d787a6832cd6d7ec830f4f1cbe0d8efaeeaef8691feb336b9f6e1f"
+      },
+      "current": {
+        "kind": "predictions",
+        "path": "results/predictions/thermo_regseq2_val.csv",
+        "sha256": "9539011545d787a6832cd6d7ec830f4f1cbe0d8efaeeaef8691feb336b9f6e1f"
+      }
+    },
+    {
+      "method_name": "cnn_1d",
+      "run_id": "cnn_ecoli50_integrated_20261002_v2",
+      "n_requested": 1783,
+      "n_success": 1783,
+      "original": {
+        "kind": "predictions",
+        "path": "CNN/runs/cnn_ecoli50_integrated_20261002_v2/validation/predictions_cnn.csv",
+        "sha256": "04755f52dff6f781c62931af7493c653f0cb1a801c345998c22320feb60ccbfd"
+      },
+      "current": {
+        "kind": "predictions",
+        "path": "results/predictions/cnn_1d_val.csv",
+        "sha256": "04755f52dff6f781c62931af7493c653f0cb1a801c345998c22320feb60ccbfd"
+      }
+    }
+  ],
+  "comparison_manifest": {
+    "kind": "run_manifest",
+    "path": "runs/comparison_val_integrated_20261002_v2/run_manifest.json",
+    "sha256": "b3e704d20acad9ecf15074ccc39d3861743a28ae5be9975bb03eaddeab0c9762"
+  },
+  "artifacts": [
+    {
+      "kind": "current_result",
+      "path": "results/metrics.csv",
+      "sha256": "fd3d41645d9d35eb7a90ee4586fbfc305560e23235a226682b1dcc7f8defa8f3"
+    },
+    {
+      "kind": "current_result",
+      "path": "results/coverage_summary.csv",
+      "sha256": "9e4856532930ab67c308903a2a5c96775bf137ab3105220726388beec33cecc2"
+    },
+    {
+      "kind": "current_result",
+      "path": "results/common_eval_ids.tsv",
+      "sha256": "df203b98dd937e165804d6f0dbda43ec9d41f20864327dfec43e9892b4a03c4f"
+    },
+    {
+      "kind": "current_result",
+      "path": "results/performance_summary.csv",
+      "sha256": "8e94dc2f5b1af18163507667c5d89a611de30de55e342797825e553805181cfe"
+    },
+    {
+      "kind": "current_result",
+      "path": "results/metrics_unique_context.csv",
+      "sha256": "b18c1222a515e2886ce0be0aee6e0ea4b512797b0d1c6e652c62150dc0c1c412"
+    },
+    {
+      "kind": "current_result",
+      "path": "results/unique_context_eval_ids.tsv",
+      "sha256": "fe73b1f88337cc41aaccb641c487e34e0750c7bf18129c5b9a980f97ab98189c"
+    }
+  ],
+  "validation": {
+    "kind": "validation",
+    "path": "runs/comparison_val_integrated_20261002_v2/integration_validation.json",
+    "sha256": "2c4aee5c60273ac58dec60504f83011515c2365b8e3e99ec474c231523b23f07"
+  },
+  "legacy_entrypoints": [
+    {
+      "kind": "current_knn_alias",
+      "path": "KNN/results/predictions_knn.csv",
+      "sha256": "885d22fbd464f83f35df2c80886bd9b801e3feffdda2a9548314c1b9769d9b99"
+    },
+    {
+      "kind": "current_knn_alias",
+      "path": "KNN/results/metrics.csv",
+      "sha256": "367737f20a1f2f4fd77c89e23fd4313e79e4beb61b1d49e3f89add54c9f5c8b1"
+    },
+    {
+      "kind": "current_knn_alias",
+      "path": "KNN/results/knn_model.joblib",
+      "sha256": "b8dd774046b27fc87d75e8c22d5787b1eea51ee71e6cca403dc2655d54d3933b"
+    },
+    {
+      "kind": "current_knn_alias",
+      "path": "KNN/results/knn_config.json",
+      "sha256": "3533cf96b8175c16e89d43db96e746a663855d1fca3cc831d7cbe21c0759cde9"
+    },
+    {
+      "kind": "current_knn_alias",
+      "path": "KNN/results/common_eval_ids.tsv",
+      "sha256": "208a27c5160f454cfc355fe210b5680359829f5cddc7623e2666632be12ad809"
+    },
+    {
+      "kind": "current_knn_alias",
+      "path": "KNN/results/coverage_summary.csv",
+      "sha256": "9e1a60e9bd4928ecf69385fd4c04589954eabf32bbeb493d27a1fea49268efd3"
+    }
+  ]
+}

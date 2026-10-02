@@ -1,0 +1,14 @@
+{
+  "input_mode": "recovered_context",
+  "both_strands": true,
+  "selection": "minimum dG_total among all (strand,TSS) states",
+  "context_match_counts": {
+    "found": 11808,
+    "ambiguous": 75,
+    "not_found": 1
+  },
+  "tool_coefficient_sha256": "fddf16b38bf29799481e8a45890b669111e16cf2e3448e99d1934d19a8f0b8e9",
+  "tool_intercept_sha256": "f7c66a8d838da71a6b2ab17936cd6ff2564e446af8c0676fba95de2116e99a7b",
+  "test_metrics_enabled": false,
+  "elapsed_seconds": 1197.9241332000001
+}

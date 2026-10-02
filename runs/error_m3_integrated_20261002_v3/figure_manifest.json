@@ -1,0 +1,149 @@
+[
+  {
+    "figure_id": "m3_prediction_scatter",
+    "title": "Validation scatter",
+    "run_id": "error_m3_integrated_20261002_v3",
+    "data_version": "ecoli50_strength_v1",
+    "split_id": "ecoli50_random_20260928_v1",
+    "subset": "val_common",
+    "target_scale": "log10",
+    "n_samples": 1782,
+    "annotation_level": "missing",
+    "reliable_annotation_coverage": 0,
+    "parameters": {
+      "subset": "val",
+      "group_threshold_source": "train log10 tertiles",
+      "thresholds_log10": [
+        1.9406658724758288,
+        2.383258681708176
+      ],
+      "case_seed": 20260928,
+      "case_rules": "top5 absolute errors per method, top5 pairwise log10 disagreement, 5 random common IDs",
+      "team_plan_missing_methods": [
+        "kmer Ridge"
+      ],
+      "calibration_handling": "verify imported train-only parameters; do not fit on val"
+    },
+    "source_tables": [
+      {
+        "path": "runs/error_m3_integrated_20261002_v3/source_tables/prediction_errors.csv",
+        "sha256": "cf4b4d819fd65e46c13fdc5391f4b73e547c858a8ba4d56a3c5da16263a6081b"
+      }
+    ],
+    "images": [
+      {
+        "path": "runs/error_m3_integrated_20261002_v3/figures/m3_prediction_scatter.png",
+        "sha256": "05a7ec7a8f57ea770b870df3edfb74991d3d788808c7f292d0754735bb2c2160"
+      },
+      {
+        "path": "runs/error_m3_integrated_20261002_v3/figures/m3_prediction_scatter.svg",
+        "sha256": "b5b7841b4e355894e4d8b9fadf16ddc3f7b035e82009b202d0ce1b6f38ea06c7"
+      }
+    ],
+    "caption": "Fixed val common IDs. Thermodynamic numerical output is train-only calibrated; no test predictions used.",
+    "visual_check_status": "pass",
+    "visual_check": {
+      "checked_at": "2026-10-02T08:00:12.425978+00:00",
+      "method": "manual inspection of rendered PNG: labels, clipping, scale, sample counts and caption",
+      "reviewer": "Codex (not a biological annotation review)"
+    }
+  },
+  {
+    "figure_id": "m3_residuals",
+    "title": "Validation residual",
+    "run_id": "error_m3_integrated_20261002_v3",
+    "data_version": "ecoli50_strength_v1",
+    "split_id": "ecoli50_random_20260928_v1",
+    "subset": "val_common",
+    "target_scale": "log10",
+    "n_samples": 1782,
+    "annotation_level": "missing",
+    "reliable_annotation_coverage": 0,
+    "parameters": {
+      "subset": "val",
+      "group_threshold_source": "train log10 tertiles",
+      "thresholds_log10": [
+        1.9406658724758288,
+        2.383258681708176
+      ],
+      "case_seed": 20260928,
+      "case_rules": "top5 absolute errors per method, top5 pairwise log10 disagreement, 5 random common IDs",
+      "team_plan_missing_methods": [
+        "kmer Ridge"
+      ],
+      "calibration_handling": "verify imported train-only parameters; do not fit on val"
+    },
+    "source_tables": [
+      {
+        "path": "runs/error_m3_integrated_20261002_v3/source_tables/prediction_errors.csv",
+        "sha256": "cf4b4d819fd65e46c13fdc5391f4b73e547c858a8ba4d56a3c5da16263a6081b"
+      }
+    ],
+    "images": [
+      {
+        "path": "runs/error_m3_integrated_20261002_v3/figures/m3_residuals.png",
+        "sha256": "f1ca31bc700ffd9388ca5e8e8abb42af6a33a240a4e6d3bab23075df8214ffeb"
+      },
+      {
+        "path": "runs/error_m3_integrated_20261002_v3/figures/m3_residuals.svg",
+        "sha256": "ad73edb8f6be91566425a71780849ec6fb697685f2aa92292faa513c6084096a"
+      }
+    ],
+    "caption": "Fixed val common IDs. Thermodynamic numerical output is train-only calibrated; no test predictions used.",
+    "visual_check_status": "pass",
+    "visual_check": {
+      "checked_at": "2026-10-02T08:00:12.425978+00:00",
+      "method": "manual inspection of rendered PNG: labels, clipping, scale, sample counts and caption",
+      "reviewer": "Codex (not a biological annotation review)"
+    }
+  },
+  {
+    "figure_id": "m3_group_errors",
+    "title": "Strength-group errors",
+    "run_id": "error_m3_integrated_20261002_v3",
+    "data_version": "ecoli50_strength_v1",
+    "split_id": "ecoli50_random_20260928_v1",
+    "subset": "val_common",
+    "target_scale": "log10",
+    "n_samples": 1782,
+    "annotation_level": "missing",
+    "reliable_annotation_coverage": 0,
+    "parameters": {
+      "subset": "val",
+      "group_threshold_source": "train log10 tertiles",
+      "thresholds_log10": [
+        1.9406658724758288,
+        2.383258681708176
+      ],
+      "case_seed": 20260928,
+      "case_rules": "top5 absolute errors per method, top5 pairwise log10 disagreement, 5 random common IDs",
+      "team_plan_missing_methods": [
+        "kmer Ridge"
+      ],
+      "calibration_handling": "verify imported train-only parameters; do not fit on val"
+    },
+    "source_tables": [
+      {
+        "path": "runs/error_m3_integrated_20261002_v3/source_tables/group_errors.csv",
+        "sha256": "c41ec9115dde7f119078b804a1ccdaa534bae9489eae6c2931007418424c24b3"
+      }
+    ],
+    "images": [
+      {
+        "path": "runs/error_m3_integrated_20261002_v3/figures/m3_group_errors.png",
+        "sha256": "01ee29e503b2b64165d94b76e189c308b4c3b36bc4710cdaecdc941786199c89"
+      },
+      {
+        "path": "runs/error_m3_integrated_20261002_v3/figures/m3_group_errors.svg",
+        "sha256": "5bcc09f143dccddff4cbbd90dc5a06a3ff5dd331712627246d7062d97897a297"
+      }
+    ],
+    "caption": "Strength boundaries come from train tertiles, not validation outcomes. Source table records group counts.",
+    "visual_check_status": "pass",
+    "visual_check": {
+      "checked_at": "2026-10-02T08:00:12.425978+00:00",
+      "method": "manual inspection of rendered PNG: labels, clipping, scale, sample counts and caption",
+      "reviewer": "Codex (not a biological annotation review)"
+    }
+  }
+]

@@ -1,0 +1,145 @@
+{
+  "dataset_id": "course_ecoli50_strength",
+  "schema_version": "2.0.0",
+  "run_id": "thermo_regseq2_integrated_20261002_v2",
+  "stage": "M3",
+  "task_id": "pr02_integrated_m2_m3",
+  "method_name": "thermo_regseq2",
+  "data_version": "ecoli50_strength_v1",
+  "split_id": "ecoli50_random_20260928_v1",
+  "evidence_level": "preliminary",
+  "execution_status": "partial",
+  "seed": null,
+  "created_at": "2026-10-02T15:40:26.192283+08:00",
+  "command": [
+    "C:\\Users\\admin\\Documents\\Codex\\2026-10-02\\wo-shi\\work\\cnn_env\\Scripts\\python.exe",
+    "D:\\PR02-01-promoter--insight\\pr02\\__main__.py",
+    "run-thermo"
+  ],
+  "code_commit": "5ed1ac99d592bb3e057961d9c665cf99f99cafe3",
+  "dirty_worktree": true,
+  "environment": {
+    "python": "3.12.14",
+    "platform": "Windows-11-10.0.22621-SP0",
+    "packages": {
+      "numpy": "2.5.3",
+      "scipy": "1.18.1",
+      "scikit-learn": "1.9.1",
+      "pandas": "3.0.6",
+      "biopython": "1.88",
+      "torch": "2.14.1+cpu",
+      "PyYAML": "6.0.3",
+      "matplotlib": "3.11.2"
+    }
+  },
+  "parameters": {
+    "input_mode": "recovered_context",
+    "both_strands": true,
+    "selection": "minimum dG_total among all (strand,TSS) states",
+    "context_match_counts": {
+      "found": 11808,
+      "ambiguous": 75,
+      "not_found": 1
+    },
+    "tool_coefficient_sha256": "fddf16b38bf29799481e8a45890b669111e16cf2e3448e99d1934d19a8f0b8e9",
+    "tool_intercept_sha256": "f7c66a8d838da71a6b2ab17936cd6ff2564e446af8c0676fba95de2116e99a7b",
+    "test_metrics_enabled": false,
+    "elapsed_seconds": 1197.9241332000001
+  },
+  "fit_subsets": [
+    "train"
+  ],
+  "selection_subsets": [],
+  "evaluation_subsets": [
+    "train",
+    "val",
+    "test"
+  ],
+  "artifacts": [
+    {
+      "kind": "raw_outputs",
+      "path": "runs/thermo_regseq2_integrated_20261002_v2/thermo_raw_outputs.jsonl",
+      "sha256": "89dcea5a5882093e7640b08dec1abc24c156d9597a8f00dfa91bfddb81dc7952"
+    },
+    {
+      "kind": "calibration",
+      "path": "runs/thermo_regseq2_integrated_20261002_v2/thermo_calibration.json",
+      "sha256": "fb6ff5696cc934f76b524dbb90a9f7e998cc610d7ab7f82c870f987594fbc14a"
+    },
+    {
+      "kind": "fit_ids",
+      "path": "runs/thermo_regseq2_integrated_20261002_v2/train_ids.tsv",
+      "sha256": "68757cedab54c10281e244ae9a4612bf03f65dcd8a693402635e915570b601ef"
+    },
+    {
+      "kind": "failures",
+      "path": "runs/thermo_regseq2_integrated_20261002_v2/calculator_failures.csv",
+      "sha256": "7ed165d0157fdf989ba766b99870312fec4fef7992f7fc1cb7514d60a44b4ce5"
+    },
+    {
+      "kind": "calculator_inputs",
+      "path": "thermo/input/calculator_inputs.tsv",
+      "sha256": "c446d04da3c922bf92e2043ad0f14de449007cd1e3c71accce352eaa85ab30f8"
+    },
+    {
+      "kind": "dataset",
+      "path": "data/01_Ecoli_strength/data_v1.tsv",
+      "sha256": "0599c5b29198c78c481d035bf32596a53411310f401463a62e160bfdbe93ca7e"
+    },
+    {
+      "kind": "splits",
+      "path": "data/01_Ecoli_strength/split_manifest.tsv",
+      "sha256": "5d162f64e68a305749033e5f9e7f4d5bdfeb6b28af757883446f75682f9fd9b0"
+    },
+    {
+      "kind": "predictions",
+      "path": "runs/thermo_regseq2_integrated_20261002_v2/predictions/thermo_train_raw.csv",
+      "sha256": "2f8f6f4b95dedabd3b0eb6b71ce1c17f68e2a8265681aeb6450ce9138c39f4fe"
+    },
+    {
+      "kind": "predictions",
+      "path": "runs/thermo_regseq2_integrated_20261002_v2/predictions/thermo_train_calibrated.csv",
+      "sha256": "9c95dcd9ebb618d9578b2683c103ff13482988bd2eef562672489ef385ab8d29"
+    },
+    {
+      "kind": "predictions",
+      "path": "runs/thermo_regseq2_integrated_20261002_v2/predictions/thermo_val_raw.csv",
+      "sha256": "56f141297319a974037bce03c95d02389aca5a26ce6add9df53b91d5f6df988f"
+    },
+    {
+      "kind": "predictions",
+      "path": "runs/thermo_regseq2_integrated_20261002_v2/predictions/thermo_val_calibrated.csv",
+      "sha256": "9539011545d787a6832cd6d7ec830f4f1cbe0d8efaeeaef8691feb336b9f6e1f"
+    },
+    {
+      "kind": "predictions",
+      "path": "runs/thermo_regseq2_integrated_20261002_v2/predictions/thermo_test_raw.csv",
+      "sha256": "f0ecf18a6ae35172986f91cd675eba9f7017d32827b4f179e6b2652b15fd7c2c"
+    },
+    {
+      "kind": "predictions",
+      "path": "runs/thermo_regseq2_integrated_20261002_v2/predictions/thermo_test_calibrated.csv",
+      "sha256": "7265c1f4ddec3834c85d81439c785416c4d1d3621dfcdcbcc98ec6f056245108"
+    },
+    {
+      "kind": "metrics",
+      "path": "runs/thermo_regseq2_integrated_20261002_v2/metrics.csv",
+      "sha256": "9e4b8ebdebca02c64ffe12b72f880e87614201124be88732fa8618c8cacfcfac"
+    },
+    {
+      "kind": "coverage",
+      "path": "runs/thermo_regseq2_integrated_20261002_v2/coverage_summary.csv",
+      "sha256": "89cf67696b24e5d17c013189a9b2314b9f9ff398799e64036fb6aec83a04a8f4"
+    },
+    {
+      "kind": "config",
+      "path": "runs/thermo_regseq2_integrated_20261002_v2/config.json",
+      "sha256": "c55fe72464d732d98fffb2390cdc370d49caba554a25fe65e35ad418bb14325c"
+    },
+    {
+      "kind": "source_patch",
+      "path": "runs/thermo_regseq2_integrated_20261002_v2/source_patch.diff",
+      "sha256": "79a4bb666d665be18240ec5150aea5d9c1b7aa37ce999a7aa2c38487e1b51a9b"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+test_calibration_excludes_validation_labels (test_integration.IntegrationTests.test_calibration_excludes_validation_labels) ... ok
+test_failed_request_preserved_in_calibrated_export (test_integration.IntegrationTests.test_failed_request_preserved_in_calibrated_export) ... ok
+test_metric_counts_are_subset_and_common_cohort_specific (test_integration.IntegrationTests.test_metric_counts_are_subset_and_common_cohort_specific) ... ok
+test_reverse_coordinates_use_mapped_key_and_half_open_boxes (test_integration.IntegrationTests.test_reverse_coordinates_use_mapped_key_and_half_open_boxes) ... ok
+test_same_coordinate_retains_forward_candidate (test_integration.IntegrationTests.test_same_coordinate_retains_forward_candidate) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.000s
+
+OK

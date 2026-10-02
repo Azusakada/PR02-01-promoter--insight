@@ -1,0 +1,27 @@
+{
+  "status": "passed",
+  "total_tests_passed": 76,
+  "suites": [
+    {
+      "suite": "integration",
+      "tests_passed": 5,
+      "exit_code": 0
+    },
+    {
+      "suite": "cnn",
+      "tests_passed": 14,
+      "exit_code": 0
+    },
+    {
+      "suite": "analysis",
+      "tests_passed": 9,
+      "exit_code": 0
+    },
+    {
+      "suite": "contracts",
+      "tests_passed": 48,
+      "exit_code": 0
+    }
+  ],
+  "run_all_existing_output_refused": true
+}

@@ -1,0 +1,7 @@
+{
+  "n_requested": 11884,
+  "n_success": 11883,
+  "n_changed_vs_legacy": 1382,
+  "changed_definition": "Tx not close at rel_tol=5e-9",
+  "all_corrected_tx_at_least_legacy_with_rounding_tolerance": true
+}

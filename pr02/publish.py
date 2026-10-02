@@ -36,12 +36,14 @@ def publish(cfg):
     n_success = sum(r['prediction_status']=='ok' for r in knn_rows)
     write_table(ROOT/'KNN/results/common_eval_ids.tsv',[{'sample_id':r['sample_id']} for r in knn_rows if r['prediction_status']=='ok'],delimiter='\t')
     write_table(ROOT/'KNN/results/coverage_summary.csv',[dict(method_name='knn_physchem_full',subset='val',n_requested=len(knn_rows),n_success=n_success,n_failed=len(knn_rows)-n_success,coverage=n_success/len(knn_rows))])
+    shutil.copy2(comparison/'integration_validation.json',ROOT/'reports/integration_validation.json')
     registry = dict(schema_version='2.0.0',published_at=datetime.now(timezone(timedelta(hours=8))).isoformat(),
                     comparison_run_id=cfg['runs']['comparison'],evidence_level='preliminary',test_metrics_enabled=False,
                     data=artifact('dataset',DATA),splits=artifact('splits',SPLITS),label_transform=artifact('label_transform',TRANSFORM),
                     transform_id=validation['transform_id'],predictions=predictions,
                     comparison_manifest=artifact('run_manifest',comparison/'run_manifest.json'),
                     artifacts=[artifact('current_result',current/name) for name in ['metrics.csv','coverage_summary.csv','common_eval_ids.tsv','performance_summary.csv','metrics_unique_context.csv','unique_context_eval_ids.tsv']],
-                    validation=artifact('validation',ROOT/'reports/integration_validation.json'))
+                    validation=artifact('validation',comparison/'integration_validation.json'),
+                    legacy_entrypoints=[artifact('current_knn_alias',ROOT/'KNN/results'/name) for name in ['predictions_knn.csv','metrics.csv','knn_model.joblib','knn_config.json','common_eval_ids.tsv','coverage_summary.csv']])
     write_json(current/'current.json',registry)
     return registry

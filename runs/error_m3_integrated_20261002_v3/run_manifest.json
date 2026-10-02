@@ -1,0 +1,181 @@
+{
+  "stage": "M3",
+  "task_id": "pr02-error-analysis-m3",
+  "run_id": "error_m3_integrated_20261002_v3",
+  "method_name": "descriptive_analysis",
+  "dataset_id": "course_ecoli50_strength",
+  "data_version": "ecoli50_strength_v1",
+  "schema_version": "2.0.0",
+  "split_id": "ecoli50_random_20260928_v1",
+  "evidence_level": "preliminary",
+  "execution_status": "partial",
+  "seed": 20260928,
+  "created_at": "2026-10-02T07:54:38.273750+00:00",
+  "command": [
+    "C:\\Users\\admin\\Documents\\Codex\\2026-10-02\\wo-shi\\work\\cnn_env\\Scripts\\python.exe",
+    "analysis_m2m3/error_analysis.py",
+    "--output",
+    "runs/error_m3_integrated_20261002_v3",
+    "--predictions",
+    "runs/knn_physchem_integrated_20261002_v2/predictions_knn_val.csv",
+    "runs/thermo_regseq2_integrated_20261002_v2/predictions/thermo_val_calibrated.csv",
+    "CNN/runs/cnn_ecoli50_integrated_20261002_v2/validation/predictions_cnn.csv"
+  ],
+  "code_commit": "f272a8547351d6fa2b5b249035e5578d7502fa68",
+  "dirty_worktree": true,
+  "environment": {
+    "python": "3.12.14",
+    "platform": "Windows-11-10.0.22621-SP0",
+    "packages": {
+      "numpy": "2.5.3",
+      "pandas": "3.0.6",
+      "scipy": "1.18.1",
+      "matplotlib": "3.11.2",
+      "scikit-learn": "1.9.1"
+    }
+  },
+  "parameters": {
+    "subset": "val",
+    "group_threshold_source": "train log10 tertiles",
+    "thresholds_log10": [
+      1.9406658724758288,
+      2.383258681708176
+    ],
+    "case_seed": 20260928,
+    "case_rules": "top5 absolute errors per method, top5 pairwise log10 disagreement, 5 random common IDs",
+    "team_plan_missing_methods": [
+      "kmer Ridge"
+    ],
+    "calibration_handling": "verify imported train-only parameters; do not fit on val"
+  },
+  "fit_subsets": [],
+  "selection_subsets": [],
+  "evaluation_subsets": [
+    "val"
+  ],
+  "inputs": [
+    {
+      "path": "data/01_Ecoli_strength/data_v1.tsv",
+      "sha256": "0599c5b29198c78c481d035bf32596a53411310f401463a62e160bfdbe93ca7e"
+    },
+    {
+      "path": "data/01_Ecoli_strength/split_manifest.tsv",
+      "sha256": "5d162f64e68a305749033e5f9e7f4d5bdfeb6b28af757883446f75682f9fd9b0"
+    },
+    {
+      "path": "runs/knn_physchem_integrated_20261002_v2/predictions_knn_val.csv",
+      "sha256": "885d22fbd464f83f35df2c80886bd9b801e3feffdda2a9548314c1b9769d9b99"
+    },
+    {
+      "path": "runs/thermo_regseq2_integrated_20261002_v2/predictions/thermo_val_calibrated.csv",
+      "sha256": "9539011545d787a6832cd6d7ec830f4f1cbe0d8efaeeaef8691feb336b9f6e1f"
+    },
+    {
+      "path": "CNN/runs/cnn_ecoli50_integrated_20261002_v2/validation/predictions_cnn.csv",
+      "sha256": "04755f52dff6f781c62931af7493c653f0cb1a801c345998c22320feb60ccbfd"
+    }
+  ],
+  "source_patch": "runs/error_m3_integrated_20261002_v3/source_patch.diff",
+  "artifacts": [
+    {
+      "kind": "json",
+      "path": "runs/error_m3_integrated_20261002_v3/figure_manifest.json",
+      "sha256": "41d4e54c00620d2102d5909cb23861bf1e2f1007311bfa2727f472fc46390d19"
+    },
+    {
+      "kind": "png",
+      "path": "runs/error_m3_integrated_20261002_v3/figures/m3_group_errors.png",
+      "sha256": "01ee29e503b2b64165d94b76e189c308b4c3b36bc4710cdaecdc941786199c89"
+    },
+    {
+      "kind": "svg",
+      "path": "runs/error_m3_integrated_20261002_v3/figures/m3_group_errors.svg",
+      "sha256": "5bcc09f143dccddff4cbbd90dc5a06a3ff5dd331712627246d7062d97897a297"
+    },
+    {
+      "kind": "png",
+      "path": "runs/error_m3_integrated_20261002_v3/figures/m3_prediction_scatter.png",
+      "sha256": "05a7ec7a8f57ea770b870df3edfb74991d3d788808c7f292d0754735bb2c2160"
+    },
+    {
+      "kind": "svg",
+      "path": "runs/error_m3_integrated_20261002_v3/figures/m3_prediction_scatter.svg",
+      "sha256": "b5b7841b4e355894e4d8b9fadf16ddc3f7b035e82009b202d0ce1b6f38ea06c7"
+    },
+    {
+      "kind": "png",
+      "path": "runs/error_m3_integrated_20261002_v3/figures/m3_residuals.png",
+      "sha256": "f1ca31bc700ffd9388ca5e8e8abb42af6a33a240a4e6d3bab23075df8214ffeb"
+    },
+    {
+      "kind": "svg",
+      "path": "runs/error_m3_integrated_20261002_v3/figures/m3_residuals.svg",
+      "sha256": "ad73edb8f6be91566425a71780849ec6fb697685f2aa92292faa513c6084096a"
+    },
+    {
+      "kind": "md",
+      "path": "runs/error_m3_integrated_20261002_v3/m3_error_analysis.md",
+      "sha256": "eebfc3b8d70e6a0d07d8e3fb05be7d575a198fc1d80d38474b93e6183d5348a3"
+    },
+    {
+      "kind": "json",
+      "path": "runs/error_m3_integrated_20261002_v3/qa_report.json",
+      "sha256": "0525fb574228fd600b6ad49f3b2052c7e9f66edaa820aa1356183c03f6eebb0f"
+    },
+    {
+      "kind": "source_patch",
+      "path": "runs/error_m3_integrated_20261002_v3/source_patch.diff",
+      "sha256": "868532dd640e6c5f8027839e9d6ae1598c825f1c54923b5415532f5eb2f4a95b"
+    },
+    {
+      "kind": "csv",
+      "path": "runs/error_m3_integrated_20261002_v3/source_tables/case_review.csv",
+      "sha256": "eb643f59f6544aad94ec3aaedfc95da37c424877d54545c07edabcd34ac47d1f"
+    },
+    {
+      "kind": "csv",
+      "path": "runs/error_m3_integrated_20261002_v3/source_tables/cnn_1d_requested_predictions.csv",
+      "sha256": "7ac375c00551f3de303d622971b9ab2c67bbc88de3b713c4c8c7b97cc10e8e25"
+    },
+    {
+      "kind": "tsv",
+      "path": "runs/error_m3_integrated_20261002_v3/source_tables/common_eval_ids.tsv",
+      "sha256": "954de5fe317576cf7254ad246e98e437c964119d44ada59d5875ae0d6cf8e272"
+    },
+    {
+      "kind": "csv",
+      "path": "runs/error_m3_integrated_20261002_v3/source_tables/coverage_summary.csv",
+      "sha256": "1f1328ebcb96358874090e4fef2d08ce000127f62a497851ae13a8ca01356554"
+    },
+    {
+      "kind": "csv",
+      "path": "runs/error_m3_integrated_20261002_v3/source_tables/group_errors.csv",
+      "sha256": "c41ec9115dde7f119078b804a1ccdaa534bae9489eae6c2931007418424c24b3"
+    },
+    {
+      "kind": "csv",
+      "path": "runs/error_m3_integrated_20261002_v3/source_tables/knn_physchem_full_requested_predictions.csv",
+      "sha256": "5486c6fa56530c65309b41327ea334acbb8d4918f5de2b294e3287057b0653f2"
+    },
+    {
+      "kind": "csv",
+      "path": "runs/error_m3_integrated_20261002_v3/source_tables/metrics.csv",
+      "sha256": "8ed53060644e32fea44b1d5f6834fb17adce791ab9e4883723968ad9e0bbce06"
+    },
+    {
+      "kind": "csv",
+      "path": "runs/error_m3_integrated_20261002_v3/source_tables/model_disagreements.csv",
+      "sha256": "20c77ce806cd1d768d547203a74a5c43f849ef8e4001076790a3db638adb47c7"
+    },
+    {
+      "kind": "csv",
+      "path": "runs/error_m3_integrated_20261002_v3/source_tables/prediction_errors.csv",
+      "sha256": "cf4b4d819fd65e46c13fdc5391f4b73e547c858a8ba4d56a3c5da16263a6081b"
+    },
+    {
+      "kind": "csv",
+      "path": "runs/error_m3_integrated_20261002_v3/source_tables/thermo_regseq2_requested_predictions.csv",
+      "sha256": "c28ea69b8b9e27a3045e0bd1f1083d499798566036a4119f806ef3b2b02ef53d"
+    }
+  ]
+}

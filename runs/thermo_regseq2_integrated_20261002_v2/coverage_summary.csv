@@ -1,0 +1,4 @@
+method_name,subset,n_requested,n_success,n_failed,coverage
+thermo_regseq2,train,8318,8318,0,1.0
+thermo_regseq2,val,1783,1782,1,0.9994391475042064
+thermo_regseq2,test,1783,1783,0,1.0

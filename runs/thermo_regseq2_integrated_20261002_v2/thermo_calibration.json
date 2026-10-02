@@ -1,0 +1,13 @@
+{
+  "calibration_id": "thermo_regseq2_integrated_20261002_v2_train_log_linear",
+  "kind": "log10_linear",
+  "fit_subset": "train",
+  "n_fit": 8318,
+  "train_ids_sha256": "95771045a88a5f60aaa2b7bc7e2a504030dc9cbb41bc4281ece1c8d114edfb36",
+  "coef_a": 0.562257297265769,
+  "intercept_b": 0.38536570528255853,
+  "split_id": "ecoli50_random_20260928_v1",
+  "run_id": "thermo_regseq2_integrated_20261002_v2",
+  "schema_version": "2.0.0",
+  "data_version": "ecoli50_strength_v1"
+}

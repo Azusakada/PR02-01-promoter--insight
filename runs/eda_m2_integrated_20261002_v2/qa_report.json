@@ -1,0 +1,17 @@
+{
+  "checked_at": "2026-10-02T08:00:10.670724+00:00",
+  "checks": {
+    "input_and_artifact_hashes": "pass",
+    "figure_source_and_image_hashes": "pass",
+    "eda_ids_and_normalization": "pass",
+    "samples_checked": 11884
+  },
+  "manually_reviewed_figure_ids": [
+    "m2_base_frequencies",
+    "m2_feature_relationships",
+    "m2_gc_binned",
+    "m2_split_distributions",
+    "m2_strength_distributions"
+  ],
+  "limitations": "Does not prove model training or biological causality."
+}

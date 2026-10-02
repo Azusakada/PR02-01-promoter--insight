@@ -82,6 +82,7 @@ KNN 沿用已发布 val 搜索选出的 k=1501；热力学校准仅在 train 拟
 - `reports/integration_validation.json`：数据、运行、校准、模型重载及独立指标复算。
 - `reports/PROJECT_STATUS.md`：分工、验收与交接。
 - `reports/OPEN_ITEMS.md`：可靠注释、测量来源、Ridge 和 M4 待办。
+- `runs/eda_m2_integrated_20261002_v2/`、`runs/error_m3_integrated_20261002_v3/`：当前 EDA 和三方法误差 / 案例图，附源表与人工图像 QA。
 - `history/`、旧运行目录：历史版本，不能当作当前标准产物。
 
 团队修改共同数据 / split / transform 前须发布新版本；新增方法提交完整 val 预测、失败状态、

@@ -1,0 +1,30 @@
+diff --git a/analysis_m2m3/error_analysis.py b/analysis_m2m3/error_analysis.py
+index 8cf3356..e84d591 100644
+--- a/analysis_m2m3/error_analysis.py
++++ b/analysis_m2m3/error_analysis.py
+@@ -2,6 +2,7 @@
+ from __future__ import annotations
+ 
+ import argparse
++import hashlib
+ import json
+ from itertools import combinations
+ from pathlib import Path
+@@ -137,7 +138,7 @@ def analyze(output, paths, calibrated=None, calibration=None, calibration_train=
+             require(frame.loc[ok,['predicted_value','predicted_value_log10']].isna().all().all(), f'{method}: partially calibrated successful rows')
+         coverage.append({'method_name':method,'run_id':single(frame,'run_id'),'subset':'val','n_requested':len(requested),'n_success':int(ok.sum()),'n_failed':int((~ok).sum()),'coverage':int(ok.sum())/len(requested),'n_common':len(common)})
+         for set_name,ids in [('all_success',success[method]),('common',common)]:
+-            cid=f'{run.run_id}_val_{set_name}_{method}'
++            cid='val_'+set_name+'_'+hashlib.sha256(''.join(s+'\n' for s in sorted(ids)).encode()).hexdigest()[:16]
+             subset = frame[frame.sample_id.isin(ids)].sort_values('sample_id')
+             used_ids.extend({'comparison_set_id':cid,'method_name':method,'sample_id':sid,'subset':'val'} for sid in subset.sample_id)
+             evaluation_scales = [('raw','true_value','predicted_value'),('log10','true_value','predicted_value_log10')] if numeric else []
+@@ -243,7 +244,7 @@ def analyze(output, paths, calibrated=None, calibration=None, calibration_train=
+         rows.append(f'| {method} | {len(common)} | {m.get("r2",float("nan")):.6f} | {m.get("spearman",float("nan")):.6f} | {m.get("mae",float("nan")):.6f} |')
+     report='''# M3 验证集误差分析
+ 
+-本轮仅读取已有模型的 val 逐样本预测，未训练模型、未使用 test 选参。热力学结果来自固定 teammate commit；原始 Tx_rate 保留独立列，数值比较使用经过 train-only 参数复算验证的校准结果。
++本轮仅读取已注册模型的 val 逐样本预测，未训练模型、未使用 test 选参。热力学来自已注册的集成运行，实际 code_commit 和文件哈希见 run_manifest；原始 Tx_rate 保留独立列，数值比较使用 train-only 校准结果，参数的独立复算见统一验收记录。
+ 
+ ## 同一批有效样本上的结果
+ 

@@ -1,0 +1,53 @@
+test_all_twelve_tables (test_contracts.ContractTests.test_all_twelve_tables) ... ok
+test_clipped_targets_rejected (test_contracts.ContractTests.test_clipped_targets_rejected) ... ok
+test_complete_bundle (test_contracts.ContractTests.test_complete_bundle) ... ok
+test_context_requires_source (test_contracts.ContractTests.test_context_requires_source) ... ok
+test_design_overlap (test_contracts.ContractTests.test_design_overlap) ... ok
+test_direction_without_annotation (test_contracts.ContractTests.test_direction_without_annotation) ... ok
+test_duplicate_sequence (test_contracts.ContractTests.test_duplicate_sequence) ... ok
+test_duplicate_source_row (test_contracts.ContractTests.test_duplicate_source_row) ... ok
+test_external_annotation_requires_source (test_contracts.ContractTests.test_external_annotation_requires_source) ... ok
+test_failed_prediction_zero (test_contracts.ContractTests.test_failed_prediction_zero) ... ok
+test_fixed_tss_121_rejected (test_contracts.ContractTests.test_fixed_tss_121_rejected) ... ok
+test_foreign_fit_ids_rejected (test_contracts.ContractTests.test_foreign_fit_ids_rejected) ... ok
+test_full_data_scaler_rejected (test_contracts.ContractTests.test_full_data_scaler_rejected) ... ok
+test_group_overlap (test_contracts.ContractTests.test_group_overlap) ... ok
+test_group_strategy_missing_ids (test_contracts.ContractTests.test_group_strategy_missing_ids) ... ok
+test_group_valid (test_contracts.ContractTests.test_group_valid) ... ok
+test_ig_missing_position (test_contracts.ContractTests.test_ig_missing_position) ... ok
+test_ig_old_coordinate (test_contracts.ContractTests.test_ig_old_coordinate) ... ok
+test_ig_wrong_base_cross_check (test_contracts.ContractTests.test_ig_wrong_base_cross_check) ... ok
+test_ig_wrong_rank (test_contracts.ContractTests.test_ig_wrong_rank) ... ok
+test_k_bounds_table (test_contracts.ContractTests.test_k_bounds_table) ... ok
+test_multibase_mutation (test_contracts.ContractTests.test_multibase_mutation) ... ok
+test_mutant_no_truth (test_contracts.ContractTests.test_mutant_no_truth) ... ok
+test_nan_label (test_contracts.ContractTests.test_nan_label) ... ok
+test_negative_r2_legal (test_contracts.ContractTests.test_negative_r2_legal) ... ok
+test_new_k10_ok (test_contracts.ContractTests.test_new_k10_ok) ... ok
+test_nonpositive_label (test_contracts.ContractTests.test_nonpositive_label) ... ok
+test_old150_sequence_rejected (test_contracts.ContractTests.test_old150_sequence_rejected) ... ok
+test_old_background_strategy (test_contracts.ContractTests.test_old_background_strategy) ... ok
+test_old_k20_k29_fail (test_contracts.ContractTests.test_old_k20_k29_fail) ... ok
+test_old_schema_rejected (test_contracts.ContractTests.test_old_schema_rejected) ... ok
+test_prediction_requires_transform (test_contracts.ContractTests.test_prediction_requires_transform) ... ok
+test_prediction_wrong_inverse (test_contracts.ContractTests.test_prediction_wrong_inverse) ... ok
+test_qc_mismatch (test_contracts.ContractTests.test_qc_mismatch) ... ok
+test_repeated_labels_not_duplicates (test_contracts.ContractTests.test_repeated_labels_not_duplicates) ... ok
+test_run_hash_mismatch (test_contracts.ContractTests.test_run_hash_mismatch) ... ok
+test_run_path_escape (test_contracts.ContractTests.test_run_path_escape) ... ok
+test_scale_roundtrip (test_contracts.ContractTests.test_scale_roundtrip) ... ok
+test_split_coverage (test_contracts.ContractTests.test_split_coverage) ... ok
+test_synthetic_run_manifest (test_contracts.ContractTests.test_synthetic_run_manifest) ... ok
+test_test_fit_forbidden (test_contracts.ContractTests.test_test_fit_forbidden) ... ok
+test_tool_r2_rejected (test_contracts.ContractTests.test_tool_r2_rejected) ... ok
+test_train_only_scale (test_contracts.ContractTests.test_train_only_scale) ... ok
+test_transform_write_no_overwrite (test_contracts.ContractTests.test_transform_write_no_overwrite) ... ok
+test_true_label_misalignment (test_contracts.ContractTests.test_true_label_misalignment) ... ok
+test_unknown_annotation_not_absent (test_contracts.ContractTests.test_unknown_annotation_not_absent) ... ok
+test_unknown_with_fabricated_bounds (test_contracts.ContractTests.test_unknown_with_fabricated_bounds) ... ok
+test_wrong_log (test_contracts.ContractTests.test_wrong_log) ... ok
+
+----------------------------------------------------------------------
+Ran 48 tests in 0.452s
+
+OK

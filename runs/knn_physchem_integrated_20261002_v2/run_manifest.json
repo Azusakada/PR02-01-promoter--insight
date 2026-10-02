@@ -1,0 +1,142 @@
+{
+  "dataset_id": "course_ecoli50_strength",
+  "schema_version": "2.0.0",
+  "run_id": "knn_physchem_integrated_20261002_v2",
+  "stage": "M3",
+  "task_id": "pr02_integrated_m2_m3",
+  "method_name": "knn_physchem_full",
+  "data_version": "ecoli50_strength_v1",
+  "split_id": "ecoli50_random_20260928_v1",
+  "evidence_level": "preliminary",
+  "execution_status": "success",
+  "seed": 20260928,
+  "created_at": "2026-10-02T15:21:29.050858+08:00",
+  "command": [
+    "C:\\Users\\admin\\Documents\\Codex\\2026-10-02\\wo-shi\\work\\cnn_env\\Scripts\\python.exe",
+    "D:\\PR02-01-promoter--insight\\pr02\\__main__.py",
+    "run-knn"
+  ],
+  "code_commit": "5ed1ac99d592bb3e057961d9c665cf99f99cafe3",
+  "dirty_worktree": false,
+  "environment": {
+    "python": "3.12.14",
+    "platform": "Windows-11-10.0.22621-SP0",
+    "packages": {
+      "numpy": "2.5.3",
+      "scipy": "1.18.1",
+      "scikit-learn": "1.9.1",
+      "pandas": "3.0.6",
+      "biopython": "1.88",
+      "torch": "2.14.1+cpu",
+      "PyYAML": "6.0.3",
+      "matplotlib": "3.11.2"
+    }
+  },
+  "parameters": {
+    "model_id": "knn_physchem_integrated_20261002_v2",
+    "method_name": "knn_physchem_full",
+    "fit_subsets": [
+      "train"
+    ],
+    "selection_subsets": [
+      "val"
+    ],
+    "test_used": false,
+    "smoke_test": false,
+    "evidence_level": "preliminary",
+    "feature_columns": [
+      "gc_content",
+      "at_content",
+      "gc_skew",
+      "at_skew",
+      "melting_temp",
+      "bendability",
+      "stacking_energy",
+      "entropy"
+    ],
+    "samples_sha256": "0599c5b29198c78c481d035bf32596a53411310f401463a62e160bfdbe93ca7e",
+    "splits_sha256": "5d162f64e68a305749033e5f9e7f4d5bdfeb6b28af757883446f75682f9fd9b0",
+    "feature_sha256": "3fda215c9a6593ba679bf0cba5e0df947f20bdf9843ea184a0a460603f530636",
+    "target_scale": "log10",
+    "best_k": 1501,
+    "train_ids_sha256": "95771045a88a5f60aaa2b7bc7e2a504030dc9cbb41bc4281ece1c8d114edfb36",
+    "selection_source": "KNN/results/hyperparameter_search.csv",
+    "selection_config_sha256": "9a262a91b0f7a9a59100b73393de29b29687b68addca5ea2a4d8c08e5fa550d1"
+  },
+  "fit_subsets": [
+    "train"
+  ],
+  "selection_subsets": [
+    "val"
+  ],
+  "evaluation_subsets": [
+    "val"
+  ],
+  "artifacts": [
+    {
+      "kind": "predictions",
+      "path": "runs/knn_physchem_integrated_20261002_v2/predictions_knn_val.csv",
+      "sha256": "885d22fbd464f83f35df2c80886bd9b801e3feffdda2a9548314c1b9769d9b99"
+    },
+    {
+      "kind": "metrics",
+      "path": "runs/knn_physchem_integrated_20261002_v2/metrics.csv",
+      "sha256": "367737f20a1f2f4fd77c89e23fd4313e79e4beb61b1d49e3f89add54c9f5c8b1"
+    },
+    {
+      "kind": "model_manifest",
+      "path": "runs/knn_physchem_integrated_20261002_v2/model_manifest.json",
+      "sha256": "3533cf96b8175c16e89d43db96e746a663855d1fca3cc831d7cbe21c0759cde9"
+    },
+    {
+      "kind": "checkpoint",
+      "path": "runs/knn_physchem_integrated_20261002_v2/knn_model.joblib",
+      "sha256": "b8dd774046b27fc87d75e8c22d5787b1eea51ee71e6cca403dc2655d54d3933b"
+    },
+    {
+      "kind": "smoke_report",
+      "path": "runs/knn_physchem_integrated_20261002_v2/save_load_check.json",
+      "sha256": "59cf643070556d0e43dded2f8dc68d6c60d2aca728086c0e4bd706ffdb4b8d47"
+    },
+    {
+      "kind": "fit_ids",
+      "path": "runs/knn_physchem_integrated_20261002_v2/train_ids.tsv",
+      "sha256": "68757cedab54c10281e244ae9a4612bf03f65dcd8a693402635e915570b601ef"
+    },
+    {
+      "kind": "feature_index_mapping",
+      "path": "runs/knn_physchem_integrated_20261002_v2/feature_sample_ids.tsv",
+      "sha256": "847f3dea1031f18f6f472a63d949ad2284beb4e1f436f0c8617a86828a4af541"
+    },
+    {
+      "kind": "features",
+      "path": "KNN/input/promoter_physicochemical.csv",
+      "sha256": "3fda215c9a6593ba679bf0cba5e0df947f20bdf9843ea184a0a460603f530636"
+    },
+    {
+      "kind": "selection_history",
+      "path": "KNN/results/hyperparameter_search.csv",
+      "sha256": "e263b7d01b09a2c24ff79ab36d8a5bf2c4684d0eabdac2412d82b17410fcff60"
+    },
+    {
+      "kind": "selection_config",
+      "path": "KNN/results/knn_ecoli_full_config.json",
+      "sha256": "9a262a91b0f7a9a59100b73393de29b29687b68addca5ea2a4d8c08e5fa550d1"
+    },
+    {
+      "kind": "dataset",
+      "path": "data/01_Ecoli_strength/data_v1.tsv",
+      "sha256": "0599c5b29198c78c481d035bf32596a53411310f401463a62e160bfdbe93ca7e"
+    },
+    {
+      "kind": "splits",
+      "path": "data/01_Ecoli_strength/split_manifest.tsv",
+      "sha256": "5d162f64e68a305749033e5f9e7f4d5bdfeb6b28af757883446f75682f9fd9b0"
+    },
+    {
+      "kind": "label_transform",
+      "path": "data/01_Ecoli_strength/label_transform.json",
+      "sha256": "1784286ed1f086c1f0d26e4b44f9cd170adc9d47a091c2cdf1f3635861b97557"
+    }
+  ]
+}

@@ -27,7 +27,7 @@ def verify(cfg):
     cnn_dir = cnn_path.parent.parent
     for directory in [knn_dir,thermo_dir,cnn_dir,cnn_dir/'validation',comparison_dir]:
         record('run_manifest:'+directory.name,v.run_check(directory/'run_manifest.json',ROOT))
-    for path in paths: record('prediction_bundle:'+str(path.relative_to(ROOT)),v.bundle_check(DATA,SPLITS,transform=TRANSFORM,predictions=path))
+    for path in paths: record('prediction_bundle:'+path.relative_to(ROOT).as_posix(),v.bundle_check(DATA,SPLITS,transform=TRANSFORM,predictions=path))
 
     # Calibration is independently reproduced by numpy least squares using successful train requests only.
     raw_train = v.load_table('predictions',thermo_dir/'predictions/thermo_train_raw.csv')
@@ -93,7 +93,18 @@ def verify(cfg):
                 v.require(len(matched)==1 and math.isclose(matched[0]['value'],value,rel_tol=1e-10,abs_tol=1e-10),'Unified metric mismatch')
                 v.require(matched[0]['n_requested']==len(rows) and matched[0]['n_used']==len(common),'Wrong comparison denominators')
     record('unified_metrics_independently_recomputed_with_sklearn_scipy')
-    out = ROOT/'reports/integration_validation.json'
+    current_index = ROOT/'results/current.json'
+    if current_index.exists():
+        registry = read_json(current_index)
+        entries = [registry[key] for key in ['data','splits','label_transform','comparison_manifest','validation']]
+        entries.extend(registry['artifacts'])
+        entries.extend(registry.get('legacy_entrypoints',[]))
+        for pred in registry['predictions']:
+            entries.extend([pred['original'],pred['current']])
+            v.require(resolve(pred['original']['path']).read_bytes()==resolve(pred['current']['path']).read_bytes(),'Current prediction alias differs from immutable run')
+        for entry in entries:
+            v.require(v.sha256(resolve(entry['path']))==entry['sha256'],'Current registry hash mismatch: '+entry['path'])
+    out = comparison_dir/'integration_validation.json'
     write_json(out,result)
     print(f'Integrated verification passed: {out}',flush=True)
     return result

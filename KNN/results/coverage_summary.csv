@@ -1,3 +1,2 @@
-dataset_id,run_id,method_name,split_id,subset,n_requested,n_success,n_failed,coverage,failure_reasons,evidence_level,k,schema_version,data_version
-course_ecoli50_strength,knn_ecoli_full_20260929_v1,knn_physchem_full,ecoli50_random_20260928_v1,val,1783,1783,0,1.0,,final,1501,2.0.0,ecoli50_strength_v1
-course_ecoli50_strength,knn_ecoli_full_20260929_v1,knn_physchem_full,ecoli50_random_20260928_v1,test,1783,1783,0,1.0,,final,1501,2.0.0,ecoli50_strength_v1
+method_name,subset,n_requested,n_success,n_failed,coverage
+knn_physchem_full,val,1783,1783,0,1.0
