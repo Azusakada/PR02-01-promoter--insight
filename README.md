@@ -26,6 +26,15 @@ python -m pr02 new-run --tag my_experiment_v1
 python -m pr02 --config configs/integration_my_experiment_v1.json run-all
 ```
 
+新配置完成验收并发布结果后，把它设为全组默认，并显式提交已验收运行。
+运行目录默认忽略；普通 `git add` 不会包含新模型，须按配置逐个登记：
+
+```powershell
+Copy-Item -LiteralPath configs/integration_my_experiment_v1.json -Destination project_config.json
+git add project_config.json configs CNN/configs results reports
+git add -f -- runs/knn_my_experiment_v1 runs/thermo_my_experiment_v1 runs/comparison_my_experiment_v1 CNN/runs/cnn_my_experiment_v1
+```
+
 单独步骤：`python -m pr02 run-knn`、`python -m pr02 run-thermo`、
 `python CNN/run_cnn.py train --config CNN/configs/cnn_run_config.yaml`、`python -m pr02 evaluate`。
 默认配置对应已交付运行；再次运行会拒绝覆盖，须先生成新 tag。

@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "branch": "csy",
+  "checked_revision": "622f0861087c5b95d3e668d04201e5058d832f33",
+  "clean_checkout": "core.autocrlf=false, --no-hardlinks",
+  "independent_checkout_validation": "passed",
+  "clean_checkout_working_tree": "clean",
+  "implementation_tests_passed": 76,
+  "remote_branch_published": true,
+  "remote_main_modified": false
+}

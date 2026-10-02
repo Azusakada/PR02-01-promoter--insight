@@ -67,3 +67,13 @@ python -m pr02 --config configs/integration_next_experiment_v1.json run-all
 | 李玘航 | 本次远端尚未见 k-mer Ridge 交付 | 补交组内承诺的 Ridge 或明确调整范围 |
 
 工程问题已修复。可靠逐样本 TSS / 实验方向 / 盒区坐标、强度单位与实验条件仍未恢复；这些是研究资料待办，不能通过代码合并补造。教师 M3 要求简单 ML + 热力学，KNN 可承担简单 ML；组内另承诺的 Ridge 仍需处理。教师 M2 盒区分析与 M4 生物学解释的证据边界见 reports/OPEN_ITEMS.md。
+
+## 发布与检出验证
+
+csy 已推送到 GitHub，远端 main 未改变。使用独立目录、core.autocrlf=false 进行干净检出后，统一验收通过，工作区保持干净，证明交付不依赖开发目录的未提交文件。
+Git 哈希产物已按原始字节固化；重新入库的历史文本变更逐项确认只涉及换行，未改写数据内容。
+
+源码与当前模型 / 日志 / 预测已一起进入 Git。后续新运行目录默认忽略，完成验收后需按 README 显式 git add -f；采用新配置后同步 project_config.json，避免当前结果索引与默认配置分离。
+
+GitHub 分支：https://github.com/Azusakada/PR02-01-promoter--insight/tree/csy
+ZIP 用于查看代码和交付；完整历史 bundle 可用于 Git 离线克隆。继续开发建议使用 Git 仓库，以保留实际 code_commit 与历史。
