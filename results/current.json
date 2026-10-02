@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0.0",
-  "published_at": "2026-10-02T15:54:36.592389+08:00",
+  "published_at": "2026-10-02T16:07:05.904886+08:00",
   "comparison_run_id": "comparison_val_integrated_20261002_v2",
   "evidence_level": "preliminary",
   "test_metrics_enabled": false,
@@ -110,7 +110,7 @@
   "validation": {
     "kind": "validation",
     "path": "runs/comparison_val_integrated_20261002_v2/integration_validation.json",
-    "sha256": "2c4aee5c60273ac58dec60504f83011515c2365b8e3e99ec474c231523b23f07"
+    "sha256": "c785412d270caedb3a0c1b66fec3f3fb0d908ae954cbe7e28aa79616e890fd65"
   },
   "legacy_entrypoints": [
     {

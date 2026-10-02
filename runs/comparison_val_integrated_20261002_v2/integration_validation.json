@@ -126,9 +126,12 @@
       }
     },
     {
-      "name": "knn_saved_train_only_model_exact_reload",
+      "name": "knn_saved_train_only_model_reload",
       "status": "passed",
-      "detail": 1783
+      "detail": {
+        "n_compared": 1783,
+        "max_abs_difference": 0.0
+      }
     },
     {
       "name": "cnn_shared_transform_and_checkpoint_reload",

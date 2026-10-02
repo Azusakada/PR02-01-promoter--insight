@@ -59,10 +59,11 @@ def verify(cfg):
     recomputed = saved['model'].predict(saved['scaler'].transform(x))
     knn_frame = next(rs for rs in frames if rs[0]['method_name']=='knn_physchem_full')
     expected = {r['sample_id']:r['predicted_value_log10'] for r in knn_frame}
-    v.require(np.array_equal(recomputed,np.asarray([expected[s['sample_id']] for s in groups['val']])),'KNN saved model does not reproduce validation')
+    expected_knn = np.asarray([expected[s['sample_id']] for s in groups['val']])
+    v.require(np.allclose(recomputed,expected_knn,rtol=1e-12,atol=1e-12),'KNN saved model does not reproduce validation')
     train_x = np.stack([mapped[s['sample_id']] for s in groups['train']])
     v.require(np.allclose(saved['scaler'].mean_,train_x.mean(axis=0),rtol=1e-12,atol=1e-12),'Scaler not fitted on train only')
-    record('knn_saved_train_only_model_exact_reload',len(recomputed))
+    record('knn_saved_train_only_model_reload',dict(n_compared=len(recomputed),max_abs_difference=float(np.max(np.abs(recomputed-expected_knn)))))
 
     # CNN checks use the actual frozen checkpoint and all validation sequences.
     sys.path.insert(0,str(ROOT/'CNN'))

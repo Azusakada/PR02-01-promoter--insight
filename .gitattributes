@@ -8,6 +8,8 @@ project_config.json text eol=lf
 runs/** -text
 results/** -text
 reports/** -text
+KNN/input/** -text
+thermo/input/** -text
 data/01_Ecoli_strength/*.tsv text eol=lf
 data/01_Ecoli_strength/*.json text eol=lf
 history/** -text
