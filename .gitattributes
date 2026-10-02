@@ -10,6 +10,8 @@ results/** -text
 reports/** -text
 KNN/input/** -text
 thermo/input/** -text
+KNN/six_species/** -text
+data/02_reg_and_gen_six_species/** -text
 data/01_Ecoli_strength/*.tsv text eol=lf
 data/01_Ecoli_strength/*.json text eol=lf
 history/** -text
