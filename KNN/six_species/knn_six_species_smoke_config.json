@@ -1,0 +1,95 @@
+{
+  "schema_version": "2.0.0",
+  "task_type": "binary_promoter_recognition",
+  "species": [
+    "Bacillus subtilis",
+    "Baumanii",
+    "Bradyrhizobium",
+    "Diphtheria",
+    "Escherichia coli",
+    "Staphylococcus"
+  ],
+  "run_id": "knn_reg_and_gen_six_species_smoke_20260928_v1",
+  "comparison_set_id": "knn_reg_and_gen_six_species_smoke_dev_384",
+  "method_name": "knn_sequence_composition",
+  "evidence_level": "smoke",
+  "model": {
+    "class": "sklearn.neighbors.KNeighborsClassifier",
+    "preprocessing": "sklearn.preprocessing.StandardScaler fitted on smoke train subset per species",
+    "n_neighbors": 5,
+    "weights": "distance",
+    "metric": "euclidean",
+    "n_jobs": 1
+  },
+  "feature_version": "sequence_composition_dinucleotide_v1",
+  "feature_columns": [
+    "sequence_length",
+    "gc_content",
+    "at_content",
+    "gc_skew",
+    "at_skew",
+    "a_fraction",
+    "c_fraction",
+    "g_fraction",
+    "t_fraction",
+    "dinuc_AA_fraction",
+    "dinuc_AC_fraction",
+    "dinuc_AG_fraction",
+    "dinuc_AT_fraction",
+    "dinuc_CA_fraction",
+    "dinuc_CC_fraction",
+    "dinuc_CG_fraction",
+    "dinuc_CT_fraction",
+    "dinuc_GA_fraction",
+    "dinuc_GC_fraction",
+    "dinuc_GG_fraction",
+    "dinuc_GT_fraction",
+    "dinuc_TA_fraction",
+    "dinuc_TC_fraction",
+    "dinuc_TG_fraction",
+    "dinuc_TT_fraction"
+  ],
+  "feature_definition": "sequence length, base fractions, GC/AT skew, and normalized dinucleotide counts",
+  "train_per_label": 256,
+  "eval_per_label": 64,
+  "train_n_per_species": 512,
+  "eval_n_per_species": 128,
+  "seed": 20260928,
+  "input_hashes": {
+    "Bacillus subtilis": {
+      "Dataset.csv": "87cae44c1e69668866869511f2a58c930a3b61d6a275c8bca718d0fcdb7ddcf5",
+      "train.csv": "4ff889a76a2e00a2d35479be4d83e4eee786e1a9c8b20868a4e342c4c4ab239d",
+      "dev.csv": "a447aa59378e8a691e70e07ddeff478b05f0e578a3dd948ffb879b25edccd929"
+    },
+    "Baumanii": {
+      "Dataset.csv": "daaf42590f1c94500240d4c2c659331b9e3ab7774f841c24f54a8a215cd0ac58",
+      "train.csv": "e0a476a410f66b6b8814bf45b4d654cc3abbd99df5e0eca7ce6ccb318d8b052c",
+      "dev.csv": "7ef3268c15032a97f01f026c2cc1dd6498dc3767a32adda230a5d4e7f0b12c41"
+    },
+    "Bradyrhizobium": {
+      "Dataset.csv": "1641cf04a7081cf271ed4ae7903c8a314e874ca987b15e6b829554eb8549bf05",
+      "train.csv": "c1841cc3e17cb7d56d895b5a8b968ece15276ebda5a830b519727d98270801e5",
+      "dev.csv": "4144e3c0bfa4627881534b9afccf2f2c2ec639cd0185a80e212fc9b08abf4708"
+    },
+    "Diphtheria": {
+      "Dataset.csv": "6196a0bb29d884dfe7eb7252ee98a8c70190dfd9132051633f1ab888b7c9f372",
+      "train.csv": "c53e11f7501338938012a5a67637c3cea5857e0f506a17353363436264923b17",
+      "dev.csv": "556e9522b923d5f51ceef7c54379853085a87ccc4dfdde1889ef5e0e112fcde0"
+    },
+    "Escherichia coli": {
+      "Dataset.csv": "5bad20aef49e68d00bce978ea92996c6d16dbc2c027276eff597c6ddce3c6fb3",
+      "train.csv": "03d338a859248cd6f4ac55aee523428723a4b0b899d39b07bd458ac7111eae60",
+      "dev.csv": "6d6683e55f8755985b24b1bf86f2b1e28d64bec0286d9cd1f1ef17dc55f16bdd"
+    },
+    "Staphylococcus": {
+      "Dataset.csv": "6c470de4dac8822af6f1e3b07a511f0ecd4ac5f829e77a85d21cb0b0b67fd2b2",
+      "train.csv": "ea4d33cecbf151b3cbbda09906b9dcbe1f0c389b8a64887584c276346c705c76",
+      "dev.csv": "6c752ea4b470c616adba454dd6e11d2a73320485a36080a9f16cb08e92505cdf"
+    }
+  },
+  "code_path": "m2_m3_work/build_six_species_knn_smoke.py",
+  "code_commit_at_generation": "9b9346de72405015a709dcf67ae3ea4c1581e1a1",
+  "python": "3.13.0",
+  "generated_at_utc": "2026-10-02T04:01:09.333560+00:00",
+  "command": "py m2_m3_work/build_six_species_knn_smoke.py"
+}

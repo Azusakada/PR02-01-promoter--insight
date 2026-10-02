@@ -1,0 +1,7 @@
+species	dataset_file	task_type	n_total	n_positive	n_negative	train_n	dev_n	test_n	sequence_lengths	missing_cells	invalid_sequence_count	duplicate_sequence_extra_records	positive_samples_n	validation_status
+Bacillus subtilis	promoter/reg_and_gen/Datasets/Bacillus subtilis/Dataset.csv	binary_promoter_recognition	1500	691	809	1050	150	300	81	0	0	0	691	passed
+Baumanii	promoter/reg_and_gen/Datasets/Baumanii/Dataset.csv	binary_promoter_recognition	2900	1540	1360	2030	290	580	81	0	0	0	1540	passed
+Bradyrhizobium	promoter/reg_and_gen/Datasets/Bradyrhizobium/Dataset.csv	binary_promoter_recognition	3940	1987	1953	2758	394	788	80,81	0	0	4	1987	passed
+Diphtheria	promoter/reg_and_gen/Datasets/Diphtheria/Dataset.csv	binary_promoter_recognition	3310	1654	1656	2317	331	662	80,81	0	0	0	1654	passed
+Escherichia coli	promoter/reg_and_gen/Datasets/Escherichia coli/Dataset.csv	binary_promoter_recognition	3350	1645	1705	2345	335	670	80,81	0	0	8	1645	passed
+Staphylococcus	promoter/reg_and_gen/Datasets/Staphylococcus/Dataset.csv	binary_promoter_recognition	3370	2207	1163	2359	337	674	80,81	0	0	1	2207	passed
