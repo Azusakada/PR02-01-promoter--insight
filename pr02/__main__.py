@@ -16,11 +16,22 @@ def main(argv=None):
     sub.add_parser('validate-data')
     sub.add_parser('run-all')
     sub.add_parser('verify')
+    sub.add_parser('publish')
+    cmd = sub.add_parser('new-run')
+    cmd.add_argument('--tag',required=True)
     args = parser.parse_args(argv)
     cfg = read_json(resolve(args.config))
     try:
-        load_bundle()
-        if args.command=='validate-data':
+        _,_,identity = load_bundle()
+        for name,path in [('samples',DATA),('splits',SPLITS),('label_transform',TRANSFORM)]:
+            v.require(resolve(cfg[name])==path,f'Unsupported shared {name}; do not silently change frozen data')
+        for name in ['dataset_id','data_version','split_id']:
+            v.require(cfg[name]==identity[name],f'Project {name} mismatch')
+        v.require(cfg.get('test_metrics_enabled') is False,'This M3 entry point does not enable test model selection/evaluation')
+        if args.command=='new-run':
+            from .new_run import create
+            create(args.tag,resolve(args.config))
+        elif args.command=='validate-data':
             print(v.bundle_check(DATA,SPLITS,transform=TRANSFORM))
         elif args.command=='run-knn':
             from .knn import run
@@ -31,6 +42,9 @@ def main(argv=None):
         elif args.command=='evaluate':
             from .evaluate import run
             run([resolve(p) for p in cfg['validation_predictions']],args.run_id or cfg['runs']['comparison'])
+        elif args.command=='publish':
+            from .publish import publish
+            publish(cfg)
         elif args.command=='verify':
             from .verify import verify
             verify(cfg)
@@ -48,8 +62,8 @@ def main(argv=None):
             thermo(cfg['runs']['thermo'])
             subprocess.run([sys.executable,str(ROOT/'CNN/run_cnn.py'),'train','--config',str(resolve(cfg['cnn_config']))],cwd=ROOT,check=True)
             evaluate([resolve(p) for p in cfg['validation_predictions']],cfg['runs']['comparison'])
-            from .verify import verify
-            verify(cfg)
+            from .publish import publish
+            publish(cfg)
     except (v.ContractError,ValueError,OSError,RuntimeError) as exc:
         parser.exit(2,f'PR02 failed: {exc}\n')
 

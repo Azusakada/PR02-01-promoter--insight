@@ -1,3 +1,5 @@
+> 历史交付记录：保留原实验和来源核查。当前集成状态、修复结果与有效运行见仓库根 reports/PROJECT_STATUS.md、results/current.json；本文件中的旧运行分数和哈希不作为当前默认入口。
+
 # CNN 接口交接记录
 
 状态：ready_for_review

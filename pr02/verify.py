@@ -23,7 +23,8 @@ def verify(cfg):
     knn_dir = ROOT/'runs'/cfg['runs']['knn']
     thermo_dir = ROOT/'runs'/cfg['runs']['thermo']
     comparison_dir = ROOT/'runs'/cfg['runs']['comparison']
-    cnn_dir = paths[2].parent.parent
+    cnn_path = next(p for p,rows in zip(paths,frames) if rows[0]['method_name']=='cnn_1d')
+    cnn_dir = cnn_path.parent.parent
     for directory in [knn_dir,thermo_dir,cnn_dir,cnn_dir/'validation',comparison_dir]:
         record('run_manifest:'+directory.name,v.run_check(directory/'run_manifest.json',ROOT))
     for path in paths: record('prediction_bundle:'+str(path.relative_to(ROOT)),v.bundle_check(DATA,SPLITS,transform=TRANSFORM,predictions=path))

@@ -38,10 +38,9 @@ python -m venv .venv
 sample_id，禁止用当前行号建立训练/预测对应关系。数据身份、完整主表 SHA256、
 split 文件 SHA256、训练和验证 ID 集合分别绑定到模型元数据。
 
-仓库 main 没有 `label_transform.json`。当配置的 `data.transform` 是 null 时，代码调用
-附件提供的标准 helper，仅从当前 split 的 train 拟合 a 和 b，并把结果保存到运行目录。
-一旦团队发布了正式 transform，将其路径填入 `data.transform`；代码会核对全部训练 ID、
-完整主表哈希和 a/b，不会重新拟合或静默接受不同版本。
+集成配置显式使用 `data/01_Ecoli_strength/label_transform.json`。代码核对全部训练 ID、
+完整主表哈希和 a/b，不重新拟合或静默接受不同版本。主表和 split 的工作区字节统一为 LF，
+由 `.gitattributes` 固定，避免跨平台换行导致哈希冲突。`transform: null` 仅用于独立测试数据。
 
 ```text
 z = log10(strength)
@@ -66,7 +65,8 @@ smoke test 使用独立模型副本验证 forward、loss、backward、参数更�
 
 ## 交付文件
 
-正式运行默认位于 `CNN/runs/cnn_ecoli50_preliminary_20261002_v1/`：
+当前集成运行位于 `CNN/runs/cnn_ecoli50_integrated_20261002_v2/`。旧 v1 结果保留为历史实验，
+绑定的 CRLF 数据副本见 `history/data_bytes_before_lf_20261002_v1/`。当前产物：
 
 | 文件 | 用途 |
 |---|---|
@@ -85,8 +85,8 @@ smoke test 使用独立模型副本验证 forward、loss、backward、参数更�
 | validation/common_eval_ids_cnn.tsv | 本次成功且参与指标计算的ID |
 | validation/coverage_cnn.csv | 请求、成功、失败和实际参与样本数及coverage |
 
-逐样本预测严格采用附件 schema 2.0.0 的所有公共列。校验器原件见 `contracts/README.md`。
-本模块不生成全组共同有效子集，也不代替李宇飞的统一评价。
+逐样本预测采用 schema 2.0.0。全组校验器见仓库根 `contracts/README.md`。
+共同有效子集、覆盖率和性能表由 `python -m pr02 evaluate` 统一生成。
 
 ## 独立加载和重复预测
 
@@ -95,7 +95,7 @@ smoke test 使用独立模型副本验证 forward、loss、backward、参数更�
 单条非法序列或推断失败保留 failed 行。
 
 ```powershell
-python CNN/run_cnn.py predict --model-dir CNN/runs/cnn_ecoli50_preliminary_20261002_v1 --input work/cnn_inputs/cnn_ecoli50_preliminary_20261002_v1/val.tsv --config CNN/configs/cnn_run_config.yaml --output CNN/runs/cnn_ecoli50_preliminary_20261002_v1/reload_validation
+python CNN/run_cnn.py predict --model-dir CNN/runs/cnn_ecoli50_integrated_20261002_v2 --input work/cnn_inputs/cnn_ecoli50_integrated_20261002_v2/val.tsv --config CNN/configs/cnn_run_config.yaml --output CNN/runs/cnn_ecoli50_integrated_20261002_v2/reload_validation
 ```
 
 Python API 与附件签名一致：
@@ -116,12 +116,12 @@ test 默认关闭。冻结方案后，如需要 M4 test 评价，复制配置、
 ## 接口验收命令
 
 ```powershell
-python CNN/contracts/scripts/validate.py bundle --samples data/01_Ecoli_strength/data_v1.tsv --splits data/01_Ecoli_strength/split_manifest.tsv --transform CNN/runs/cnn_ecoli50_preliminary_20261002_v1/label_transform.json --predictions CNN/runs/cnn_ecoli50_preliminary_20261002_v1/validation/predictions_cnn.csv
-python CNN/contracts/scripts/validate.py table metrics CNN/runs/cnn_ecoli50_preliminary_20261002_v1/validation/metrics_cnn.csv
-python CNN/contracts/scripts/validate.py run CNN/runs/cnn_ecoli50_preliminary_20261002_v1/run_manifest.json --root .
-python CNN/contracts/scripts/validate.py run CNN/runs/cnn_ecoli50_preliminary_20261002_v1/validation/run_manifest.json --root .
-python CNN/contracts/scripts/validate.py self-test
-python CNN/plot_cnn_diagnostics.py --run-dir CNN/runs/cnn_ecoli50_preliminary_20261002_v1
+python contracts/scripts/validate.py bundle --samples data/01_Ecoli_strength/data_v1.tsv --splits data/01_Ecoli_strength/split_manifest.tsv --transform CNN/runs/cnn_ecoli50_integrated_20261002_v2/label_transform.json --predictions CNN/runs/cnn_ecoli50_integrated_20261002_v2/validation/predictions_cnn.csv
+python contracts/scripts/validate.py table metrics CNN/runs/cnn_ecoli50_integrated_20261002_v2/validation/metrics_cnn.csv
+python contracts/scripts/validate.py run CNN/runs/cnn_ecoli50_integrated_20261002_v2/run_manifest.json --root .
+python contracts/scripts/validate.py run CNN/runs/cnn_ecoli50_integrated_20261002_v2/validation/run_manifest.json --root .
+python contracts/scripts/validate.py self-test
+python CNN/plot_cnn_diagnostics.py --run-dir CNN/runs/cnn_ecoli50_integrated_20261002_v2
 ```
 
 结果解读与交接分别见 `results_report.md` 和 `handoff.md`。任何具体性能数值以运行产生的

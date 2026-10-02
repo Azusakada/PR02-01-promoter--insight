@@ -1,0 +1,10 @@
+numpy==2.5.3
+scipy==1.18.1
+scikit-learn==1.9.1
+pandas==3.0.6
+biopython==1.88
+torch==2.14.1
+PyYAML==6.0.3
+matplotlib==3.11.2
+pillow==12.3.0
+joblib==1.6.0

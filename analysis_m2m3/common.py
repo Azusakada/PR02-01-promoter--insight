@@ -5,6 +5,8 @@ import hashlib
 import importlib.metadata
 import json
 import platform
+import os
+import shutil
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -25,6 +27,7 @@ SCHEMA = "2.0.0"
 DATASET = "course_ecoli50_strength"
 SEED = 20260928
 COLORS = {"train": "#386CB0", "val": "#E18B35", "test": "#45A37A"}
+GIT = os.environ.get('PR02_GIT') or shutil.which('git')
 
 
 def require(condition, message):
@@ -87,6 +90,7 @@ def sequence_features(data):
 
 class Run:
     def __init__(self, output, stage, task_id, data, inputs, parameters):
+        require(bool(GIT), 'Set PR02_GIT or add Git to PATH')
         self.output = Path(output).resolve()
         relative(self.output)
         require(not self.output.exists() or not any(self.output.iterdir()), f"Output already nonempty: {self.output}; choose a new run")
@@ -104,14 +108,14 @@ class Run:
             "execution_status": "success", "seed": SEED,
             "created_at": datetime.now(timezone.utc).isoformat(),
             "command": [sys.executable, *sys.argv],
-            "code_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
-            "dirty_worktree": bool(subprocess.check_output(["git", "status", "--porcelain", "--untracked-files=no"], cwd=ROOT, text=True).strip()),
+            "code_commit": subprocess.check_output([GIT, "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
+            "dirty_worktree": bool(subprocess.check_output([GIT, "status", "--porcelain", "--untracked-files=no"], cwd=ROOT, text=True).strip()),
             "environment": {"python": platform.python_version(), "platform": platform.platform(),
                             "packages": {x: importlib.metadata.version(x) for x in ["numpy", "pandas", "scipy", "matplotlib", "scikit-learn"]}},
             "parameters": parameters, "fit_subsets": [], "selection_subsets": [], "evaluation_subsets": [],
             "inputs": [{"path": relative(p), "sha256": sha256(p)} for p in inputs],
         }
-        patch = subprocess.check_output(["git", "diff", "HEAD", "--", "analysis_m2m3"], cwd=ROOT)
+        patch = subprocess.check_output([GIT, "diff", "HEAD", "--", "analysis_m2m3"], cwd=ROOT)
         if patch:
             (self.output / "source_patch.diff").write_bytes(patch)
             self.meta['source_patch'] = relative(self.output / "source_patch.diff")

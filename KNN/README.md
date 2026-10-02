@@ -1,17 +1,16 @@
-# E. coli KNN 全量实验
+# E. coli KNN 基线
 
-本目录只包含 E. coli `strength` 回归的全量 KNN 实验代码、输入特征、模型、逐样本预测、指标、搜索记录和图表，不包含冒烟实验或六物种分类内容。
+当前集成版本使用原验证集搜索选出的 k=1501，StandardScaler 和 KNN 都只拟合 train。
+验证预测引用本次实际保存的 train-only checkpoint，并独立重载核验；不做 train+val 重拟合。
 
-- `input/`：8 维理化特征输入。
-- `results/`：最终模型、val/test 预测、R²/MAE/Spearman、coverage、k 搜索记录和诊断图。
-- `run_ecoli_knn_full.py`：按固定 train/val/test 划分重新运行完整实验。
-- `plot_ecoli_knn_analysis.py`：生成 k-指标曲线和 test 诊断图。
-
-最终按验证集 `log10 R²` 选择 `k=1501`；test `log10 R²=0.025224`、`log10 MAE=0.460037`、Spearman=0.164439。
-
-从仓库根目录运行：
-
-```bash
-python KNN/run_ecoli_knn_full.py
-python KNN/plot_ecoli_knn_analysis.py
+```powershell
+python -m pr02 run-knn
 ```
+
+默认配置已有交付时会拒绝覆盖；新实验先执行 `python -m pr02 new-run --tag 新的英文tag`，再使用生成的配置。
+当前运行在 `runs/knn_physchem_integrated_20261002_v2/`，全组比较见根目录 `results/`。
+`results/predictions_knn.csv` 为 val 标准别名，direct log10 的 normalized 和 label_transform_id 留空。
+
+输入八维特征按主表稳定 source_row 映射，逐条核对 GC、有限值与完整覆盖，并保存 sample_id/source_row 索引。
+`results/*ecoli_full*` 和原搜索 / 图表是历史实验，保留但不作为当前模型身份。
+`six_species/` 是独立分类 smoke，不能与 strength 回归混用。

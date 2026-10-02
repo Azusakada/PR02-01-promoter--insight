@@ -93,6 +93,18 @@ class AnalysisTests(unittest.TestCase):
         self.assertEqual(status,'undefined')
         self.assertIn('constant',reason)
 
+    def test_calibration_accepts_new_full_request_table(self):
+        raw=checked_predictions(INPUTS/'thermo_val.csv',self.data)
+        success=pd.read_csv(INPUTS/'thermo_val_calibrated.csv')
+        failed=raw[raw.prediction_status.eq('failed')].copy()
+        failed['calibration_id']=success.calibration_id.iloc[0]
+        with tempfile.TemporaryDirectory() as tmp:
+            path=Path(tmp)/'full_calibrated.csv'
+            pd.concat([success,failed],ignore_index=True).to_csv(path,index=False)
+            joined,qc=attach_calibration(raw,path,INPUTS/'thermo_calibration.json',INPUTS/'thermo_train.csv',self.data)
+            self.assertEqual(len(joined),len(raw))
+            self.assertEqual(int(joined.prediction_status.eq('failed').sum()),1)
+
 
 if __name__=='__main__':
     unittest.main()

@@ -1,7 +1,7 @@
 """Strict ID alignment, full-request coverage and identical evaluation cohorts."""
 from __future__ import annotations
 import hashlib
-from .common import (DATA, SPLITS, TRANSFORM, artifact, load_bundle, relative, run_dir,
+from .common import (ROOT, DATA, SPLITS, TRANSFORM, artifact, load_bundle, read_table, relative, run_dir,
                      v, write_json, write_manifest, write_table)
 from .metrics import metric_rows
 
@@ -44,6 +44,12 @@ def run(paths,run_id='comparison_val_integrated_20261002_v2'):
     write_table(output/'coverage_summary.csv',coverage)
     write_table(output/'common_eval_ids.tsv',[{'sample_id':s} for s in common],delimiter='\t')
     write_table(output/'comparison_predictions.csv',joined)
+    context_path = ROOT/'thermo/input/context_map.tsv'
+    unique = {r['sample_id'] for r in read_table(context_path,delimiter='\t') if r['match_status']=='found'} & common_set
+    unique_id = 'val_unique_context_'+hashlib.sha256(''.join(s+'\n' for s in sorted(unique)).encode()).hexdigest()[:16]
+    unique_metrics = [m for rows in frames for m in metric_rows(rows,'val',comparison_set_id=unique_id,common_ids=unique)]
+    write_table(output/'metrics_unique_context.csv',unique_metrics)
+    write_table(output/'unique_context_eval_ids.tsv',[{'sample_id':s} for s in sorted(unique)],delimiter='\t')
     table = []
     for c in coverage:
         values = {m['metric_name']:m['value'] for m in metrics if m['method_name']==c['method_name'] and m['target_scale']=='log10'}
@@ -51,10 +57,13 @@ def run(paths,run_id='comparison_val_integrated_20261002_v2'):
                           n_requested=c['n_requested'],n_success=c['n_success'],n_common=c['n_used'],coverage=c['coverage']))
     write_table(output/'performance_summary.csv',table)
     write_json(output/'comparison_config.json',dict(subset='val',target_scale='log10',fit_protocol='train only for every method',
-               comparison_set_id=comparison,n_common=len(common),prediction_files=[relative(p) for p in paths],test_metrics_enabled=False))
+               comparison_set_id=comparison,n_common=len(common),prediction_files=[relative(p) for p in paths],test_metrics_enabled=False,
+               information_scope={'cnn_1d':'provided 50bp','knn_physchem_full':'8 derived features from provided 50bp','thermo_regseq2':'150bp reference-genome recovered context'},
+               unique_context_sensitivity=dict(n_common=len(unique),comparison_set_id=unique_id)))
     artifacts = [artifact(kind,output/name) for kind,name in [('comparison_metrics','metrics.csv'),('coverage','coverage_summary.csv'),
                  ('common_eval_ids','common_eval_ids.tsv'),('comparison_predictions','comparison_predictions.csv'),
-                 ('summary','performance_summary.csv'),('config','comparison_config.json')]]
+                 ('summary','performance_summary.csv'),('config','comparison_config.json'),
+                 ('sensitivity_metrics','metrics_unique_context.csv'),('sensitivity_ids','unique_context_eval_ids.tsv')]]
     artifacts.extend(artifact('prediction_input',p) for p in paths)
     artifacts.extend([artifact('dataset',DATA),artifact('splits',SPLITS),artifact('label_transform',TRANSFORM)])
     # A method failing one request does not make the comparison computation fail.
