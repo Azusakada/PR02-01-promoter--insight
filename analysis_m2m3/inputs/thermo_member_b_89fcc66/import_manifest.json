@@ -1,0 +1,53 @@
+{
+  "source_repository": "https://github.com/Azusakada/PR02-01-promoter--insight",
+  "source_commit": "89fcc6600185100eac511de2a27fc0784774604c",
+  "evidence_level": "imported_teammate_preliminary",
+  "scope": "Teammate data snapshot; no model training or calculator execution in this module",
+  "artifacts": [
+    {
+      "source_path": "thermo/input/context_map.tsv",
+      "path": "analysis_m2m3/inputs/thermo_member_b_89fcc66/context_map.tsv",
+      "sha256": "a426099a08bf4a3bd01c60237447adf155feca9d81ef8526070f0665528c528d"
+    },
+    {
+      "source_path": "thermo/results/predictions/thermo_train.csv",
+      "path": "analysis_m2m3/inputs/thermo_member_b_89fcc66/thermo_train.csv",
+      "sha256": "de8b110633bac6332c0a5b1fdcb8dad80ac6779a29e99d35ad92cf14c0f67562"
+    },
+    {
+      "source_path": "thermo/results/predictions/thermo_val.csv",
+      "path": "analysis_m2m3/inputs/thermo_member_b_89fcc66/thermo_val.csv",
+      "sha256": "c99dad4084f6a4e5d73a8d17f22f7e2145e17e46dcefa956272be6ea98d2e332"
+    },
+    {
+      "source_path": "thermo/results/predictions/thermo_val_calibrated.csv",
+      "path": "analysis_m2m3/inputs/thermo_member_b_89fcc66/thermo_val_calibrated.csv",
+      "sha256": "eb72e303ac4c013e2affa0126010c426136d0fee65cf9982e166c99963186832"
+    },
+    {
+      "source_path": "thermo/results/thermo_calibration.json",
+      "path": "analysis_m2m3/inputs/thermo_member_b_89fcc66/thermo_calibration.json",
+      "sha256": "74d16c4eec4c62e0726f086f1b5c46cc23358b2c980a22104b8c605727387cc0"
+    },
+    {
+      "source_path": "thermo/thermo_applicability.md",
+      "path": "analysis_m2m3/inputs/thermo_member_b_89fcc66/thermo_applicability.md",
+      "sha256": "2d9680acc981e620d7875112c7e0708029b3e3be5e6c5a0faf1df68295e477e0"
+    },
+    {
+      "source_path": "thermo/handoff.md",
+      "path": "analysis_m2m3/inputs/thermo_member_b_89fcc66/handoff.md",
+      "sha256": "e236692b80435d8e0a8333a0ae73166c8eabb216566395a3280fe2eed8ac1bc8"
+    },
+    {
+      "source_path": "thermo/recover_context.py",
+      "path": "analysis_m2m3/inputs/thermo_member_b_89fcc66/recover_context.py",
+      "sha256": "5530bee77660a0589c919a47139cc1ead1368002b6361f8ce088574b114dc540"
+    },
+    {
+      "source_path": "thermo/run_thermo.py",
+      "path": "analysis_m2m3/inputs/thermo_member_b_89fcc66/run_thermo.py",
+      "sha256": "f96f68cca7399b1f1722d8c34ce048c3559a692b3b6d9a3ea35a6c66a54446af"
+    }
+  ]
+}
