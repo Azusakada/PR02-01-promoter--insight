@@ -1,0 +1,40 @@
+{
+  "source_repository": "https://github.com/wangxinglong1990/Promoter_design",
+  "source_commit": "56c1b331bfbca0665b2c3f6b02345de794fe25df",
+  "paper": "https://doi.org/10.1002/ggn2.202300184",
+  "method": "Source arrays in source_row order; sequence uppercased only; labels parsed as float",
+  "target": {
+    "path": "data/01_Ecoli_strength/data_v1.tsv",
+    "sha256": "0599c5b29198c78c481d035bf32596a53411310f401463a62e160bfdbe93ca7e"
+  },
+  "inputs": [
+    {
+      "source_path": "PromoS_and_PromoA_strength_prediction/PromoA_train/promoter.npy",
+      "url": "https://raw.githubusercontent.com/wangxinglong1990/Promoter_design/56c1b331bfbca0665b2c3f6b02345de794fe25df/PromoS_and_PromoA_strength_prediction/PromoA_train/promoter.npy",
+      "sha256": "e71911452431acb620478f0de5ae896481be5618e7a7f9712125cd98cb8e37ab",
+      "shape": [
+        11884
+      ],
+      "dtype": "<U50"
+    },
+    {
+      "source_path": "PromoS_and_PromoA_strength_prediction/PromoA_train/gene_expression.npy",
+      "url": "https://raw.githubusercontent.com/wangxinglong1990/Promoter_design/56c1b331bfbca0665b2c3f6b02345de794fe25df/PromoS_and_PromoA_strength_prediction/PromoA_train/gene_expression.npy",
+      "sha256": "a1426fa5e5806fceff2c041218b781b6dc1f0cc84b39cf4ef626d02965fd9ce5",
+      "shape": [
+        11884
+      ],
+      "dtype": "<U10"
+    }
+  ],
+  "n_requested": 11884,
+  "n_sequence_match": 11884,
+  "n_strength_match": 11884,
+  "source_match_sha256": "32ea6b87e4c0bb0fc09a6e271977ae41ae458b5d37284f04d38170599bcb24d3",
+  "result": "all_matched",
+  "limits": [
+    "Data ancestry verified, not original assay quality",
+    "No per-sample TSS or motif coordinates in these source NPY files",
+    "Assay units and label aggregation still require original data documentation"
+  ]
+}
