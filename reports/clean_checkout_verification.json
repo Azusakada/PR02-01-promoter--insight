@@ -1,11 +1,12 @@
 {
   "status": "passed",
-  "branch": "csy",
-  "checked_revision": "622f0861087c5b95d3e668d04201e5058d832f33",
-  "clean_checkout": "core.autocrlf=false, --no-hardlinks",
+  "target_branch": "main",
+  "checked_revision": "83445a418c37f088a5cfa2a3ffe503a3b1b7b832",
+  "clean_checkout": "core.autocrlf=true, --no-hardlinks",
   "independent_checkout_validation": "passed",
   "clean_checkout_working_tree": "clean",
-  "implementation_tests_passed": 76,
-  "remote_branch_published": true,
-  "remote_main_modified": false
+  "verification_exit_code": 0,
+  "implementation_tests_passed": 90,
+  "verification_preserved_tracked_bytes": true,
+  "scope": "Checks saved artifacts and model reloads, not a complete retraining of every model."
 }
