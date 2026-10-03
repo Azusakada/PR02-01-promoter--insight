@@ -21,5 +21,9 @@
     "runs/ridge_kmer_integrated_20261003_v1/predictions_ridge_val.csv",
     "runs/svr_kmer_integrated_20261003_v1/predictions_svr_val.csv"
   ],
-  "test_metrics_enabled": false
+  "test_metrics_enabled": false,
+  "analysis_runs": {
+    "eda": "runs/eda_m2_integrated_20261002_v2",
+    "errors": "runs/error_m3_five_methods_20261003_v1"
+  }
 }

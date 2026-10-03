@@ -14,6 +14,7 @@ def main(argv=None):
         cmd = sub.add_parser(name)
         cmd.add_argument('--run-id')
     sub.add_parser('run-ridge-svr')
+    sub.add_parser('analyze')
     sub.add_parser('validate-data')
     sub.add_parser('run-all')
     sub.add_parser('verify')
@@ -44,6 +45,9 @@ def main(argv=None):
         elif args.command=='run-ridge-svr':
             from .kmer import run
             run(cfg['runs']['ridge'],cfg['runs']['svr'])
+        elif args.command=='analyze':
+            from .analysis import run
+            run(cfg)
         elif args.command=='evaluate':
             from .evaluate import run
             run([resolve(p) for p in cfg['validation_predictions']],args.run_id or cfg['runs']['comparison'])
@@ -61,6 +65,7 @@ def main(argv=None):
             import yaml
             cnn = yaml.safe_load(resolve(cfg['cnn_config']).read_text(encoding='utf-8'))
             destinations = [ROOT/'runs'/r for r in cfg['runs'].values()]+[resolve(cnn['output_dir'])]
+            if 'analysis_runs' in cfg: destinations.append(resolve(cfg['analysis_runs']['errors']))
             for path in destinations:
                 v.require(not path.exists() or not any(path.iterdir()),f'Use new run IDs; existing output: {path}')
             knn(cfg['runs']['knn'])
@@ -70,6 +75,11 @@ def main(argv=None):
                 kmer(cfg['runs']['ridge'],cfg['runs']['svr'])
             subprocess.run([sys.executable,str(ROOT/'CNN/run_cnn.py'),'train','--config',str(resolve(cfg['cnn_config']))],cwd=ROOT,check=True)
             evaluate([resolve(p) for p in cfg['validation_predictions']],cfg['runs']['comparison'])
+            if 'analysis_runs' in cfg:
+                from .analysis import run as analyze
+                output=analyze(cfg)
+                print(f'Computations complete. Review figures in {output}/figures, acknowledge them with analysis_m2m3/verify_run.py, then run pr02 publish. Current published results have not changed.')
+                return
             from .publish import publish
             publish(cfg)
     except (v.ContractError,ValueError,OSError,RuntimeError,subprocess.CalledProcessError) as exc:

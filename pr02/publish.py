@@ -62,5 +62,6 @@ def publish(cfg):
                     artifacts=[artifact('current_result',current/name) for name in ['metrics.csv','coverage_summary.csv','common_eval_ids.tsv','performance_summary.csv','metrics_unique_context.csv','unique_context_eval_ids.tsv']],
                     validation=artifact('validation',comparison/'integration_validation.json'),
                     legacy_entrypoints=legacy)
+    registry['analysis']=[artifact('analysis_'+name,resolve(path)/'run_manifest.json') for name,path in cfg.get('analysis_runs',{}).items()]
     write_json(current/'current.json',registry)
     return registry

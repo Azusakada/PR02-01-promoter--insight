@@ -100,12 +100,24 @@ def verify(cfg):
                 v.require(len(matched)==1 and math.isclose(matched[0]['value'],value,rel_tol=1e-10,abs_tol=1e-10),'Unified metric mismatch')
                 v.require(matched[0]['n_requested']==len(rows) and matched[0]['n_used']==len(common),'Wrong comparison denominators')
     record('unified_metrics_independently_recomputed_with_sklearn_scipy')
+    for name,path in cfg.get('analysis_runs',{}).items():
+        directory=resolve(path)
+        detail=v.run_check(directory/'run_manifest.json',ROOT)
+        figures=read_json(directory/'figure_manifest.json')
+        v.require(all(f['visual_check_status']=='pass' for f in figures),'Analysis figures need manual review before publication: '+str(directory))
+        if name=='errors':
+            meta=read_json(directory/'run_manifest.json')
+            input_paths={entry['path'] for entry in meta['inputs']}
+            v.require(set(cfg['validation_predictions'])<=input_paths,'Error analysis uses stale model predictions')
+            v.require(all(f['n_samples']==len(common) for f in figures),'Error figure comparison count mismatch')
+        record('analysis_artifacts_and_visual_review:'+name,detail)
     current_index = ROOT/'results/current.json'
     if current_index.exists():
         registry = read_json(current_index)
         entries = [registry[key] for key in ['data','splits','label_transform','comparison_manifest','validation']]
         entries.extend(registry['artifacts'])
         entries.extend(registry.get('legacy_entrypoints',[]))
+        entries.extend(registry.get('analysis',[]))
         for pred in registry['predictions']:
             entries.extend([pred['original'],pred['current']])
             v.require(resolve(pred['original']['path']).read_bytes()==resolve(pred['current']['path']).read_bytes(),'Current prediction alias differs from immutable run')

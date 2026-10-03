@@ -59,12 +59,13 @@ class KmerIntegrationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory); (root/'CNN/configs').mkdir(parents=True)
             cnn=root/'CNN/configs/base.yaml'; cnn.write_text(yaml.safe_dump(dict(run_id='old',output_dir='CNN/runs/old')))
-            base=root/'base.json'; base.write_text(json.dumps(dict(cnn_config='CNN/configs/base.yaml',runs=dict(knn='old',thermo='old',comparison='old',ridge='old',svr='old'))))
+            base=root/'base.json'; base.write_text(json.dumps(dict(cnn_config='CNN/configs/base.yaml',runs=dict(knn='old',thermo='old',comparison='old',ridge='old',svr='old'),analysis_runs=dict(eda='runs/eda_old',errors='runs/error_old'))))
             with patch('pr02.new_run.ROOT',root): plan=create('fresh',base)
             cfg=json.loads(plan.read_text())
             self.assertEqual(set(cfg['runs']),{'knn','thermo','comparison','ridge','svr'})
             self.assertEqual(len(cfg['validation_predictions']),5)
             self.assertIn('runs/ridge_fresh/predictions_ridge_val.csv',cfg['validation_predictions'])
+            self.assertEqual(cfg['analysis_runs'],dict(eda='runs/eda_old',errors='runs/error_fresh'))
 
 
 if __name__=='__main__': unittest.main()

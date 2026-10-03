@@ -23,6 +23,8 @@ def create(tag, base):
     if 'ridge' in plan['runs']:
         plan['validation_predictions'].extend([f"runs/{plan['runs']['ridge']}/predictions_ridge_val.csv",
                                                f"runs/{plan['runs']['svr']}/predictions_svr_val.csv"])
+    if 'analysis_runs' in plan:
+        plan['analysis_runs']['errors']='runs/error_'+tag
     cnn_path.write_text(yaml.safe_dump(cnn,allow_unicode=True,sort_keys=False),encoding='utf-8',newline='\n')
     write_json(plan_path,plan)
     print(f'Created {plan_path}; run: python -m pr02 --config {plan_path.relative_to(ROOT).as_posix()} run-all')
