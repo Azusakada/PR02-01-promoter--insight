@@ -110,6 +110,9 @@ def verify(cfg):
             input_paths={entry['path'] for entry in meta['inputs']}
             v.require(set(cfg['validation_predictions'])<=input_paths,'Error analysis uses stale model predictions')
             v.require(all(f['n_samples']==len(common) for f in figures),'Error figure comparison count mismatch')
+            error_ids=read_table(directory/'source_tables/common_eval_ids.tsv',delimiter='\t')
+            metric_ids={m['comparison_set_id'] for m in metric_table}
+            v.require(any(r['comparison_set_id'] in metric_ids for r in error_ids),'Error analysis comparison identity mismatch')
         record('analysis_artifacts_and_visual_review:'+name,detail)
     current_index = ROOT/'results/current.json'
     if current_index.exists():

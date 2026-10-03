@@ -12,6 +12,25 @@ from pr02.kmer import count_matrix, checked_feature, selected_candidates
 
 
 class KmerIntegrationTests(unittest.TestCase):
+    def test_new_method_changes_comparison_identity_even_when_ids_match(self):
+        from pr02.comparison import comparison_id
+        row=dict(dataset_id='d',data_version='v',split_id='s',method_name='m1',run_id='r1')
+        with tempfile.TemporaryDirectory() as directory:
+            a=Path(directory)/'a.csv'; b=Path(directory)/'b.csv'
+            a.write_text('a'); b.write_text('b')
+            old=comparison_id([[row]],[a],{'sample'})
+            new=comparison_id([[row],[dict(row,method_name='m2',run_id='r2')]],[a,b],{'sample'})
+            self.assertNotEqual(old,new)
+
+    def test_prediction_version_changes_comparison_identity(self):
+        from pr02.comparison import comparison_id
+        row=dict(dataset_id='d',data_version='v',split_id='s',method_name='m',run_id='r')
+        with tempfile.TemporaryDirectory() as directory:
+            path=Path(directory)/'pred.csv'; path.write_text('before')
+            old=comparison_id([[row]],[path],{'sample'})
+            path.write_text('after')
+            self.assertNotEqual(old,comparison_id([[row]],[path],{'sample'}))
+
     def test_all_supported_counts_match_independent_window_counter(self):
         sequences=['A'*50,'ACGT'*12+'AC']
         for k in [3,4,5]:

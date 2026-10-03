@@ -4,6 +4,7 @@ import hashlib
 from .common import (ROOT, DATA, SPLITS, TRANSFORM, artifact, load_bundle, read_table, relative, run_dir,
                      v, write_json, write_manifest, write_table)
 from .metrics import metric_rows
+from .comparison import comparison_id
 
 
 def align_predictions(paths, subset='val'):
@@ -26,7 +27,7 @@ def align_predictions(paths, subset='val'):
 def run(paths,run_id='comparison_val_integrated_20261002_v2'):
     frames,common,requested = align_predictions(paths)
     output = run_dir(run_id)
-    comparison = 'val_common_'+hashlib.sha256(''.join(s+'\n' for s in common).encode()).hexdigest()[:16]
+    comparison = comparison_id(frames,paths,common)
     metrics,coverage,joined = [],[],[]
     common_set = set(common)
     for path,rows in zip(paths,frames):
@@ -46,7 +47,7 @@ def run(paths,run_id='comparison_val_integrated_20261002_v2'):
     write_table(output/'comparison_predictions.csv',joined)
     context_path = ROOT/'thermo/input/context_map.tsv'
     unique = {r['sample_id'] for r in read_table(context_path,delimiter='\t') if r['match_status']=='found'} & common_set
-    unique_id = 'val_unique_context_'+hashlib.sha256(''.join(s+'\n' for s in sorted(unique)).encode()).hexdigest()[:16]
+    unique_id = comparison_id(frames,paths,unique,kind='unique_context')
     unique_metrics = [m for rows in frames for m in metric_rows(rows,'val',comparison_set_id=unique_id,common_ids=unique)]
     write_table(output/'metrics_unique_context.csv',unique_metrics)
     write_table(output/'unique_context_eval_ids.tsv',[{'sample_id':s} for s in sorted(unique)],delimiter='\t')

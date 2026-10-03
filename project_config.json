@@ -10,7 +10,7 @@
   "runs": {
     "knn": "knn_physchem_integrated_20261002_v2",
     "thermo": "thermo_regseq2_integrated_20261002_v2",
-    "comparison": "comparison_val_five_methods_20261003_v1",
+    "comparison": "comparison_val_five_methods_20261003_v2",
     "ridge": "ridge_kmer_integrated_20261003_v1",
     "svr": "svr_kmer_integrated_20261003_v1"
   },
@@ -24,6 +24,6 @@
   "test_metrics_enabled": false,
   "analysis_runs": {
     "eda": "runs/eda_m2_integrated_20261002_v2",
-    "errors": "runs/error_m3_five_methods_20261003_v1"
+    "errors": "runs/error_m3_five_methods_20261003_v2"
   }
 }

@@ -120,13 +120,18 @@ def analyze(output, paths, calibrated=None, calibration=None, calibration_train=
     requested = set(data.loc[data['split'].eq('val'),'sample_id'])
     success = {m:set(f.loc[f.prediction_status.eq('ok'),'sample_id']) for m,f in zip(methods,frames)}
     common = set.intersection(*success.values())
+    import sys
+    sys.path.insert(0,str(ROOT))
+    from pr02.comparison import comparison_id
+    records=[f.to_dict('records') for f in frames]
+    common_id=comparison_id(records,paths,common)
     run = Run(output,'M3','pr02-error-analysis-m3',data,inputs,{'subset':'val','group_threshold_source':'train log10 tertiles','thresholds_log10':thresholds.tolist(),'case_seed':SEED,'case_rules':'top5 absolute errors per method, top5 pairwise log10 disagreement, 5 random common IDs','team_plan_missing_methods':['kmer Ridge'] if not any('ridge' in m.lower() for m in methods) else [],'calibration_handling':'verify imported train-only parameters; do not fit on val'})
     run.meta['evaluation_subsets'] = ['val']
     run.meta['execution_status'] = 'partial' if any(f.prediction_status.eq('failed').any() for f in frames) else 'success'
     if calibration_qc:
         write_json(run.output/'calibration_qc.json',calibration_qc)
     metrics,used_ids,coverage,errors,groups = [],[],[],[],[]
-    for method,frame in zip(methods,frames):
+    for method,frame,path in zip(methods,frames,paths):
         ok = frame.prediction_status.eq('ok')
         numeric = frame.loc[ok,'predicted_value_log10'].notna().all() and frame.loc[ok,'predicted_value'].notna().all()
         if numeric and ok.any():
@@ -138,7 +143,7 @@ def analyze(output, paths, calibrated=None, calibration=None, calibration_train=
             require(frame.loc[ok,['predicted_value','predicted_value_log10']].isna().all().all(), f'{method}: partially calibrated successful rows')
         coverage.append({'method_name':method,'run_id':single(frame,'run_id'),'subset':'val','n_requested':len(requested),'n_success':int(ok.sum()),'n_failed':int((~ok).sum()),'coverage':int(ok.sum())/len(requested),'n_common':len(common)})
         for set_name,ids in [('all_success',success[method]),('common',common)]:
-            cid='val_'+set_name+'_'+hashlib.sha256(''.join(s+'\n' for s in sorted(ids)).encode()).hexdigest()[:16]
+            cid=common_id if set_name=='common' else comparison_id([frame.to_dict('records')],[path],ids,kind='available')
             subset = frame[frame.sample_id.isin(ids)].sort_values('sample_id')
             used_ids.extend({'comparison_set_id':cid,'method_name':method,'sample_id':sid,'subset':'val'} for sid in subset.sample_id)
             evaluation_scales = [('raw','true_value','predicted_value'),('log10','true_value','predicted_value_log10')] if numeric else []
