@@ -6,12 +6,14 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 import numpy as np
 import pandas as pd
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from common import DATASET, ROOT, load_data
+import common
 from eda import label_transform
 from error_analysis import attach_calibration, checked_predictions, metric_value
 
@@ -33,6 +35,18 @@ class AnalysisTests(unittest.TestCase):
         self.assertEqual(scope,'analysis_only_pending_team_adoption')
         z=(self.data.target_log10-meta['min_log10'])/(meta['max_log10']-meta['min_log10'])
         self.assertTrue((z>1).any())  # actual held-out maximum is outside train range
+
+    def test_dirty_repository_captures_shared_source_patch(self):
+        for content in (b'diff --git a/pr02/comparison.py b/pr02/comparison.py\n', b''):
+            with self.subTest(content=content), tempfile.TemporaryDirectory() as tmp:
+                with patch.object(common, 'ROOT', Path(tmp)), patch.object(common, 'GIT', 'git'), \
+                        patch.object(common.subprocess, 'check_output', side_effect=[
+                            'a' * 40, ' M pr02/comparison.py\n', content]) as git:
+                    run = common.Run(Path(tmp) / 'run', 'M3', 'test', self.data, [], {})
+                    self.assertTrue(run.meta['dirty_worktree'])
+                    self.assertEqual((run.output / 'source_patch.diff').read_bytes(), content)
+                    self.assertEqual(run.meta['source_patch'], 'run/source_patch.diff')
+                    self.assertEqual(git.call_args.args[0], ['git', 'diff', 'HEAD'])
 
     def test_modified_shared_transform_is_rejected(self):
         meta,_=label_transform(self.data)

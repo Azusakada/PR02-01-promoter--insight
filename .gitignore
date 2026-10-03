@@ -1,6 +1,7 @@
 __pycache__/
 *.py[cod]
 .venv/
+.pr02_cache/
 work/
 CNN/runs/
 runs/

@@ -115,8 +115,10 @@ class Run:
             "parameters": parameters, "fit_subsets": [], "selection_subsets": [], "evaluation_subsets": [],
             "inputs": [{"path": relative(p), "sha256": sha256(p)} for p in inputs],
         }
-        patch = subprocess.check_output([GIT, "diff", "HEAD", "--", "analysis_m2m3"], cwd=ROOT)
-        if patch:
+        # dirty_worktree covers the entire repository. Match that scope, including
+        # shared pr02 code and staged changes; retain even an empty patch when dirty.
+        patch = subprocess.check_output([GIT, "diff", "HEAD"], cwd=ROOT)
+        if self.meta['dirty_worktree']:
             (self.output / "source_patch.diff").write_bytes(patch)
             self.meta['source_patch'] = relative(self.output / "source_patch.diff")
         plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 10, "axes.spines.top": False, "axes.spines.right": False, "axes.titleweight": "bold", "figure.dpi": 120})
