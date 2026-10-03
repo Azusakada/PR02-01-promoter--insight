@@ -118,7 +118,7 @@ def write_manifest(output, run_id, method, artifacts, *, parameters, fit=(), sel
         patch.write_bytes(git('diff','HEAD',binary=True))
         artifacts = [*artifacts, artifact('source_patch', patch)]
     packages = {}
-    for name in ['numpy','scipy','scikit-learn','pandas','biopython','torch','PyYAML','matplotlib']:
+    for name in ['numpy','scipy','scikit-learn','pandas','biopython','torch','PyYAML','matplotlib','joblib']:
         try: packages[name] = importlib.metadata.version(name)
         except importlib.metadata.PackageNotFoundError: pass
     manifest = dict(dataset_id=transform['dataset_id'], schema_version='2.0.0', run_id=run_id,

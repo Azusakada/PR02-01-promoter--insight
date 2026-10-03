@@ -25,7 +25,9 @@ def verify(cfg):
     comparison_dir = ROOT/'runs'/cfg['runs']['comparison']
     cnn_path = next(p for p,rows in zip(paths,frames) if rows[0]['method_name']=='cnn_1d')
     cnn_dir = cnn_path.parent.parent
-    for directory in [knn_dir,thermo_dir,cnn_dir,cnn_dir/'validation',comparison_dir]:
+    directories=[knn_dir,thermo_dir,cnn_dir,cnn_dir/'validation',comparison_dir]
+    directories.extend(ROOT/'runs'/cfg['runs'][kind] for kind in ['ridge','svr'] if kind in cfg['runs'])
+    for directory in directories:
         record('run_manifest:'+directory.name,v.run_check(directory/'run_manifest.json',ROOT))
     for path in paths: record('prediction_bundle:'+path.relative_to(ROOT).as_posix(),v.bundle_check(DATA,SPLITS,transform=TRANSFORM,predictions=path))
 
@@ -64,6 +66,10 @@ def verify(cfg):
     train_x = np.stack([mapped[s['sample_id']] for s in groups['train']])
     v.require(np.allclose(saved['scaler'].mean_,train_x.mean(axis=0),rtol=1e-12,atol=1e-12),'Scaler not fitted on train only')
     record('knn_saved_train_only_model_reload',dict(n_compared=len(recomputed),max_abs_difference=float(np.max(np.abs(recomputed-expected_knn)))))
+
+    if 'ridge' in cfg['runs']:
+        from .kmer import verify_models
+        for name,detail in verify_models(cfg,frames): record(name,detail)
 
     # CNN checks use the actual frozen checkpoint and all validation sequences.
     sys.path.insert(0,str(ROOT/'CNN'))
@@ -106,6 +112,9 @@ def verify(cfg):
         for entry in entries:
             v.require(v.sha256(resolve(entry['path']))==entry['sha256'],'Current registry hash mismatch: '+entry['path'])
     out = comparison_dir/'integration_validation.json'
-    write_json(out,result)
+    # Published validation evidence is hash-bound. A later independent verify
+    # must not rewrite it because platform-dependent numerical differences can
+    # change diagnostics without changing whether validation passed.
+    if not out.exists(): write_json(out,result)
     print(f'Integrated verification passed: {out}',flush=True)
     return result

@@ -1,5 +1,1 @@
-numpy
-pandas
-scikit-learn
-scipy
-joblib
+-r ../requirements.txt

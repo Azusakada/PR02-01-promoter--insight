@@ -175,8 +175,10 @@ def analyze(output, paths, calibrated=None, calibration=None, calibration_train=
     numeric_methods = sorted(error_df.method_name.unique()) if len(error_df) else []
     if numeric_methods:
         for fig_name,kind in [('m3_prediction_scatter','scatter'),('m3_residuals','residual')]:
-            fig,axes=plt.subplots(1,len(numeric_methods),figsize=(6*len(numeric_methods),4.4),squeeze=False)
-            for ax,method in zip(axes[0],numeric_methods):
+            columns=min(3,len(numeric_methods)); nrows=(len(numeric_methods)+columns-1)//columns
+            fig,axes=plt.subplots(nrows,columns,figsize=(5.2*columns,4.3*nrows),squeeze=False)
+            for ax in axes.flat[len(numeric_methods):]: ax.set_visible(False)
+            for ax,method in zip(axes.flat,numeric_methods):
                 e=error_df[error_df.method_name.eq(method)&error_df.in_common_set]
                 if kind=='scatter':
                     ax.scatter(e.true_log10,e.predicted_value_log10,s=10,alpha=.28,color='#386CB0',edgecolors='none')

@@ -56,9 +56,13 @@ def run(paths,run_id='comparison_val_integrated_20261002_v2'):
         table.append(dict(method_name=c['method_name'],log10_r2=values['r2'],spearman=values['spearman'],log10_mae=values['mae'],
                           n_requested=c['n_requested'],n_success=c['n_success'],n_common=c['n_used'],coverage=c['coverage']))
     write_table(output/'performance_summary.csv',table)
+    information = {'cnn_1d':'provided 50bp','knn_physchem_full':'8 derived features from provided 50bp','thermo_regseq2':'150bp reference-genome recovered context'}
+    for rows in frames:
+        method=rows[0]['method_name']
+        if method.startswith('kmer'): information[method]='k-mer counts from provided 50bp'
     write_json(output/'comparison_config.json',dict(subset='val',target_scale='log10',fit_protocol='train only for every method',
                comparison_set_id=comparison,n_common=len(common),prediction_files=[relative(p) for p in paths],test_metrics_enabled=False,
-               information_scope={'cnn_1d':'provided 50bp','knn_physchem_full':'8 derived features from provided 50bp','thermo_regseq2':'150bp reference-genome recovered context'},
+               information_scope=information,
                unique_context_sensitivity=dict(n_common=len(unique),comparison_set_id=unique_id)))
     artifacts = [artifact(kind,output/name) for kind,name in [('comparison_metrics','metrics.csv'),('coverage','coverage_summary.csv'),
                  ('common_eval_ids','common_eval_ids.tsv'),('comparison_predictions','comparison_predictions.csv'),

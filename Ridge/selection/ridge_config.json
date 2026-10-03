@@ -1,0 +1,67 @@
+{
+  "schema_version": "2.0.0",
+  "dataset_id": "course_ecoli50_strength",
+  "data_version": "ecoli50_strength_v1",
+  "split_id": "ecoli50_random_20260928_v1",
+  "transform_id": "log10mm_59711a1c2217859e",
+  "owner": "李玘航",
+  "ridge_run_id": "ridge_kmer_20261003_v1",
+  "svr_run_id": "svr_kmer_20261003_v1",
+  "method_name": "kmer3_ridge",
+  "svr_method_name": "kmer3_svr",
+  "evidence_level": "preliminary",
+  "target": "target_log10 = log10(strength)",
+  "selection_rule": "maximize val log10 R2 among k-mer-only Ridge candidates; record all k x alpha",
+  "selected": {
+    "feature_set": "kmer3",
+    "k": 3,
+    "alpha": 100.0,
+    "val_r2_log10": 0.052801796373081356
+  },
+  "svr_selected": {
+    "model": "LinearSVR",
+    "C": 10.0,
+    "kernel": "linear",
+    "val_r2_log10": 0.009038907661019113,
+    "val_mae_log10": 0.44642998885034085,
+    "val_spearman_log10": 0.2277839613703406,
+    "n_iter": 85425
+  },
+  "alpha_grid": [
+    0.01,
+    0.1,
+    1.0,
+    3.0,
+    10.0,
+    30.0,
+    100.0,
+    300.0,
+    1000.0
+  ],
+  "k_grid": [
+    3,
+    4,
+    5
+  ],
+  "final_fit_scope": "train_only",
+  "do_not_refit_train_plus_val": true,
+  "physchem_role": "supplementary control in ridge_search.csv, not the main method",
+  "input_files": {
+    "samples": "Ridge/data_snapshot/data_v1.tsv",
+    "splits": "Ridge/data_snapshot/split_manifest.tsv",
+    "label_transform": "Ridge/data_snapshot/label_transform.json",
+    "features": "Ridge/features/feature_manifest.json"
+  },
+  "input_sha256": {
+    "samples": "0599c5b29198c78c481d035bf32596a53411310f401463a62e160bfdbe93ca7e",
+    "splits": "5d162f64e68a305749033e5f9e7f4d5bdfeb6b28af757883446f75682f9fd9b0"
+  },
+  "split_sizes": {
+    "train": 8318,
+    "val": 1783,
+    "test": 1783
+  },
+  "python": "3.13.7",
+  "generated_at_utc": "2026-10-03T20:17:56.404179+08:00",
+  "command": "python Ridge/src/prepare_frozen_inputs.py && python Ridge/src/build_feature_bundle.py && python Ridge/src/train_ridge_svr.py"
+}

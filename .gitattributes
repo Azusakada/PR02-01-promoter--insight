@@ -20,6 +20,10 @@ analysis_m2m3/runs/** -text
 analysis_m2m3/inputs/** -text
 KNN/results/** -text
 thermo/results/** -text
+Ridge/data_snapshot/** -text
+Ridge/features/** -text
+Ridge/selection/** -text
+Ridge/results/** -text
 contracts/** -text
 *.joblib -text
 *.pt -text

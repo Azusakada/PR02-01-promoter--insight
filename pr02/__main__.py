@@ -13,6 +13,7 @@ def main(argv=None):
     for name in ['run-knn','run-thermo','evaluate']:
         cmd = sub.add_parser(name)
         cmd.add_argument('--run-id')
+    sub.add_parser('run-ridge-svr')
     sub.add_parser('validate-data')
     sub.add_parser('run-all')
     sub.add_parser('verify')
@@ -40,6 +41,9 @@ def main(argv=None):
         elif args.command=='run-thermo':
             from .thermo import run
             run(args.run_id or cfg['runs']['thermo'])
+        elif args.command=='run-ridge-svr':
+            from .kmer import run
+            run(cfg['runs']['ridge'],cfg['runs']['svr'])
         elif args.command=='evaluate':
             from .evaluate import run
             run([resolve(p) for p in cfg['validation_predictions']],args.run_id or cfg['runs']['comparison'])
@@ -61,6 +65,9 @@ def main(argv=None):
                 v.require(not path.exists() or not any(path.iterdir()),f'Use new run IDs; existing output: {path}')
             knn(cfg['runs']['knn'])
             thermo(cfg['runs']['thermo'])
+            if 'ridge' in cfg['runs']:
+                from .kmer import run as kmer
+                kmer(cfg['runs']['ridge'],cfg['runs']['svr'])
             subprocess.run([sys.executable,str(ROOT/'CNN/run_cnn.py'),'train','--config',str(resolve(cfg['cnn_config']))],cwd=ROOT,check=True)
             evaluate([resolve(p) for p in cfg['validation_predictions']],cfg['runs']['comparison'])
             from .publish import publish
