@@ -1,0 +1,57 @@
+{
+  "data_version": "ecoli50_strength_v1",
+  "n_samples": 11884,
+  "row_order": "data_v1 source order, sample_id ecoli50_r000001..r011884",
+  "feature_version": "kmer_count_acgt_lex_v1",
+  "feature_index": "features/feature_index.tsv",
+  "features": [
+    {
+      "name": "kmer3",
+      "kind": "kmer_count",
+      "k": 3,
+      "n_features": 64,
+      "windows_per_seq": 48,
+      "path": "features/kmer3.npz",
+      "vocabulary_path": "features/kmer3_vocabulary.txt",
+      "note": "全部 4^k 个 k-mer，ACGT 字典序；等长序列下计数与频率只差常数"
+    },
+    {
+      "name": "kmer4",
+      "kind": "kmer_count",
+      "k": 4,
+      "n_features": 256,
+      "windows_per_seq": 47,
+      "path": "features/kmer4.npz",
+      "vocabulary_path": "features/kmer4_vocabulary.txt",
+      "note": "全部 4^k 个 k-mer，ACGT 字典序；等长序列下计数与频率只差常数"
+    },
+    {
+      "name": "kmer5",
+      "kind": "kmer_count",
+      "k": 5,
+      "n_features": 1024,
+      "windows_per_seq": 46,
+      "path": "features/kmer5.npz",
+      "vocabulary_path": "features/kmer5_vocabulary.txt",
+      "note": "全部 4^k 个 k-mer，ACGT 字典序；等长序列下计数与频率只差常数"
+    },
+    {
+      "name": "physchem8",
+      "kind": "derived_physicochemical",
+      "n_features": 8,
+      "columns": [
+        "gc_content",
+        "at_content",
+        "gc_skew",
+        "at_skew",
+        "melting_temp",
+        "bendability",
+        "stacking_energy",
+        "entropy"
+      ],
+      "path": "features/physchem8.tsv",
+      "experimental_measurement": false,
+      "note": "课程已有 8 类派生理化特征，按源表行序接入，不是湿实验新测。"
+    }
+  ]
+}

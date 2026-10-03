@@ -19,6 +19,17 @@
 
 标准预测表合并了 val/test 两个固定划分，并通过 `label_transform_id` 关联标签变换契约。
 
+## E. coli k-mer Ridge / SVR
+
+`Ridge/` 是李玘航的传统 ML 主线，基于同一份冻结 `data_v1` 和 `ecoli50_random_20260928_v1` 划分：
+
+- `Ridge/features/`：固定词表的 k=3/4/5 计数特征、8 类派生理化特征和 feature manifest
+- `Ridge/results/predictions_ridge.csv`：主方法 `kmer3_ridge`（train 拟合、val 选 `alpha=100`）
+- `Ridge/results/predictions_svr.csv`：同一 split/标签尺度上的可选 `kmer3_svr`
+- `Ridge/results/ridge_search.csv`：全部 k × alpha 候选，不只保留最优结果
+
+复现命令见 `Ridge/README.md`。该结果证据级别为 `preliminary`，不要和六物种二分类混评。
+
 ## 六物种数据与 KNN 冒烟结果
 
 - `data/02_reg_and_gen_six_species/`：Bacillus subtilis、Baumanii、Bradyrhizobium、Diphtheria、Escherichia coli、Staphylococcus 六个独立二分类数据集，以及汇总表和清洗日志。

@@ -1,0 +1,19 @@
+{
+  "data_v1_sha256": "0599c5b29198c78c481d035bf32596a53411310f401463a62e160bfdbe93ca7e",
+  "official_data_v1_sha256": "0599c5b29198c78c481d035bf32596a53411310f401463a62e160bfdbe93ca7e",
+  "data_v1_hash_match": true,
+  "split_sha256": "5d162f64e68a305749033e5f9e7f4d5bdfeb6b28af757883446f75682f9fd9b0",
+  "official_split_sha256": "5d162f64e68a305749033e5f9e7f4d5bdfeb6b28af757883446f75682f9fd9b0",
+  "split_hash_match": true,
+  "split_membership_verified_against_official_train_ids": true,
+  "data_source": "official_repo_data_v1",
+  "note": "优先使用李宇飞仓库中的冻结 data_v1；若下载失败则按清洗日志从课程 E_coli.txt 重建官方列。sample_id/sequence/strength/target_log10 与划分成员已核对。理化特征来自课程 promoter_physicochemical.csv，按源表行序接入，不是湿实验新测。",
+  "transform_id": "log10mm_59711a1c2217859e",
+  "split_id": "ecoli50_random_20260928_v1",
+  "n": 11884,
+  "split_sizes": {
+    "train": 8318,
+    "val": 1783,
+    "test": 1783
+  }
+}

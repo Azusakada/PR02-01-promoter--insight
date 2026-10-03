@@ -1,0 +1,11 @@
+dataset_id,run_id,method_name,split_id,evaluation_subset,extra_fit_scope,extra_k,extra_alpha,extra_C,metric_name,target_scale,value,n_requested,n_success,n_used,metric_status,reason,evidence_level,schema_version,data_version
+course_ecoli50_strength,svr_kmer_20261003_v1,kmer3_svr,ecoli50_random_20260928_v1,val,train,3,,10.0,r2,log10,0.009038907661019113,1783,1783,1783,ok,,preliminary,2.0.0,ecoli50_strength_v1
+course_ecoli50_strength,svr_kmer_20261003_v1,kmer3_svr,ecoli50_random_20260928_v1,val,train,3,,10.0,mae,log10,0.44642998885034085,1783,1783,1783,ok,,preliminary,2.0.0,ecoli50_strength_v1
+course_ecoli50_strength,svr_kmer_20261003_v1,kmer3_svr,ecoli50_random_20260928_v1,val,train,3,,10.0,spearman,log10,0.2277839613703406,1783,1783,1783,ok,,preliminary,2.0.0,ecoli50_strength_v1
+course_ecoli50_strength,svr_kmer_20261003_v1,kmer3_svr,ecoli50_random_20260928_v1,val,train,3,,10.0,r2,raw,-0.012536340150457459,1783,1783,1783,ok,,preliminary,2.0.0,ecoli50_strength_v1
+course_ecoli50_strength,svr_kmer_20261003_v1,kmer3_svr,ecoli50_random_20260928_v1,val,train,3,,10.0,mae,raw,1393.4611960436096,1783,1783,1783,ok,,preliminary,2.0.0,ecoli50_strength_v1
+course_ecoli50_strength,svr_kmer_20261003_v1,kmer3_svr,ecoli50_random_20260928_v1,test,train,3,,10.0,r2,log10,0.008736340635376094,1783,1783,1783,ok,,preliminary,2.0.0,ecoli50_strength_v1
+course_ecoli50_strength,svr_kmer_20261003_v1,kmer3_svr,ecoli50_random_20260928_v1,test,train,3,,10.0,mae,log10,0.43756492982707923,1783,1783,1783,ok,,preliminary,2.0.0,ecoli50_strength_v1
+course_ecoli50_strength,svr_kmer_20261003_v1,kmer3_svr,ecoli50_random_20260928_v1,test,train,3,,10.0,spearman,log10,0.2102133370742594,1783,1783,1783,ok,,preliminary,2.0.0,ecoli50_strength_v1
+course_ecoli50_strength,svr_kmer_20261003_v1,kmer3_svr,ecoli50_random_20260928_v1,test,train,3,,10.0,r2,raw,-0.002020417012715381,1783,1783,1783,ok,,preliminary,2.0.0,ecoli50_strength_v1
+course_ecoli50_strength,svr_kmer_20261003_v1,kmer3_svr,ecoli50_random_20260928_v1,test,train,3,,10.0,mae,raw,3132.675149669082,1783,1783,1783,ok,,preliminary,2.0.0,ecoli50_strength_v1
