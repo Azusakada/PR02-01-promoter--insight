@@ -2,7 +2,7 @@
 
 本仓库保存 PR02-01 M2/M3 阶段的可复现数据与实验交付物。
 
-当前集成开发在 `csy`：接入 main、member-b 和 EDA 分支，统一代码与验收；不直接修改远端 main。
+当前主线为 `main`：已整合数据/KNN、热力学、CNN、Ridge/SVR 与 EDA/误差分析。成员继续在各自分支开发，统一验收后进入主线。
 当前有效配置是 [project_config.json](project_config.json)，共同结果见 `results/`，验证和任务状态见 `reports/`。
 
 ## 统一入口
@@ -10,6 +10,7 @@
 建议 Python 3.12。使用 CPU PyTorch 的实际验证环境，依赖版本固定在 `requirements.txt`。
 
 ```powershell
+$env:PIP_CACHE_DIR = Join-Path (Get-Location) '.pr02_cache\pip'
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install torch==2.14.1 --index-url https://download.pytorch.org/whl/cpu
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
@@ -26,17 +27,25 @@ python -m pr02 new-run --tag my_experiment_v1
 python -m pr02 --config configs/integration_my_experiment_v1.json run-all
 ```
 
-新配置完成验收并发布结果后，把它设为全组默认，并显式提交已验收运行。
+新配置的 run-all 会生成五模型结果、统一成绩和误差图。实际查看图像后执行下面的核验，再发布；未经过视觉检查时不会更新当前结果索引。
+
+```powershell
+python analysis_m2m3/verify_run.py runs/error_my_experiment_v1 --acknowledge-manually-reviewed m3_prediction_scatter m3_residuals m3_group_errors
+python -m pr02 --config configs/integration_my_experiment_v1.json publish
+```
+
+完成验收并发布结果后，把新配置设为全组默认，并显式提交已验收运行。
 运行目录默认忽略；普通 `git add` 不会包含新模型，须按配置逐个登记：
 
 ```powershell
 Copy-Item -LiteralPath configs/integration_my_experiment_v1.json -Destination project_config.json
-git add project_config.json configs CNN/configs results reports
-git add -f -- runs/knn_my_experiment_v1 runs/thermo_my_experiment_v1 runs/comparison_my_experiment_v1 CNN/runs/cnn_my_experiment_v1
+git add project_config.json configs CNN/configs KNN/results Ridge/results results reports
+git add -f -- runs/knn_my_experiment_v1 runs/thermo_my_experiment_v1 runs/comparison_my_experiment_v1 runs/ridge_my_experiment_v1 runs/svr_my_experiment_v1 runs/error_my_experiment_v1 CNN/runs/cnn_my_experiment_v1
 ```
 
 单独步骤：`python -m pr02 run-knn`、`python -m pr02 run-thermo`、
-`python CNN/run_cnn.py train --config CNN/configs/cnn_run_config.yaml`、`python -m pr02 evaluate`。
+`python -m pr02 run-ridge-svr`、`python CNN/run_cnn.py train --config CNN/configs/cnn_run_config.yaml`、
+`python -m pr02 evaluate`、`python -m pr02 analyze`。
 默认配置对应已交付运行；再次运行会拒绝覆盖，须先生成新 tag。
 
 ```powershell
@@ -44,6 +53,7 @@ python -m unittest discover -s tests -v
 python -m unittest discover -s CNN/tests -v
 python -m unittest discover -s analysis_m2m3/tests -v
 python contracts/scripts/validate.py self-test
+python Ridge/src/test_kmer.py
 ```
 
 ## E. coli strength 数据
@@ -78,7 +88,7 @@ python contracts/scripts/validate.py self-test
 - `Ridge/results/predictions_svr.csv`：同一 split/标签尺度上的可选 `kmer3_svr`
 - `Ridge/results/ridge_search.csv`：全部 k × alpha 候选，不只保留最优结果
 
-复现命令见 `Ridge/README.md`。该结果证据级别为 `preliminary`，不要和六物种二分类混评。
+当前标准入口只含完整 val，直接 log10 预测不填 normalized/label_transform_id。Ridge/SVR 使用统一依赖环境重新拟合，k=3、alpha=100、LinearSVR C=10 沿用原 val 搜索选择。原交付及其 test 成绩封存在 `history/liqihang_delivery_495ee43.zip`；选择记录保存在 `Ridge/selection/`。复现见 `Ridge/README.md`，证据级别为 `preliminary`。
 
 ## 六物种数据与 KNN 冒烟结果
 
@@ -92,19 +102,20 @@ python contracts/scripts/validate.py self-test
 ## 统一评价和交接
 
 所有方法使用同一 data_v1 和 split。CNN/KNN 仅在 train 拟合，CNN 在 val 选 checkpoint，
-KNN 沿用已发布 val 搜索选出的 k=1501；热力学校准仅在 train 拟合。默认不输出 test 成绩。
+KNN 沿用已发布 val 搜索选出的 k=1501；Ridge/SVR 沿用已发布 val 选择且只在 train 拟合；热力学校准仅在 train 拟合。默认入口不输出新的 test 成绩。历史传统基线已经报告过 test，不能把后续同一 test 称为全新盲测。
 按 sample_id 对齐各方法成功预测的交集，主比较同样本、同尺度；完整请求的 coverage 单独报告。
 另报唯一参考基因组匹配子集的敏感性结果。热力学使用 150 bp 补取上下文，CNN 使用 50 bp，
-因此同样本比较不意味着输入信息量相同。
+Ridge/SVR 同样来自原 50 bp，因此同样本比较不意味着所有方法输入信息量相同。
+比较 ID 同时绑定方法、run_id、预测文件哈希和样本 ID；新增方法或版本即使共同样本不变，也会生成新 ID。
 
 - `results/current.json`：当前有效运行、文件路径和哈希索引。
 - `results/performance_summary.csv`、`metrics.csv`、`coverage_summary.csv`、`common_eval_ids.tsv`：统一成绩和精确评价集合。
 - `reports/integration_validation.json`：数据、运行、校准、模型重载及独立指标复算。
 - `reports/PROJECT_STATUS.md`：分工、验收与交接。
-- `reports/OPEN_ITEMS.md`：可靠注释、测量来源、Ridge 和 M4 待办。
-- `runs/eda_m2_integrated_20261002_v2/`、`runs/error_m3_integrated_20261002_v3/`：当前 EDA 和三方法误差 / 案例图，附源表与人工图像 QA。
+- `reports/OPEN_ITEMS.md`：可靠注释、测量来源和 M4 待办。
+- `runs/eda_m2_integrated_20261002_v2/`、`runs/error_m3_five_methods_20261003_v2/`：当前 EDA 和五方法误差 / 案例图，附源表与人工图像 QA。
 - `history/`、旧运行目录：历史版本，不能当作当前标准产物。
 
 团队修改共同数据 / split / transform 前须发布新版本；新增方法提交完整 val 预测、失败状态、
 train-only 模型及 run_manifest，再注册到统一配置。每次新增方法或数据版本都重新生成评价集合。
-提交前执行适用测试和 `python -m pr02 verify`；用自己的开发分支提交集成变更，验收后再通过 PR 进入 main。
+提交前执行适用测试和 `python -m pr02 verify`；用自己的开发分支提交集成变更，按组内发布授权完成验收后合入 main。`verify` 为只读验收，不重写已发布的验证证据；发布索引同时绑定图表运行清单。

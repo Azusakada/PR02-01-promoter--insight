@@ -1,10 +1,12 @@
 {
   "status": "passed",
-  "total_tests_passed": 76,
+  "total_tests_passed": 90,
+  "unittest_tests_passed": 86,
+  "kmer_assertion_checks_passed": 4,
   "suites": [
     {
       "suite": "integration",
-      "tests_passed": 5,
+      "tests_passed": 14,
       "exit_code": 0
     },
     {
@@ -14,14 +16,20 @@
     },
     {
       "suite": "analysis",
-      "tests_passed": 9,
+      "tests_passed": 10,
       "exit_code": 0
     },
     {
       "suite": "contracts",
       "tests_passed": 48,
       "exit_code": 0
+    },
+    {
+      "suite": "kmer",
+      "tests_passed": 4,
+      "exit_code": 0
     }
   ],
-  "run_all_existing_output_refused": true
+  "run_all_existing_output_refused": true,
+  "ridge_svr_existing_output_refused": true
 }

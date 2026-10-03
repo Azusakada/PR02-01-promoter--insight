@@ -1,0 +1,15 @@
+test_calibration_accepts_new_full_request_table (test_analysis.AnalysisTests.test_calibration_accepts_new_full_request_table) ... ok
+test_calibration_verified_and_failed_request_preserved (test_analysis.AnalysisTests.test_calibration_verified_and_failed_request_preserved) ... ok
+test_constant_rank_metric_is_undefined (test_analysis.AnalysisTests.test_constant_rank_metric_is_undefined) ... ok
+test_dirty_repository_captures_shared_source_patch (test_analysis.AnalysisTests.test_dirty_repository_captures_shared_source_patch) ... ok
+test_missing_requested_id_rejected (test_analysis.AnalysisTests.test_missing_requested_id_rejected) ... ok
+test_modified_shared_transform_is_rejected (test_analysis.AnalysisTests.test_modified_shared_transform_is_rejected) ... ok
+test_prediction_alignment_is_by_id_not_row (test_analysis.AnalysisTests.test_prediction_alignment_is_by_id_not_row) ... ok
+test_raw_thermo_is_not_numeric_strength (test_analysis.AnalysisTests.test_raw_thermo_is_not_numeric_strength) ... ok
+test_transform_uses_train_and_does_not_clip (test_analysis.AnalysisTests.test_transform_uses_train_and_does_not_clip) ... ok
+test_unknown_id_and_true_label_rejected (test_analysis.AnalysisTests.test_unknown_id_and_true_label_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.640s
+
+OK

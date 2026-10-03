@@ -1,0 +1,193 @@
+{
+  "stage": "M3",
+  "task_id": "pr02-error-analysis-m3",
+  "run_id": "error_m3_five_methods_20261003_v1",
+  "method_name": "descriptive_analysis",
+  "dataset_id": "course_ecoli50_strength",
+  "data_version": "ecoli50_strength_v1",
+  "schema_version": "2.0.0",
+  "split_id": "ecoli50_random_20260928_v1",
+  "evidence_level": "preliminary",
+  "execution_status": "partial",
+  "seed": 20260928,
+  "created_at": "2026-10-03T13:26:07.852971+00:00",
+  "command": [
+    "C:\\Users\\admin\\Documents\\Codex\\2026-10-02\\wo-shi\\work\\cnn_env\\Scripts\\python.exe",
+    "D:\\PR02-01-promoter--insight\\analysis_m2m3\\error_analysis.py",
+    "--output",
+    "D:\\PR02-01-promoter--insight\\runs\\error_m3_five_methods_20261003_v1",
+    "--predictions",
+    "D:\\PR02-01-promoter--insight\\runs\\knn_physchem_integrated_20261002_v2\\predictions_knn_val.csv",
+    "D:\\PR02-01-promoter--insight\\runs\\thermo_regseq2_integrated_20261002_v2\\predictions\\thermo_val_calibrated.csv",
+    "D:\\PR02-01-promoter--insight\\CNN\\runs\\cnn_ecoli50_integrated_20261002_v2\\validation\\predictions_cnn.csv",
+    "D:\\PR02-01-promoter--insight\\runs\\ridge_kmer_integrated_20261003_v1\\predictions_ridge_val.csv",
+    "D:\\PR02-01-promoter--insight\\runs\\svr_kmer_integrated_20261003_v1\\predictions_svr_val.csv"
+  ],
+  "code_commit": "3cdd241c8d8644f3f56d78039381b2c4eb31d076",
+  "dirty_worktree": false,
+  "environment": {
+    "python": "3.12.14",
+    "platform": "Windows-11-10.0.22621-SP0",
+    "packages": {
+      "numpy": "2.5.3",
+      "pandas": "3.0.6",
+      "scipy": "1.18.1",
+      "matplotlib": "3.11.2",
+      "scikit-learn": "1.9.1"
+    }
+  },
+  "parameters": {
+    "subset": "val",
+    "group_threshold_source": "train log10 tertiles",
+    "thresholds_log10": [
+      1.9406658724758288,
+      2.383258681708176
+    ],
+    "case_seed": 20260928,
+    "case_rules": "top5 absolute errors per method, top5 pairwise log10 disagreement, 5 random common IDs",
+    "team_plan_missing_methods": [],
+    "calibration_handling": "verify imported train-only parameters; do not fit on val"
+  },
+  "fit_subsets": [],
+  "selection_subsets": [],
+  "evaluation_subsets": [
+    "val"
+  ],
+  "inputs": [
+    {
+      "path": "data/01_Ecoli_strength/data_v1.tsv",
+      "sha256": "0599c5b29198c78c481d035bf32596a53411310f401463a62e160bfdbe93ca7e"
+    },
+    {
+      "path": "data/01_Ecoli_strength/split_manifest.tsv",
+      "sha256": "5d162f64e68a305749033e5f9e7f4d5bdfeb6b28af757883446f75682f9fd9b0"
+    },
+    {
+      "path": "runs/knn_physchem_integrated_20261002_v2/predictions_knn_val.csv",
+      "sha256": "885d22fbd464f83f35df2c80886bd9b801e3feffdda2a9548314c1b9769d9b99"
+    },
+    {
+      "path": "runs/thermo_regseq2_integrated_20261002_v2/predictions/thermo_val_calibrated.csv",
+      "sha256": "9539011545d787a6832cd6d7ec830f4f1cbe0d8efaeeaef8691feb336b9f6e1f"
+    },
+    {
+      "path": "CNN/runs/cnn_ecoli50_integrated_20261002_v2/validation/predictions_cnn.csv",
+      "sha256": "04755f52dff6f781c62931af7493c653f0cb1a801c345998c22320feb60ccbfd"
+    },
+    {
+      "path": "runs/ridge_kmer_integrated_20261003_v1/predictions_ridge_val.csv",
+      "sha256": "11ff56bc53dff64c48de59cf81810ceffa0211bc53756c36f7a7c5154540609c"
+    },
+    {
+      "path": "runs/svr_kmer_integrated_20261003_v1/predictions_svr_val.csv",
+      "sha256": "d8caccf434915bedda00476e33ecd1df8e367036b335dc316c27a35553ec546d"
+    }
+  ],
+  "artifacts": [
+    {
+      "kind": "json",
+      "path": "runs/error_m3_five_methods_20261003_v1/figure_manifest.json",
+      "sha256": "1f8740c1ebdfacaf15d2a34b51460ecb35ca45f691ef4e7545c6cb1aeabaed25"
+    },
+    {
+      "kind": "png",
+      "path": "runs/error_m3_five_methods_20261003_v1/figures/m3_group_errors.png",
+      "sha256": "7f3e799407e70ab64bb7c6e4fc7fce00bd384d921791cc0cc8b040b98f850ac1"
+    },
+    {
+      "kind": "svg",
+      "path": "runs/error_m3_five_methods_20261003_v1/figures/m3_group_errors.svg",
+      "sha256": "2e55806c384979bf06c8bf6f5d507736f471a000266ac9f2dcaaebade0179ac1"
+    },
+    {
+      "kind": "png",
+      "path": "runs/error_m3_five_methods_20261003_v1/figures/m3_prediction_scatter.png",
+      "sha256": "69530b316eb8e72eb8524a0810ae54085697d2b9fec317d09f26cbe0a3d689ca"
+    },
+    {
+      "kind": "svg",
+      "path": "runs/error_m3_five_methods_20261003_v1/figures/m3_prediction_scatter.svg",
+      "sha256": "14e13093a7a8ac201bf3fc213bccec9f44a1efa21dceb658b32d92bfe83db68e"
+    },
+    {
+      "kind": "png",
+      "path": "runs/error_m3_five_methods_20261003_v1/figures/m3_residuals.png",
+      "sha256": "8b27ec80e27b1a9024c280f1fd93b03916385603020f2257177c3540fedc47fd"
+    },
+    {
+      "kind": "svg",
+      "path": "runs/error_m3_five_methods_20261003_v1/figures/m3_residuals.svg",
+      "sha256": "1000ee14deee73a1de001eeef59a327af0b2f9e64cd65d2b99c31031c9871670"
+    },
+    {
+      "kind": "md",
+      "path": "runs/error_m3_five_methods_20261003_v1/m3_error_analysis.md",
+      "sha256": "4c8f2ad0fae3f9f1dfdc3d0c3a46e0318c256f9ae6e1dcd6b1d0e30189f1ce5f"
+    },
+    {
+      "kind": "json",
+      "path": "runs/error_m3_five_methods_20261003_v1/qa_report.json",
+      "sha256": "db9346a171f04d1aae410e8e342265572583fb26262e5ad2fde5c5b901529274"
+    },
+    {
+      "kind": "csv",
+      "path": "runs/error_m3_five_methods_20261003_v1/source_tables/case_review.csv",
+      "sha256": "9e8581f5beba667950cb8010491a7c3f75120b17198a54bd93816e84ff7d8ed1"
+    },
+    {
+      "kind": "csv",
+      "path": "runs/error_m3_five_methods_20261003_v1/source_tables/cnn_1d_requested_predictions.csv",
+      "sha256": "7ac375c00551f3de303d622971b9ab2c67bbc88de3b713c4c8c7b97cc10e8e25"
+    },
+    {
+      "kind": "tsv",
+      "path": "runs/error_m3_five_methods_20261003_v1/source_tables/common_eval_ids.tsv",
+      "sha256": "e831569f4ae3c5cea52edf40fa595a1e7bc06f5afcf287825dd9ad77335d29ef"
+    },
+    {
+      "kind": "csv",
+      "path": "runs/error_m3_five_methods_20261003_v1/source_tables/coverage_summary.csv",
+      "sha256": "26403367d83b111b9633ec6a43070b2082be028c5f94d2252643cf637e06c768"
+    },
+    {
+      "kind": "csv",
+      "path": "runs/error_m3_five_methods_20261003_v1/source_tables/group_errors.csv",
+      "sha256": "42e7d80741091e19f0b0f2c1106af6f2f62a887fe3e582537b84fbe4a46dbd3d"
+    },
+    {
+      "kind": "csv",
+      "path": "runs/error_m3_five_methods_20261003_v1/source_tables/kmer3_ridge_requested_predictions.csv",
+      "sha256": "c28538a28b52700bd5498be1d19c0c8c5a6c67b39bb9ca18f17f3612f9c454d8"
+    },
+    {
+      "kind": "csv",
+      "path": "runs/error_m3_five_methods_20261003_v1/source_tables/kmer3_svr_requested_predictions.csv",
+      "sha256": "23739214df76f8521625437b104d437bf18f68ea4127987e2d21454a499faa03"
+    },
+    {
+      "kind": "csv",
+      "path": "runs/error_m3_five_methods_20261003_v1/source_tables/knn_physchem_full_requested_predictions.csv",
+      "sha256": "5486c6fa56530c65309b41327ea334acbb8d4918f5de2b294e3287057b0653f2"
+    },
+    {
+      "kind": "csv",
+      "path": "runs/error_m3_five_methods_20261003_v1/source_tables/metrics.csv",
+      "sha256": "ffc96e46c1efb69ec7b0c66203872935a6aba0cbb6b698efd3320d0d6bb16c23"
+    },
+    {
+      "kind": "csv",
+      "path": "runs/error_m3_five_methods_20261003_v1/source_tables/model_disagreements.csv",
+      "sha256": "fce3a8150572a29e1e2c21175b0e32b88af172cce842fc8d1fcd395aa6b60ad9"
+    },
+    {
+      "kind": "csv",
+      "path": "runs/error_m3_five_methods_20261003_v1/source_tables/prediction_errors.csv",
+      "sha256": "071558e2278875174b62ec335ebf605c10b45dedfae348255c3a3372373f4567"
+    },
+    {
+      "kind": "csv",
+      "path": "runs/error_m3_five_methods_20261003_v1/source_tables/thermo_regseq2_requested_predictions.csv",
+      "sha256": "c28ea69b8b9e27a3045e0bd1f1083d499798566036a4119f806ef3b2b02ef53d"
+    }
+  ]
+}

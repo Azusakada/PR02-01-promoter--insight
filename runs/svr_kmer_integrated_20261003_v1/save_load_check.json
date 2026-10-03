@@ -1,0 +1,7 @@
+{
+  "status": "passed",
+  "n_compared": 1783,
+  "max_abs_difference": 0.0,
+  "source_prediction_max_abs_difference": 7.904787935331115e-14,
+  "source_predictions_close": true
+}

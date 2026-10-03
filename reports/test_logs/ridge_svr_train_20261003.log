@@ -1,0 +1,2 @@
+Fitting kmer3_ridge: train=8318, val=1783, params={'k': 3, 'alpha': 100.0}
+Fitting kmer3_svr: train=8318, val=1783, params={'k': 3, 'C': 10.0, 'kernel': 'linear'}

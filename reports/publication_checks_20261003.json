@@ -1,0 +1,27 @@
+{
+  "status": "passed",
+  "checks": [
+    {
+      "command": "verify",
+      "exit_code": 0,
+      "expected": 0
+    },
+    {
+      "command": "verify",
+      "exit_code": 0,
+      "expected": 0
+    },
+    {
+      "command": "run-all",
+      "exit_code": 2,
+      "expected": 2
+    },
+    {
+      "command": "run-ridge-svr",
+      "exit_code": 2,
+      "expected": 2
+    }
+  ],
+  "checked_files": 16,
+  "model_and_published_evidence_unchanged": true
+}

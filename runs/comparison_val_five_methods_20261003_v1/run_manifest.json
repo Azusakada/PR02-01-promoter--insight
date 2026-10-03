@@ -1,0 +1,127 @@
+{
+  "dataset_id": "course_ecoli50_strength",
+  "schema_version": "2.0.0",
+  "run_id": "comparison_val_five_methods_20261003_v1",
+  "stage": "M3",
+  "task_id": "pr02_integrated_m2_m3",
+  "method_name": "unified_evaluation",
+  "data_version": "ecoli50_strength_v1",
+  "split_id": "ecoli50_random_20260928_v1",
+  "evidence_level": "preliminary",
+  "execution_status": "partial",
+  "seed": null,
+  "created_at": "2026-10-03T21:23:29.932448+08:00",
+  "command": [
+    "C:\\Users\\admin\\Documents\\Codex\\2026-10-02\\wo-shi\\work\\cnn_env\\Scripts\\python.exe",
+    "D:\\PR02-01-promoter--insight\\pr02\\__main__.py",
+    "evaluate"
+  ],
+  "code_commit": "aabbb4b568865005cb1f32a3e1ba96788e70d650",
+  "dirty_worktree": false,
+  "environment": {
+    "python": "3.12.14",
+    "platform": "Windows-11-10.0.22621-SP0",
+    "packages": {
+      "numpy": "2.5.3",
+      "scipy": "1.18.1",
+      "scikit-learn": "1.9.1",
+      "pandas": "3.0.6",
+      "biopython": "1.88",
+      "torch": "2.14.1+cpu",
+      "PyYAML": "6.0.3",
+      "matplotlib": "3.11.2",
+      "joblib": "1.6.0"
+    }
+  },
+  "parameters": {
+    "subset": "val",
+    "comparison_set_id": "val_common_929dbfa0d86e1f2e"
+  },
+  "fit_subsets": [],
+  "selection_subsets": [],
+  "evaluation_subsets": [
+    "val"
+  ],
+  "artifacts": [
+    {
+      "kind": "comparison_metrics",
+      "path": "runs/comparison_val_five_methods_20261003_v1/metrics.csv",
+      "sha256": "4b59f5abd99c019ec30d930ff4003426b88c1970c82915e0a94f662055236b23"
+    },
+    {
+      "kind": "coverage",
+      "path": "runs/comparison_val_five_methods_20261003_v1/coverage_summary.csv",
+      "sha256": "870f0064e87fd6decd49055d2f8956abcc79a81c82e01798929858edd8763ae3"
+    },
+    {
+      "kind": "common_eval_ids",
+      "path": "runs/comparison_val_five_methods_20261003_v1/common_eval_ids.tsv",
+      "sha256": "df203b98dd937e165804d6f0dbda43ec9d41f20864327dfec43e9892b4a03c4f"
+    },
+    {
+      "kind": "comparison_predictions",
+      "path": "runs/comparison_val_five_methods_20261003_v1/comparison_predictions.csv",
+      "sha256": "72c4a5e3207a50bea9ad6debd10e533cd0b27d3678810ecdb59116aaab53238a"
+    },
+    {
+      "kind": "summary",
+      "path": "runs/comparison_val_five_methods_20261003_v1/performance_summary.csv",
+      "sha256": "d1af45a269b8ccc598f5e80b06e8933b43f20cf4295af47d0341f7ad7c462261"
+    },
+    {
+      "kind": "config",
+      "path": "runs/comparison_val_five_methods_20261003_v1/comparison_config.json",
+      "sha256": "10b7af8e7d21834f5f72d5df1b86308b764d91411e8867c1c303e0f2ac9d4238"
+    },
+    {
+      "kind": "sensitivity_metrics",
+      "path": "runs/comparison_val_five_methods_20261003_v1/metrics_unique_context.csv",
+      "sha256": "7a9e0c1868baa60360277aa2001c45d9b94c4d530ea75151b4ff48c91cfbb5d0"
+    },
+    {
+      "kind": "sensitivity_ids",
+      "path": "runs/comparison_val_five_methods_20261003_v1/unique_context_eval_ids.tsv",
+      "sha256": "fe73b1f88337cc41aaccb641c487e34e0750c7bf18129c5b9a980f97ab98189c"
+    },
+    {
+      "kind": "prediction_input",
+      "path": "runs/knn_physchem_integrated_20261002_v2/predictions_knn_val.csv",
+      "sha256": "885d22fbd464f83f35df2c80886bd9b801e3feffdda2a9548314c1b9769d9b99"
+    },
+    {
+      "kind": "prediction_input",
+      "path": "runs/thermo_regseq2_integrated_20261002_v2/predictions/thermo_val_calibrated.csv",
+      "sha256": "9539011545d787a6832cd6d7ec830f4f1cbe0d8efaeeaef8691feb336b9f6e1f"
+    },
+    {
+      "kind": "prediction_input",
+      "path": "CNN/runs/cnn_ecoli50_integrated_20261002_v2/validation/predictions_cnn.csv",
+      "sha256": "04755f52dff6f781c62931af7493c653f0cb1a801c345998c22320feb60ccbfd"
+    },
+    {
+      "kind": "prediction_input",
+      "path": "runs/ridge_kmer_integrated_20261003_v1/predictions_ridge_val.csv",
+      "sha256": "11ff56bc53dff64c48de59cf81810ceffa0211bc53756c36f7a7c5154540609c"
+    },
+    {
+      "kind": "prediction_input",
+      "path": "runs/svr_kmer_integrated_20261003_v1/predictions_svr_val.csv",
+      "sha256": "d8caccf434915bedda00476e33ecd1df8e367036b335dc316c27a35553ec546d"
+    },
+    {
+      "kind": "dataset",
+      "path": "data/01_Ecoli_strength/data_v1.tsv",
+      "sha256": "0599c5b29198c78c481d035bf32596a53411310f401463a62e160bfdbe93ca7e"
+    },
+    {
+      "kind": "splits",
+      "path": "data/01_Ecoli_strength/split_manifest.tsv",
+      "sha256": "5d162f64e68a305749033e5f9e7f4d5bdfeb6b28af757883446f75682f9fd9b0"
+    },
+    {
+      "kind": "label_transform",
+      "path": "data/01_Ecoli_strength/label_transform.json",
+      "sha256": "1784286ed1f086c1f0d26e4b44f9cd170adc9d47a091c2cdf1f3635861b97557"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+method_name,run_id,subset,n_requested,n_success,n_failed,coverage,n_common
+knn_physchem_full,knn_physchem_integrated_20261002_v2,val,1783,1783,0,1.0,1782
+thermo_regseq2,thermo_regseq2_integrated_20261002_v2,val,1783,1782,1,0.9994391475042064,1782
+cnn_1d,cnn_ecoli50_integrated_20261002_v2,val,1783,1783,0,1.0,1782
+kmer3_ridge,ridge_kmer_integrated_20261003_v1,val,1783,1783,0,1.0,1782
+kmer3_svr,svr_kmer_integrated_20261003_v1,val,1783,1783,0,1.0,1782

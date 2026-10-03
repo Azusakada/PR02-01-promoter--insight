@@ -1,0 +1,4 @@
+method_name,run_id,subset,n_requested,n_success,n_failed,n_used,coverage,comparison_set_id,predictions_file
+knn_physchem_full,knn_physchem_integrated_20261002_v2,val,1783,1783,0,1782,1.0,val_common_929dbfa0d86e1f2e,runs/knn_physchem_integrated_20261002_v2/predictions_knn_val.csv
+thermo_regseq2,thermo_regseq2_integrated_20261002_v2,val,1783,1782,1,1782,0.9994391475042064,val_common_929dbfa0d86e1f2e,runs/thermo_regseq2_integrated_20261002_v2/predictions/thermo_val_calibrated.csv
+cnn_1d,cnn_ecoli50_integrated_20261002_v2,val,1783,1783,0,1782,1.0,val_common_929dbfa0d86e1f2e,CNN/runs/cnn_ecoli50_integrated_20261002_v2/validation/predictions_cnn.csv

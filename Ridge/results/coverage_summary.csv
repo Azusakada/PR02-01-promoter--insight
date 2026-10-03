@@ -1,5 +1,3 @@
-dataset_id,run_id,method_name,split_id,subset,n_requested,n_success,n_failed,coverage,failure_reasons,evidence_level,schema_version,data_version
-course_ecoli50_strength,ridge_kmer_20261003_v1,kmer3_ridge,ecoli50_random_20260928_v1,val,1783,1783,0,1.0,,preliminary,2.0.0,ecoli50_strength_v1
-course_ecoli50_strength,ridge_kmer_20261003_v1,kmer3_ridge,ecoli50_random_20260928_v1,test,1783,1783,0,1.0,,preliminary,2.0.0,ecoli50_strength_v1
-course_ecoli50_strength,svr_kmer_20261003_v1,kmer3_svr,ecoli50_random_20260928_v1,val,1783,1783,0,1.0,,preliminary,2.0.0,ecoli50_strength_v1
-course_ecoli50_strength,svr_kmer_20261003_v1,kmer3_svr,ecoli50_random_20260928_v1,test,1783,1783,0,1.0,,preliminary,2.0.0,ecoli50_strength_v1
+method_name,run_id,subset,n_requested,n_success,n_failed,coverage
+kmer3_ridge,ridge_kmer_integrated_20261003_v1,val,1783,1783,0,1.0
+kmer3_svr,svr_kmer_integrated_20261003_v1,val,1783,1783,0,1.0

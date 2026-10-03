@@ -1,79 +1,48 @@
-# PR02-01 csy 统一集成交付
+# PR02 01 五人项目当前交付
 
-日期：2026-10-02。开发仓库：D:\PR02-01-promoter--insight，工作分支 csy。
+日期 2026-10-03。仓库 D:\PR02-01-promoter--insight。默认配置 project_config.json，发布入口 main，成员开发分支保留。
 
-## 完成范围
+已整合 main 数据/KNN、member-b 热力学、csy CNN、liqihang Ridge/SVR 和 feature/eda-annotation-m2m3。李玘航主线已到位；工程集成和已确认问题修复已完成，可靠注释及 M4 研究仍待推进。
 
-已合入最新 main、member-b 和 feature/eda-annotation-m2m3；原 main 未被改写。原 CNN 开发已先提交，README 冲突已解决。原实验、文件字节和旧标准别名保存在历史目录或原运行目录。
+## 当前验证集结果
 
-- 公共 schema 校验器移到根目录 contracts，统一数据、split 与 train-only transform。LF 换行规则固定，内容及划分未改变；公共 transform 哈希校验通过。
-- 修复热力学正反向候选覆盖，保留选中方向和正确映射坐标，增加回归测试。全量 11,884 请求成功 11,883，失败 1（ecoli50_r003290，未定位）。相比旧结果，1382 条成功预测发生变化；未把失败记录删除或填成零。
-- 校准只用 8,318 条 train，校准 CSV 完整保留请求。按子集报告人数与 coverage，run_manifest 满足接口并绑定产物哈希。
-- 重建 KNN train-only 模型，沿用原 val 搜索选出的 k=1501；验证预测能由保存模型精确重现。直接 log10 预测不填写 normalized / label_transform_id，标准别名只含 val。
-- CNN 使用公共 transform 重新训练，最佳 epoch 4、16 epoch 早停；训练配置未调优，验证结果与原实验一致。保存加载及实际预测通过校验。
-- 三方法按 sample_id 对齐，共同 val 成功集 1,782 条。完整 val 请求 1,783 条的 coverage 另报；补充唯一参考上下文匹配共同集 1,767 条的敏感性结果。
-- EDA 5 张与三模型误差 / 案例 3 张图已更新，源表、哈希、人数和人工图像检查记录齐全。
-- 统一 CLI、版本配置生成器、当前结果索引、任务状态、依赖和交接文档已提供。默认不生成 test 成绩；新运行拒绝覆盖非空输出。
+五方法共同 val 1,782 条，完整请求 1,783 条。唯一参考上下文匹配的共同子集另报 1,767 条。R² 和 MAE 为 log10 strength 尺度，证据级别 preliminary。
 
-## 当前验证集比较
-
-以下全部使用相同 1,782 条 val 样本、log10 strength 尺度，为 preliminary：
-
-| 方法 | log10 R² | Spearman | log10 MAE | 完整请求成功率 |
+| 方法 | log10 R² | Spearman | log10 MAE | 成功请求 |
 |---|---:|---:|---:|---:|
-| KNN | 0.017841 | 0.123234 | 0.467671 | 1783/1783 |
-| 热力学（train 校准） | 0.029041 | 0.151955 | 0.464151 | 1782/1783 |
-| CNN | 0.054623 | 0.207132 | 0.457034 | 1783/1783 |
+| knn_physchem_full | 0.017841 | 0.123234 | 0.467671 | 1783/1783 |
+| thermo_regseq2 | 0.029041 | 0.151955 | 0.464151 | 1782/1783 |
+| cnn_1d | 0.054623 | 0.207132 | 0.457034 | 1783/1783 |
+| kmer3_ridge | 0.052757 | 0.219489 | 0.459778 | 1783/1783 |
+| kmer3_svr | 0.009121 | 0.227552 | 0.446457 | 1783/1783 |
 
-CNN/KNN 输入来自原 50 bp，热力学使用补取的 150 bp 参考上下文，信息范围不同。单次训练结果不能证明稳定优劣。修复后预测能力仍有限，不能因为工程验收通过就宣称模型表现强或发现生物学因果机制。
+CNN/KNN/Ridge/SVR 基于原 50 bp，热力学使用补取的 150 bp，信息范围不同。单次 val 结果不足以证明稳定优劣。SVR 的 Spearman 较高、MAE 较低，但 R² 较低，因此不能只用单一指标概括其表现。
 
-## 验收
+## 本轮修复与核验
 
-- 76 项测试通过：集成 5、CNN 14、分析 9、原接口 48；非空输出覆盖防护实测通过。
-- 主表、split、transform、各模型预测与运行 manifest 校验通过。
-- KNN 全 val 保存加载精确一致；CNN 全 val checkpoint 重载数值一致。
-- 校准参数由独立 numpy 最小二乘复算，确认只使用 train。
-- 三模型 raw/log10 指标由 sklearn/scipy 独立复算；误差分析的 38 项指标复算通过。
-- 图像检查确认标签、尺度、人数与布局，未把工具推断当作实验注释。
+- 替换 Ridge 私人路径及自行恢复 split 的默认脚本，统一使用公共冻结输入；独立核对全部 k=3/4/5 计数、词表、行索引及理化特征。
+- 修复混合 val/test 标准入口与 log10 输出填写 normalized/transform 的接口错误；保留原始交付 ZIP。
+- 沿用原 val 选定 k=3、alpha=100、LinearSVR C=10，在统一依赖环境只用 train 重拟合；重载全部 val，Ridge 系数独立复算。
+- 新增模型 run_manifest、哈希、拟合 ID、完整 val 与覆盖；CLI/new-run/run-all 及当前结果索引接入五方法。
+- 比较 ID 绑定样本、方法、run_id 与预测哈希；新增模型而共同 ID 不变时也产生新版本。统一误差分析使用相同 ID 定义。
+- 修复分析运行对全仓未提交改动的差异捕获遗漏，保持 dirty 标记与 source_patch 记录一致。
+- 新增图表注册和过期预测检查；已发布验证报告保持只读，防止跨环境诊断数值变化破坏索引哈希。
+- 五方法图改为多行布局，62 项误差指标复算并实际检查 3 张图。已有非空输出拒绝覆盖。
 
-## 管理入口
+验收为 86 项 unittest 测试与 4 项 k-mer 检查，共 90 项；详细日志见 reports/test_logs。数据、模型、校准、统一指标与图表清单验收见 reports/integration_validation.json。干净检出证据见 reports/clean_checkout_verification.json。
 
-从仓库根目录、已安装 requirements.txt 的环境运行：
+## 成员职责
 
-```powershell
-python -m pr02 validate-data
-python -m pr02 verify
-python -m pr02 new-run --tag next_experiment_v1
-python -m pr02 --config configs/integration_next_experiment_v1.json run-all
-```
-
-当前版本由 project_config.json 和 results/current.json 注册。模型 / 原始输出在不可覆盖的运行目录，results 是可更新的当前别名；别名与索引哈希也由 verify 检查。
-
-- results/performance_summary.csv、metrics.csv、coverage_summary.csv、common_eval_ids.tsv：共同成绩、覆盖与精确 ID。
-- reports/integration_validation.json、test_summary.json、test_logs/：验收证据。
-- runs/eda_m2_integrated_20261002_v2、runs/error_m3_integrated_20261002_v3：当前图和源表。
-- history、原 KNN / thermo 结果与 CNN v1：保留历史，不作为当前标准入口。
-
-成员在自己的分支开发；新增方法交付完整 val 预测、train-only 模型、配置、失败状态和 manifest，再注册至统一配置。每次方法 / 数据版本变化都重新生成评价集合，不复用旧 comparison_set_id。
-
-## 分工与待办
-
-| 成员 | 当前可验收交付 | 尚需继续 |
+| 成员 | 当前已交付 | 后续任务 |
 |---|---|---|
-| 李宇飞 | 主表、固定 split、共享 transform、已修复的 KNN 与统一评测接口 | 维护公共数据与跨方法评价；接入后续 Ridge |
-| 田惠今 | 已修复并重跑的热力学、校准、失败与覆盖记录 | 说明多重定位和实验上下文适用性 |
-| 陈思远 | CNN、三线集成、统一管理与验收 | M4 泛化对照、归因与突变接口 |
-| 胡昊铭 | EDA、三模型误差 / 案例、注释来源核查 | 恢复可靠区域注释并支持盒区关系分析 |
-| 李玘航 | 本次远端尚未见 k-mer Ridge 交付 | 补交组内承诺的 Ridge 或明确调整范围 |
+| 李宇飞 | 公共主表、split、transform、KNN 与统一评测 | 数据维护与跨方法评价 |
+| 李玘航 | k-mer 特征、Ridge、SVR、搜索与预测 | 传统 ML 对照及后续泛化 |
+| 田惠今 | 热力学推断、train 校准、失败与覆盖 | 多重定位及实验适用性说明 |
+| 陈思远 | CNN、五线集成、管理与验收 | CNN 泛化、消融、归因与突变 |
+| 胡昊铭 | EDA、注释来源审查、五方法误差与案例 | 恢复可靠区域注释与盒区关系分析 |
 
-工程问题已修复。可靠逐样本 TSS / 实验方向 / 盒区坐标、强度单位与实验条件仍未恢复；这些是研究资料待办，不能通过代码合并补造。教师 M3 要求简单 ML + 热力学，KNN 可承担简单 ML；组内另承诺的 Ridge 仍需处理。教师 M2 盒区分析与 M4 生物学解释的证据边界见 reports/OPEN_ITEMS.md。
+## 当前路径
 
-## 发布与检出验证
+results/current.json 注册唯一当前结果，旧结果归档到 history。不可覆盖的模型运行、五方法比较和误差图由 project_config.json 绑定。新增实验依照 README 创建新 tag，完成图像检查后再 publish。
 
-csy 已推送到 GitHub，远端 main 未改变。使用独立目录、core.autocrlf=false 进行干净检出后，统一验收通过，工作区保持干净，证明交付不依赖开发目录的未提交文件。
-Git 哈希产物已按原始字节固化；重新入库的历史文本变更逐项确认只涉及换行，未改写数据内容。
-
-源码与当前模型 / 日志 / 预测已一起进入 Git。后续新运行目录默认忽略，完成验收后需按 README 显式 git add -f；采用新配置后同步 project_config.json，避免当前结果索引与默认配置分离。
-
-GitHub 分支：https://github.com/Azusakada/PR02-01-promoter--insight/tree/csy
-ZIP 用于查看代码和交付；完整历史 bundle 可用于 Git 离线克隆。继续开发建议使用 Git 仓库，以保留实际 code_commit 与历史。
+本轮新增临时文件和检出副本在 D:\CodexAnalysis\PR02-01\20261003-main；复用原有 Python 环境，未新建 C 盘大型运行环境。未清理现有缓存。

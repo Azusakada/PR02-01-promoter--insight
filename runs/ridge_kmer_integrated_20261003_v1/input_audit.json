@@ -1,0 +1,58 @@
+{
+  "inputs": {
+    "status": "passed",
+    "samples_sha256": "0599c5b29198c78c481d035bf32596a53411310f401463a62e160bfdbe93ca7e",
+    "splits_sha256": "5d162f64e68a305749033e5f9e7f4d5bdfeb6b28af757883446f75682f9fd9b0",
+    "transform_id": "log10mm_59711a1c2217859e"
+  },
+  "features": {
+    "status": "passed",
+    "features": [
+      {
+        "k": 3,
+        "n_samples": 11884,
+        "n_features": 64,
+        "all_counts_independently_recomputed": true
+      },
+      {
+        "k": 4,
+        "n_samples": 11884,
+        "n_features": 256,
+        "all_counts_independently_recomputed": true
+      },
+      {
+        "k": 5,
+        "n_samples": 11884,
+        "n_features": 1024,
+        "all_counts_independently_recomputed": true
+      }
+    ],
+    "physchem8_ids_and_values_verified": true
+  },
+  "source_delivery": {
+    "status": "passed",
+    "source_commit": "495ee435774a1eab31bbfb8b1d2aa8f166873b7f",
+    "checks": [
+      {
+        "method": "ridge",
+        "n_val": 1783,
+        "max_abs_difference": 0.0,
+        "load_warnings": [
+          "Trying to unpickle estimator Ridge from version 1.8.0 when using version 1.9.1. This might lead to breaking code or invalid results. Use at your own risk. For more info please refer to:\nhttps://scikit-learn.org/stable/model_persistence.html#security-maintainability-limitations",
+          "Trying to unpickle estimator StandardScaler from version 1.8.0 when using version 1.9.1. This might lead to breaking code or invalid results. Use at your own risk. For more info please refer to:\nhttps://scikit-learn.org/stable/model_persistence.html#security-maintainability-limitations"
+        ]
+      },
+      {
+        "method": "svr",
+        "n_val": 1783,
+        "max_abs_difference": 0.0,
+        "load_warnings": [
+          "Trying to unpickle estimator LinearSVR from version 1.8.0 when using version 1.9.1. This might lead to breaking code or invalid results. Use at your own risk. For more info please refer to:\nhttps://scikit-learn.org/stable/model_persistence.html#security-maintainability-limitations",
+          "Trying to unpickle estimator StandardScaler from version 1.8.0 when using version 1.9.1. This might lead to breaking code or invalid results. Use at your own risk. For more info please refer to:\nhttps://scikit-learn.org/stable/model_persistence.html#security-maintainability-limitations"
+        ]
+      }
+    ],
+    "historical_test_results_present": true,
+    "test_metrics_recomputed": false
+  }
+}

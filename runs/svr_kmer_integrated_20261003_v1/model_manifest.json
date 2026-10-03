@@ -1,0 +1,30 @@
+{
+  "schema_version": "2.0.0",
+  "model_id": "svr_kmer_integrated_20261003_v1",
+  "method_name": "kmer3_svr",
+  "data_version": "ecoli50_strength_v1",
+  "split_id": "ecoli50_random_20260928_v1",
+  "fit_subsets": [
+    "train"
+  ],
+  "selection_subsets": [
+    "val"
+  ],
+  "target_scale": "log10",
+  "parameters": {
+    "k": 3,
+    "C": 10.0,
+    "kernel": "linear"
+  },
+  "n_fit": 8318,
+  "source_selection_commit": "495ee435774a1eab31bbfb8b1d2aa8f166873b7f",
+  "selection_reused": true,
+  "test_used_for_fit_or_selection": false,
+  "feature_file": {
+    "kind": "features",
+    "path": "Ridge/features/kmer3.npz",
+    "sha256": "d6c11dc3fc3c130f30369f19c3d48a6b16c4231a421a9c1da5c4ae93f1d6c019"
+  },
+  "train_ids_sha256": "95771045a88a5f60aaa2b7bc7e2a504030dc9cbb41bc4281ece1c8d114edfb36",
+  "n_iter": 85425
+}

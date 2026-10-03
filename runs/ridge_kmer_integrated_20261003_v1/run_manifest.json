@@ -1,0 +1,151 @@
+{
+  "dataset_id": "course_ecoli50_strength",
+  "schema_version": "2.0.0",
+  "run_id": "ridge_kmer_integrated_20261003_v1",
+  "stage": "M3",
+  "task_id": "pr02_integrated_m2_m3",
+  "method_name": "kmer3_ridge",
+  "data_version": "ecoli50_strength_v1",
+  "split_id": "ecoli50_random_20260928_v1",
+  "evidence_level": "preliminary",
+  "execution_status": "success",
+  "seed": 20260928,
+  "created_at": "2026-10-03T21:20:33.015502+08:00",
+  "command": [
+    "C:\\Users\\admin\\Documents\\Codex\\2026-10-02\\wo-shi\\work\\cnn_env\\Scripts\\python.exe",
+    "D:\\PR02-01-promoter--insight\\pr02\\__main__.py",
+    "run-ridge-svr"
+  ],
+  "code_commit": "aabbb4b568865005cb1f32a3e1ba96788e70d650",
+  "dirty_worktree": false,
+  "environment": {
+    "python": "3.12.14",
+    "platform": "Windows-11-10.0.22621-SP0",
+    "packages": {
+      "numpy": "2.5.3",
+      "scipy": "1.18.1",
+      "scikit-learn": "1.9.1",
+      "pandas": "3.0.6",
+      "biopython": "1.88",
+      "torch": "2.14.1+cpu",
+      "PyYAML": "6.0.3",
+      "matplotlib": "3.11.2",
+      "joblib": "1.6.0"
+    }
+  },
+  "parameters": {
+    "schema_version": "2.0.0",
+    "model_id": "ridge_kmer_integrated_20261003_v1",
+    "method_name": "kmer3_ridge",
+    "data_version": "ecoli50_strength_v1",
+    "split_id": "ecoli50_random_20260928_v1",
+    "fit_subsets": [
+      "train"
+    ],
+    "selection_subsets": [
+      "val"
+    ],
+    "target_scale": "log10",
+    "parameters": {
+      "k": 3,
+      "alpha": 100.0
+    },
+    "n_fit": 8318,
+    "source_selection_commit": "495ee435774a1eab31bbfb8b1d2aa8f166873b7f",
+    "selection_reused": true,
+    "test_used_for_fit_or_selection": false,
+    "feature_file": {
+      "kind": "features",
+      "path": "Ridge/features/kmer3.npz",
+      "sha256": "d6c11dc3fc3c130f30369f19c3d48a6b16c4231a421a9c1da5c4ae93f1d6c019"
+    },
+    "train_ids_sha256": "95771045a88a5f60aaa2b7bc7e2a504030dc9cbb41bc4281ece1c8d114edfb36",
+    "n_iter": null
+  },
+  "fit_subsets": [
+    "train"
+  ],
+  "selection_subsets": [
+    "val"
+  ],
+  "evaluation_subsets": [
+    "val"
+  ],
+  "artifacts": [
+    {
+      "kind": "predictions",
+      "path": "runs/ridge_kmer_integrated_20261003_v1/predictions_ridge_val.csv",
+      "sha256": "11ff56bc53dff64c48de59cf81810ceffa0211bc53756c36f7a7c5154540609c"
+    },
+    {
+      "kind": "metrics",
+      "path": "runs/ridge_kmer_integrated_20261003_v1/metrics.csv",
+      "sha256": "f656ef67720bd53109a2caef0d2f64f1bbaa034babe4702e08832d3a591da7bd"
+    },
+    {
+      "kind": "model_manifest",
+      "path": "runs/ridge_kmer_integrated_20261003_v1/model_manifest.json",
+      "sha256": "e51e4023ab5b72e17adfe0076ed235341c3fa3fbaf59bfa148ad3a61db621198"
+    },
+    {
+      "kind": "checkpoint",
+      "path": "runs/ridge_kmer_integrated_20261003_v1/ridge_model.joblib",
+      "sha256": "57f1a4fbd9f6b221b072b1ccab8a685c4715602827e21089eb3549fa3eb9a998"
+    },
+    {
+      "kind": "fit_ids",
+      "path": "runs/ridge_kmer_integrated_20261003_v1/train_ids.tsv",
+      "sha256": "68757cedab54c10281e244ae9a4612bf03f65dcd8a693402635e915570b601ef"
+    },
+    {
+      "kind": "save_load",
+      "path": "runs/ridge_kmer_integrated_20261003_v1/save_load_check.json",
+      "sha256": "7b35a316681b5b95c25477d3739fece859411900191314ff7bfe3c3b115c5b99"
+    },
+    {
+      "kind": "input_audit",
+      "path": "runs/ridge_kmer_integrated_20261003_v1/input_audit.json",
+      "sha256": "721f399d933d819463f28cde246a6049b2c1671039e64b2b49608d7de54239f6"
+    },
+    {
+      "kind": "dataset",
+      "path": "data/01_Ecoli_strength/data_v1.tsv",
+      "sha256": "0599c5b29198c78c481d035bf32596a53411310f401463a62e160bfdbe93ca7e"
+    },
+    {
+      "kind": "splits",
+      "path": "data/01_Ecoli_strength/split_manifest.tsv",
+      "sha256": "5d162f64e68a305749033e5f9e7f4d5bdfeb6b28af757883446f75682f9fd9b0"
+    },
+    {
+      "kind": "label_transform",
+      "path": "data/01_Ecoli_strength/label_transform.json",
+      "sha256": "1784286ed1f086c1f0d26e4b44f9cd170adc9d47a091c2cdf1f3635861b97557"
+    },
+    {
+      "kind": "features",
+      "path": "Ridge/features/kmer3.npz",
+      "sha256": "d6c11dc3fc3c130f30369f19c3d48a6b16c4231a421a9c1da5c4ae93f1d6c019"
+    },
+    {
+      "kind": "source_delivery",
+      "path": "history/liqihang_delivery_495ee43.zip",
+      "sha256": "9176fc7755a2ef53a4579792ba03df3b68ceb40c48214296fdb19f59e6d8ef09"
+    },
+    {
+      "kind": "selection_history",
+      "path": "Ridge/selection/ridge_config.json",
+      "sha256": "67874b746e3c9c47924d929c2f124fc18dd87e4018a50e20acd3ef7c7f9fda98"
+    },
+    {
+      "kind": "selection_history",
+      "path": "Ridge/selection/ridge_search.csv",
+      "sha256": "04ac36eb29b3821501f91d75d3e7b9c46c20bb337ae398f56bf801a5547434d7"
+    },
+    {
+      "kind": "selection_history",
+      "path": "Ridge/selection/svr_search.csv",
+      "sha256": "53ea2201ddfdf176b0dd8e163b48ebf5c184dfb6d52939f6719088268fb3d6d4"
+    }
+  ]
+}

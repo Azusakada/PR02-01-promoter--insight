@@ -1,3 +1,5 @@
+> 历史验收记录，反映原分支首次交付；当前五方法验收见根 reports/integration_validation.json 和已注册图表 QA。
+
 # 发布前验证记录
 
 检查日期：2026-10-01（America/Los_Angeles；运行记录保留 UTC）。代码提交：`1039b9b`。两次正式运行的 tracked 工作区均为 clean。

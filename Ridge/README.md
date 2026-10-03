@@ -1,115 +1,43 @@
-# 李玘航：k-mer 特征 + Ridge/SVR 传统 ML 主线
+# k-mer Ridge 与 SVR
 
-本目录完成 PR02-01 M2+M3 中李玘航的连续工作流：从冻结的 50 bp E. coli strength 主表出发，生成固定词表的 k-mer 特征，接入已有 8 类派生理化特征，训练 k-mer + Ridge 主基线，并补充同一划分上的 SVR。
+李玘航的主线已接入全组默认配置。固定输入为公共 50 bp E. coli 主表、8,318/1,783/1,783 的 train/val/test split 和 train-only transform。Ridge 内部拟合 log10 strength。
 
-正式输入对齐 [李宇飞仓库](https://github.com/Azusakada/PR02-01-promoter--insight) 的 `data_v1.tsv`、`split_manifest.tsv` 和 `label_transform.json`。不再自行重新切分，也不沿用旧 GSE108535 / 150 bp 字段。
+## 当前入口
 
-## 复现命令
+安装仓库根目录 requirements.txt；本次验证环境为 Python 3.12 和 scikit-learn 1.9.1。
 
-在项目根目录 `promotorC` 下执行：
-
-```text
+```powershell
 python Ridge/src/prepare_frozen_inputs.py
 python Ridge/src/test_kmer.py
 python Ridge/src/build_feature_bundle.py
-python Ridge/src/train_ridge_svr.py
+python -m pr02 verify
 ```
 
-## 数据与标签
+prepare_frozen_inputs 检查随交付保存的快照与公共入口一致，不访问私人路径、网络或重新随机划分。build_feature_bundle 默认独立重算并核对现有特征；指定 --output runs/features_NEW 可生成到新目录，非空目录拒绝覆盖。新 bundle 使用 Unicode sample_ids，不需要 pickle 加载 ID。
 
-- 数据对象：`course_ecoli50_strength` / `ecoli50_strength_v1`
-- 样本：11,884 条 × 50 bp ACGT，`sample_id` 为 `ecoli50_r000001` … `ecoli50_r011884`
-- 标签：模型拟合 `target_log10 = log10(strength)`；写回预测表时同时给出原 strength 尺度和官方 train-only min-max 归一化
-- 划分：`ecoli50_random_20260928_v1`，seed=20260928，train 8318 / val 1783 / test 1783
-- 标签变换：`log10mm_59711a1c2217859e`（只用于写出 `predicted_value_normalized`，不作为 Ridge 内部目标）
-- 主表哈希：与仓库 `0599c5b29198c78c481d035bf32596a53411310f401463a62e160bfdbe93ca7e` 一致
-- 划分哈希：与仓库 `5d162f64e68a305749033e5f9e7f4d5bdfeb6b28af757883446f75682f9fd9b0` 一致
+已有正式模型不能覆盖。使用根 README 的 new-run/run-all 重跑全组流程；只重跑 Ridge/SVR 时，使用带新 run_id 的配置：
 
-## 特征
+```powershell
+python -m pr02 new-run --tag ridge_check_v1
+python -m pr02 --config configs/integration_ridge_check_v1.json run-ridge-svr
+```
 
-`Ridge/features/` 中的行序等于 `data_v1` 源序，列序由固定词表决定。
+此时只生成两条模型运行，其他新配置指定的模型尚未执行，不能直接发布为全组结果。兼容训练入口为 python Ridge/src/train_ridge_svr.py --config 配置路径，同样拒绝覆盖。
 
-| 名称 | 维度 | 说明 |
-|---|---:|---|
-| kmer3 | 64 | 主线候选。全部 4^3 个 3-mer，ACGT 字典序计数 |
-| kmer4 | 256 | 主线候选 |
-| kmer5 | 1024 | 可选对照 |
-| physchem8 | 8 | 课程已有派生特征：gc/at content、gc/at skew、melting_temp、bendability、stacking_energy、entropy。不是湿实验新测 |
+## 特征与选择
 
-等长 50 bp 下，计数与频率只差常数 `50-k+1`。词表不依赖训练集是否出现过某个 k-mer。
+Ridge/features 保留 k=3/4/5 的 ACGT 字典序计数、行索引及 8 类派生理化对照。11,884 条样本的全部 k-mer 值已由独立 base-4 窗口算法重算，并核对理化特征的 ID 与数值。
 
-## 模型规则
+Ridge/selection 保留原来的完整选择记录：36 个 Ridge 候选及 7 个 SVR 候选。主线只在 k-mer-only 中按 val log10 R² 选择，理化拼接仅为对照。当前沿用 k=3、Ridge alpha=100、LinearSVR C=10；本次不扩大搜索，不读取 test 选参。
 
-- 主方法：k-mer + Ridge。只在 train 拟合 `StandardScaler` 和模型，用 val 的 log10 R² 选超参，**不把 val 并回训练**。
-- 记录全部候选：`k ∈ {3,4,5} × alpha ∈ {0.01,0.1,1,3,10,30,100,300,1000}`，外加最佳 k-mer 拼接 physchem8 的对照，共 36 行，见 `results/ridge_search.csv`。
-- 主线只在 **k-mer only** 中选 val R² 最高者，理化拼接不覆盖主方法，避免和李宇飞的 physchem KNN 抢同一条主线。
-- 可选 SVR：同一 split、同一最佳 k-mer、同一 log10 标签。LinearSVR 扫 `C ∈ {0.03,0.1,0.3,1,3,10}`，再补一个 RBF SVR（C=1）。
-- 预测表覆盖 val+test，每条样本都有真实值、预测值、方法名和 `prediction_status`。
+原交付使用 scikit-learn 1.8.0；本次在统一 1.9.1 环境中只用 train 重新拟合。两种保存模型均能重现全部 val 预测；Ridge 系数还由独立 train 正规方程复算。与原预测仅有浮点舍入差异，详见每个 run 的 save_load_check.json。
 
-## 选定结果
+## 产物
 
-选定主方法：`kmer3_ridge`，`alpha=100`，`run_id=ridge_kmer_20261003_v1`。
+- runs/ridge_kmer_integrated_20261003_v1 与 runs/svr_kmer_integrated_20261003_v1 是不可覆盖的模型、预测、日志、输入核查与 manifest。
+- Ridge/results/predictions_ridge.csv 和 predictions_svr.csv 为当前完整 val 别名，各 1,783 行；直接 log10 输出不填写 normalized 或 label_transform_id。
+- Ridge/results 的模型、配置、各方法 metrics 和 coverage 同步注册到 results/current.json。
+- results/performance_summary.csv 为五方法 1,782 条共同 val 的统一比较；本目录的单方法指标使用各自完整成功 val，人数和用途不同。
+- history/liqihang_delivery_495ee43.zip 完整保留原提交 495ee43 中的源码、搜索、模型、混合 val/test 预测和历史成绩。
 
-| 方法 | subset | log10 R² | log10 Spearman | log10 MAE |
-|---|---|---:|---:|---:|
-| kmer3_ridge | val | 0.0528 | 0.2198 | 0.4597 |
-| kmer3_ridge | test | 0.0494 | 0.2117 | 0.4528 |
-| knn_physchem_full（李宇飞，对照） | test | 0.0252 | 0.1644 | 0.4600 |
-| kmer3_svr（LinearSVR C=10） | val | 0.0090 | 0.2278 | 0.4464 |
-| kmer3_svr（LinearSVR C=10） | test | 0.0087 | 0.2102 | 0.4376 |
-
-观察：
-
-- k=3 全面优于 k=4、k=5；k=5 在小 alpha 下 val R² 为负，更强正则才略好于 0。
-- 给 k=3 再拼 8 类理化特征没有超过 k-mer only。
-- k-mer Ridge 的 test log10 R² / Spearman 高于仓库中的 physchem KNN，但仍是弱相关，只作为中期传统 ML 基线。
-- SVR 的 Spearman 略高，R² 更低，作为第二条序列特征基线保留，不替代 Ridge。
-
-## 交付文件
-
-特征：
-
-- `features/kmer{3,4,5}.npz`：`X` / `sample_ids` / `vocabulary`
-- `features/kmer{3,4,5}_vocabulary.txt`
-- `features/physchem8.tsv`
-- `features/feature_index.tsv`
-- `features/feature_manifest.json`
-- `features/sample_ids.txt`
-
-模型与预测：
-
-- `results/ridge_model.joblib`、`results/ridge_config.json`
-- `results/ridge_search.csv`、`results/ridge_metrics.csv`
-- `results/predictions_ridge.csv`
-- `results/svr_model.joblib`、`results/svr_search.csv`、`results/svr_metrics.csv`
-- `results/predictions_svr.csv`
-- `results/coverage_summary.csv`、`results/common_eval_ids.tsv`
-
-输入快照：
-
-- `data_snapshot/data_v1.tsv`
-- `data_snapshot/split_manifest.tsv`
-- `data_snapshot/label_transform.json`
-- `data_snapshot/input_audit.json`
-
-## 给统一评测的读法
-
-李宇飞对齐 `sample_id` 时，主方法读 `results/predictions_ridge.csv`：
-
-- `true_value`：原 strength
-- `predicted_value`：还原到原 strength
-- `predicted_value_log10`：模型内部尺度
-- `predicted_value_normalized`：官方 train-only min-max，不 clip
-- `method_name=kmer3_ridge`
-- `target_scale_model=log10`
-- `label_transform_id=log10mm_59711a1c2217859e`
-- `subset ∈ {val,test}`，coverage=1.0
-
-不要和六物种二分类 KNN、旧 150 bp CNN 混表。
-
-## 已知限制
-
-- 8 类理化特征按课程表行序接入；本地 CSV 字节与仓库 `KNN/input/promoter_physicochemical.csv` 可能不同，因此不把 physchem 当作第二条主线。
-- Ridge 在很小的 alpha 上会触发病态矩阵警告，选定 `alpha=100` 后不再出现该警告。
-- LinearSVR 选定 C=10 时迭代 85425 次后收敛；完整搜索记录在 `svr_search.csv`。
-- 本结果证据级别为 `preliminary`，供中期同样本比较，不是 M4 最终深度模型成绩。
+旧交付已经报告过 test；统一默认入口不新增 test 成绩，但后续同一 test 不能称为从未查看过的盲测。所有结果为 preliminary；当前预测能力仍有限，不能据此证明生物学机制。

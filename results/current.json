@@ -1,7 +1,7 @@
 {
   "schema_version": "2.0.0",
-  "published_at": "2026-10-02T16:07:05.904886+08:00",
-  "comparison_run_id": "comparison_val_integrated_20261002_v2",
+  "published_at": "2026-10-03T21:51:05.406391+08:00",
+  "comparison_run_id": "comparison_val_five_methods_20261003_v2",
   "evidence_level": "preliminary",
   "test_metrics_enabled": false,
   "data": {
@@ -68,23 +68,55 @@
         "path": "results/predictions/cnn_1d_val.csv",
         "sha256": "04755f52dff6f781c62931af7493c653f0cb1a801c345998c22320feb60ccbfd"
       }
+    },
+    {
+      "method_name": "kmer3_ridge",
+      "run_id": "ridge_kmer_integrated_20261003_v1",
+      "n_requested": 1783,
+      "n_success": 1783,
+      "original": {
+        "kind": "predictions",
+        "path": "runs/ridge_kmer_integrated_20261003_v1/predictions_ridge_val.csv",
+        "sha256": "11ff56bc53dff64c48de59cf81810ceffa0211bc53756c36f7a7c5154540609c"
+      },
+      "current": {
+        "kind": "predictions",
+        "path": "results/predictions/kmer3_ridge_val.csv",
+        "sha256": "11ff56bc53dff64c48de59cf81810ceffa0211bc53756c36f7a7c5154540609c"
+      }
+    },
+    {
+      "method_name": "kmer3_svr",
+      "run_id": "svr_kmer_integrated_20261003_v1",
+      "n_requested": 1783,
+      "n_success": 1783,
+      "original": {
+        "kind": "predictions",
+        "path": "runs/svr_kmer_integrated_20261003_v1/predictions_svr_val.csv",
+        "sha256": "d8caccf434915bedda00476e33ecd1df8e367036b335dc316c27a35553ec546d"
+      },
+      "current": {
+        "kind": "predictions",
+        "path": "results/predictions/kmer3_svr_val.csv",
+        "sha256": "d8caccf434915bedda00476e33ecd1df8e367036b335dc316c27a35553ec546d"
+      }
     }
   ],
   "comparison_manifest": {
     "kind": "run_manifest",
-    "path": "runs/comparison_val_integrated_20261002_v2/run_manifest.json",
-    "sha256": "b3e704d20acad9ecf15074ccc39d3861743a28ae5be9975bb03eaddeab0c9762"
+    "path": "runs/comparison_val_five_methods_20261003_v2/run_manifest.json",
+    "sha256": "a240bfe454baa89143de89426a744ef4cff59566e4163d52e44e91706d3ad660"
   },
   "artifacts": [
     {
       "kind": "current_result",
       "path": "results/metrics.csv",
-      "sha256": "fd3d41645d9d35eb7a90ee4586fbfc305560e23235a226682b1dcc7f8defa8f3"
+      "sha256": "a79ef5bc9082c7f6a7519fe9977204ea28ceb530e60f88668cd1f968e614c74e"
     },
     {
       "kind": "current_result",
       "path": "results/coverage_summary.csv",
-      "sha256": "9e4856532930ab67c308903a2a5c96775bf137ab3105220726388beec33cecc2"
+      "sha256": "df637629d6c06725dd7c1d596acefdfd0d99476c98de4ca66528b63aa1952c31"
     },
     {
       "kind": "current_result",
@@ -94,12 +126,12 @@
     {
       "kind": "current_result",
       "path": "results/performance_summary.csv",
-      "sha256": "8e94dc2f5b1af18163507667c5d89a611de30de55e342797825e553805181cfe"
+      "sha256": "d1af45a269b8ccc598f5e80b06e8933b43f20cf4295af47d0341f7ad7c462261"
     },
     {
       "kind": "current_result",
       "path": "results/metrics_unique_context.csv",
-      "sha256": "b18c1222a515e2886ce0be0aee6e0ea4b512797b0d1c6e652c62150dc0c1c412"
+      "sha256": "3acab4d262a2dce7ad392b1cbc15a298e0e1423451f7d89a10724bbb8493f7f3"
     },
     {
       "kind": "current_result",
@@ -109,8 +141,8 @@
   ],
   "validation": {
     "kind": "validation",
-    "path": "runs/comparison_val_integrated_20261002_v2/integration_validation.json",
-    "sha256": "c785412d270caedb3a0c1b66fec3f3fb0d908ae954cbe7e28aa79616e890fd65"
+    "path": "runs/comparison_val_five_methods_20261003_v2/integration_validation.json",
+    "sha256": "b6f67a24bb00ec3391991d359317671ab40e051fcf1ccc4c7fbc8a853e4a022d"
   },
   "legacy_entrypoints": [
     {
@@ -142,6 +174,68 @@
       "kind": "current_knn_alias",
       "path": "KNN/results/coverage_summary.csv",
       "sha256": "9e1a60e9bd4928ecf69385fd4c04589954eabf32bbeb493d27a1fea49268efd3"
+    },
+    {
+      "kind": "current_kmer_alias",
+      "path": "Ridge/results/predictions_ridge.csv",
+      "sha256": "11ff56bc53dff64c48de59cf81810ceffa0211bc53756c36f7a7c5154540609c"
+    },
+    {
+      "kind": "current_kmer_alias",
+      "path": "Ridge/results/ridge_metrics.csv",
+      "sha256": "f656ef67720bd53109a2caef0d2f64f1bbaa034babe4702e08832d3a591da7bd"
+    },
+    {
+      "kind": "current_kmer_alias",
+      "path": "Ridge/results/ridge_model.joblib",
+      "sha256": "57f1a4fbd9f6b221b072b1ccab8a685c4715602827e21089eb3549fa3eb9a998"
+    },
+    {
+      "kind": "current_kmer_alias",
+      "path": "Ridge/results/ridge_config.json",
+      "sha256": "e51e4023ab5b72e17adfe0076ed235341c3fa3fbaf59bfa148ad3a61db621198"
+    },
+    {
+      "kind": "current_kmer_alias",
+      "path": "Ridge/results/predictions_svr.csv",
+      "sha256": "d8caccf434915bedda00476e33ecd1df8e367036b335dc316c27a35553ec546d"
+    },
+    {
+      "kind": "current_kmer_alias",
+      "path": "Ridge/results/svr_metrics.csv",
+      "sha256": "a1f00f6bcf9ef7a82b1eecb6a7a797256e75051de1c0d9c14a4ead82f053674a"
+    },
+    {
+      "kind": "current_kmer_alias",
+      "path": "Ridge/results/svr_model.joblib",
+      "sha256": "d5e564e7a9ced24741f3510c0c2573022ac2844521d4927e9cbe70a94ab5baa1"
+    },
+    {
+      "kind": "current_kmer_alias",
+      "path": "Ridge/results/svr_config.json",
+      "sha256": "9384b2aeaba143c103d6be26c6243ac96f3655426f6f5c141500d4b31d411463"
+    },
+    {
+      "kind": "current_kmer_alias",
+      "path": "Ridge/results/coverage_summary.csv",
+      "sha256": "78f28d3cc95be71a2d10261f8c274e1c0c602c0b8ca5dd1f396e1aaf8f47b10d"
+    },
+    {
+      "kind": "current_kmer_alias",
+      "path": "Ridge/results/common_eval_ids.tsv",
+      "sha256": "9a491a9ae6c1dc7cbb08e0e27ba960c308e42c0a7ee7a39e67f8a1dfa48c9e47"
+    }
+  ],
+  "analysis": [
+    {
+      "kind": "analysis_eda",
+      "path": "runs/eda_m2_integrated_20261002_v2/run_manifest.json",
+      "sha256": "e1abd9ae6317aef4c28612a1f624c60a04d69f61d876a7e69f9bdae87bc5fe1f"
+    },
+    {
+      "kind": "analysis_errors",
+      "path": "runs/error_m3_five_methods_20261003_v2/run_manifest.json",
+      "sha256": "9ab745c4f10cf134ede9cad0fc231b8ea5a6ad5c74f10dab74599fd55427ea08"
     }
   ]
 }

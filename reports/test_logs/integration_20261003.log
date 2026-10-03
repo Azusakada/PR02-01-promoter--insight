@@ -1,0 +1,20 @@
+test_calibration_excludes_validation_labels (test_integration.IntegrationTests.test_calibration_excludes_validation_labels) ... ok
+test_failed_request_preserved_in_calibrated_export (test_integration.IntegrationTests.test_failed_request_preserved_in_calibrated_export) ... ok
+test_metric_counts_are_subset_and_common_cohort_specific (test_integration.IntegrationTests.test_metric_counts_are_subset_and_common_cohort_specific) ... ok
+test_reverse_coordinates_use_mapped_key_and_half_open_boxes (test_integration.IntegrationTests.test_reverse_coordinates_use_mapped_key_and_half_open_boxes) ... ok
+test_same_coordinate_retains_forward_candidate (test_integration.IntegrationTests.test_same_coordinate_retains_forward_candidate) ... ok
+test_all_supported_counts_match_independent_window_counter (test_kmer_integration.KmerIntegrationTests.test_all_supported_counts_match_independent_window_counter) ... ok
+test_feature_row_reordering_is_rejected (test_kmer_integration.KmerIntegrationTests.test_feature_row_reordering_is_rejected) ... ok
+test_feature_vocabulary_reordering_is_rejected (test_kmer_integration.KmerIntegrationTests.test_feature_vocabulary_reordering_is_rejected) ... ok
+test_invalid_sequence_is_rejected (test_kmer_integration.KmerIntegrationTests.test_invalid_sequence_is_rejected) ... ok
+test_new_method_changes_comparison_identity_even_when_ids_match (test_kmer_integration.KmerIntegrationTests.test_new_method_changes_comparison_identity_even_when_ids_match) ... ok
+test_new_run_preserves_ridge_and_svr_in_the_pipeline (test_kmer_integration.KmerIntegrationTests.test_new_run_preserves_ridge_and_svr_in_the_pipeline) ... ok
+test_prediction_version_changes_comparison_identity (test_kmer_integration.KmerIntegrationTests.test_prediction_version_changes_comparison_identity) ... ok
+test_supplementary_physchem_does_not_replace_main_ridge (test_kmer_integration.KmerIntegrationTests.test_supplementary_physchem_does_not_replace_main_ridge) ... ok
+test_unpublished_svr_selection_is_rejected (test_kmer_integration.KmerIntegrationTests.test_unpublished_svr_selection_is_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.010s
+
+OK
+Created D:\CodexAnalysis\PR02-01\20261003-main\tmpuy2uoajk\configs\integration_fresh.json; run: python -m pr02 --config configs/integration_fresh.json run-all
