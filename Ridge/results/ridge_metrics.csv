@@ -1,0 +1,11 @@
+dataset_id,run_id,method_name,split_id,evaluation_subset,extra_fit_scope,extra_k,extra_alpha,extra_C,metric_name,target_scale,value,n_requested,n_success,n_used,metric_status,reason,evidence_level,schema_version,data_version
+course_ecoli50_strength,ridge_kmer_20261003_v1,kmer3_ridge,ecoli50_random_20260928_v1,val,train,3,100.0,,r2,log10,0.052801796373081356,1783,1783,1783,ok,,preliminary,2.0.0,ecoli50_strength_v1
+course_ecoli50_strength,ridge_kmer_20261003_v1,kmer3_ridge,ecoli50_random_20260928_v1,val,train,3,100.0,,mae,log10,0.459665047292827,1783,1783,1783,ok,,preliminary,2.0.0,ecoli50_strength_v1
+course_ecoli50_strength,ridge_kmer_20261003_v1,kmer3_ridge,ecoli50_random_20260928_v1,val,train,3,100.0,,spearman,log10,0.21975388914361418,1783,1783,1783,ok,,preliminary,2.0.0,ecoli50_strength_v1
+course_ecoli50_strength,ridge_kmer_20261003_v1,kmer3_ridge,ecoli50_random_20260928_v1,val,train,3,100.0,,r2,raw,-0.010707110161589206,1783,1783,1783,ok,,preliminary,2.0.0,ecoli50_strength_v1
+course_ecoli50_strength,ridge_kmer_20261003_v1,kmer3_ridge,ecoli50_random_20260928_v1,val,train,3,100.0,,mae,raw,1399.6973988679435,1783,1783,1783,ok,,preliminary,2.0.0,ecoli50_strength_v1
+course_ecoli50_strength,ridge_kmer_20261003_v1,kmer3_ridge,ecoli50_random_20260928_v1,test,train,3,100.0,,r2,log10,0.049367666202467575,1783,1783,1783,ok,,preliminary,2.0.0,ecoli50_strength_v1
+course_ecoli50_strength,ridge_kmer_20261003_v1,kmer3_ridge,ecoli50_random_20260928_v1,test,train,3,100.0,,mae,log10,0.4527550822931607,1783,1783,1783,ok,,preliminary,2.0.0,ecoli50_strength_v1
+course_ecoli50_strength,ridge_kmer_20261003_v1,kmer3_ridge,ecoli50_random_20260928_v1,test,train,3,100.0,,spearman,log10,0.21168468509073168,1783,1783,1783,ok,,preliminary,2.0.0,ecoli50_strength_v1
+course_ecoli50_strength,ridge_kmer_20261003_v1,kmer3_ridge,ecoli50_random_20260928_v1,test,train,3,100.0,,r2,raw,-0.0019321286624358613,1783,1783,1783,ok,,preliminary,2.0.0,ecoli50_strength_v1
+course_ecoli50_strength,ridge_kmer_20261003_v1,kmer3_ridge,ecoli50_random_20260928_v1,test,train,3,100.0,,mae,raw,3139.388138119549,1783,1783,1783,ok,,preliminary,2.0.0,ecoli50_strength_v1
