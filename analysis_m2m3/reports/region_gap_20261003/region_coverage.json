@@ -1,0 +1,59 @@
+{
+  "annotation_version": "region_gap_20261003_v1",
+  "evidence_ref": "analysis_m2m3/reports/annotation_source_review.md",
+  "n_samples": 11884,
+  "n_annotation_rows": 59420,
+  "regions": [
+    {
+      "region_type": "minus10",
+      "n_rows": 11884,
+      "n_samples_denominator": 11884,
+      "n_missing": 11884,
+      "n_tool_inferred_not_used": 0,
+      "n_reliable_external_with_coordinates": 0,
+      "coverage": 0.0,
+      "relationship_status": "not_computed_no_reliable_coordinates"
+    },
+    {
+      "region_type": "minus35",
+      "n_rows": 11884,
+      "n_samples_denominator": 11884,
+      "n_missing": 11884,
+      "n_tool_inferred_not_used": 0,
+      "n_reliable_external_with_coordinates": 0,
+      "coverage": 0.0,
+      "relationship_status": "not_computed_no_reliable_coordinates"
+    },
+    {
+      "region_type": "spacer",
+      "n_rows": 11884,
+      "n_samples_denominator": 11884,
+      "n_missing": 11884,
+      "n_tool_inferred_not_used": 0,
+      "n_reliable_external_with_coordinates": 0,
+      "coverage": 0.0,
+      "relationship_status": "not_computed_no_reliable_coordinates"
+    },
+    {
+      "region_type": "UP_element",
+      "n_rows": 11884,
+      "n_samples_denominator": 11884,
+      "n_missing": 11884,
+      "n_tool_inferred_not_used": 0,
+      "n_reliable_external_with_coordinates": 0,
+      "coverage": 0.0,
+      "relationship_status": "not_computed_no_reliable_coordinates"
+    },
+    {
+      "region_type": "TSS",
+      "n_rows": 11884,
+      "n_samples_denominator": 11884,
+      "n_missing": 11884,
+      "n_tool_inferred_not_used": 0,
+      "n_reliable_external_with_coordinates": 0,
+      "coverage": 0.0,
+      "relationship_status": "not_computed_no_reliable_coordinates"
+    }
+  ],
+  "limitation": "No Spearman is stored unless relationship_status is computed."
+}

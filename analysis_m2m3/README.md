@@ -18,4 +18,11 @@ Ridge 和 SVR 已接入，CNN 也已正式接入。教师 M3 要求简单 ML 与
 
 reports/annotation_source_review.md 和 inputs/source_audit_20261001 保留原始数据来源核查；inputs/thermo_member_b_89fcc66 和旧 runs 保存历史快照，不能作为当前结果入口。缺少可靠 TSS、实验方向及盒区坐标，计算推断不充当实验注释；具体研究待办见根 reports/OPEN_ITEMS.md。
 
+区域注释缺口在 `reports/region_gap_20261003/`。它为 11,884 条样本的五种区域写出契约 `annotations.tsv`，坐标留空。可靠坐标子集为空时不计算盒区与强度的相关系数。已有输出目录不会被覆盖：
+
+```powershell
+python analysis_m2m3/region_annotation.py --output analysis_m2m3/reports/region_gap_20261003
+python contracts/scripts/validate.py table annotations analysis_m2m3/reports/region_gap_20261003/annotations.tsv
+```
+
 EDA 新实验应显式传 --transform data/01_Ecoli_strength/label_transform.json；原 error_analysis.py 的任意方法读取和历史热力学校准适配功能继续保留，默认新流程读取完整校准 val 文件。
