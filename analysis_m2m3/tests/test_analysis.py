@@ -17,6 +17,7 @@ import common
 from eda import label_transform
 from error_analysis import attach_calibration, checked_predictions, metric_value
 from region_annotation import REGION_TYPES, build_annotations, summarize_regions
+from map_81bp import LAYOUT, build_mapped_annotations, classify_matches, index_windows, map_interval
 
 INPUTS = ROOT/'analysis_m2m3/inputs/thermo_member_b_89fcc66'
 KNN = ROOT/'KNN/results/predictions_knn_ecoli_full_val.csv'
@@ -180,6 +181,73 @@ class AnalysisTests(unittest.TestCase):
         self.assertEqual(row['n_tool_inferred_not_used'],3)
         self.assertEqual(row['n_reliable_external_with_coordinates'],0)
         self.assertNotIn('spearman_gc_vs_log10',row)
+
+    def _layout_promoter(self):
+        sequence = 'A'*25 + 'TTGACA' + 'C'*17 + 'TATAAT' + 'G'*6 + 'A' + 'T'*20
+        self.assertEqual(len(sequence), 81)
+        self.assertEqual(sequence[LAYOUT['minus35'][0]:LAYOUT['minus35'][1]], 'TTGACA')
+        self.assertEqual(sequence[LAYOUT['minus10'][0]:LAYOUT['minus10'][1]], 'TATAAT')
+        return sequence
+
+    def test_unique_forward_match_transfers_minus10(self):
+        promoter = self._layout_promoter()
+        window = promoter[10:60]
+        samples = pd.DataFrame({
+            'sample_id':['s1'], 'source_row':[1], 'sequence':[window],
+            'dataset_id':'course_ecoli50_strength', 'data_version':'ecoli50_strength_v1', 'schema_version':'2.0.0',
+        })
+        ecoli = pd.DataFrame({'seq_id':[1], 'seq':[promoter], 'label':[1]})
+        audit, usable = classify_matches(samples, index_windows(ecoli), {})
+        self.assertEqual(audit.match_status.iloc[0], 'unique_positive')
+        annotations = build_mapped_annotations(samples, usable)
+        minus10 = annotations[annotations.region_type.eq('minus10')].iloc[0]
+        self.assertEqual(minus10.annotation_status, 'reliable_external')
+        self.assertEqual(int(minus10.start_0index), 38)
+        self.assertEqual(int(minus10.end_0index_exclusive), 44)
+        self.assertEqual(minus10.strand, 'forward')
+        self.assertEqual(window[38:44], 'TATAAT')
+        tss = annotations[annotations.region_type.eq('TSS')].iloc[0]
+        self.assertEqual(tss.annotation_status, 'not_applicable')
+        self.assertTrue(pd.isna(tss.start_0index))
+
+    def test_reverse_match_puts_minus35_downstream_of_minus10(self):
+        promoter = self._layout_promoter()
+        original = 10
+        window = promoter[original:original+50].translate(str.maketrans('ACGT','TGCA'))[::-1]
+        samples = pd.DataFrame({
+            'sample_id':['s1'], 'source_row':[1], 'sequence':[window],
+            'dataset_id':'course_ecoli50_strength', 'data_version':'ecoli50_strength_v1', 'schema_version':'2.0.0',
+        })
+        ecoli = pd.DataFrame({'seq_id':[1], 'seq':[promoter], 'label':[1]})
+        audit, usable = classify_matches(samples, index_windows(ecoli), {})
+        self.assertEqual(audit.strand.iloc[0], 'reverse')
+        annotations = build_mapped_annotations(samples, usable)
+        minus10 = annotations[annotations.region_type.eq('minus10')].iloc[0]
+        minus35 = annotations[annotations.region_type.eq('minus35')].iloc[0]
+        self.assertEqual(minus10.strand, 'reverse')
+        self.assertGreater(int(minus35.start_0index), int(minus10.start_0index))
+        self.assertEqual(map_interval(*LAYOUT['minus10'], original, 'reverse', 81), (int(minus10.start_0index), int(minus10.end_0index_exclusive)))
+
+    def test_ambiguous_or_negative_match_stays_missing(self):
+        promoter = self._layout_promoter()
+        window = promoter[10:60]
+        other = 'G'*5 + window + 'G'*26
+        self.assertEqual(len(other), 81)
+        samples = pd.DataFrame({
+            'sample_id':['unique_neg','ambiguous'], 'source_row':[1,2],
+            'sequence':[window, window],
+            'dataset_id':'course_ecoli50_strength', 'data_version':'ecoli50_strength_v1', 'schema_version':'2.0.0',
+        })
+        negative = pd.DataFrame({'seq_id':[9], 'seq':[promoter], 'label':[0]})
+        positive = pd.DataFrame({'seq_id':[1,2], 'seq':[promoter, other], 'label':[1,1]})
+        audit, usable = classify_matches(samples.iloc[:1], {}, index_windows(negative))
+        self.assertEqual(audit.match_status.iloc[0], 'negative_only')
+        self.assertEqual(usable, {})
+        audit, usable = classify_matches(samples.iloc[1:], index_windows(positive), {})
+        self.assertEqual(audit.match_status.iloc[0], 'ambiguous_positive')
+        annotations = build_mapped_annotations(samples.iloc[1:], usable)
+        self.assertTrue(annotations.annotation_status.eq('missing').all())
+        self.assertTrue(annotations.strand.eq('unknown').all())
 
 
 if __name__=='__main__':
