@@ -1,0 +1,9 @@
+{
+  "n_requested": 1783,
+  "n_success": 1783,
+  "failed_ids": [],
+  "request_order_preserved": true,
+  "subset": "val",
+  "evidence_level": "preliminary",
+  "checkpoint_sha256": "df62cb792709a4b1e3aebbc0640cfa9c7d30e97054050b212e98c5af85f193c0"
+}

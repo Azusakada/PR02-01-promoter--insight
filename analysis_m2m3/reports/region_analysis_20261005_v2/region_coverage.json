@@ -1,0 +1,151 @@
+{
+  "annotation_version": "region_map_81bp_20261005_v2",
+  "evidence_ref": "data/02_reg_and_gen_six_species/Escherichia coli/Dataset.csv",
+  "layout_81bp_0based_end_exclusive": {
+    "UP_element": [
+      0,
+      21
+    ],
+    "minus35": [
+      25,
+      31
+    ],
+    "spacer": [
+      31,
+      48
+    ],
+    "minus10": [
+      48,
+      54
+    ],
+    "TSS": [
+      60,
+      61
+    ]
+  },
+  "n_samples": 11884,
+  "match_status_counts": {
+    "no_hit": 11137,
+    "position_consistent_positive": 614,
+    "negative_only": 92,
+    "ambiguous_positive": 40,
+    "both": 1
+  },
+  "n_position_consistent_positive": 614,
+  "n_unique_positive_parent": 608,
+  "n_multiple_positive_parents_same_position": 6,
+  "position_consistent_positive_by_split": {
+    "train": 430,
+    "val": 96,
+    "test": 88
+  },
+  "regions": [
+    {
+      "region_type": "minus10",
+      "n_rows": 11884,
+      "n_samples_denominator": 11884,
+      "n_missing": 11270,
+      "n_not_applicable": 37,
+      "n_tool_inferred": 577,
+      "n_tool_inferred_not_used": 0,
+      "n_reliable_external_with_coordinates": 0,
+      "n_tool_inferred_with_coordinates": 577,
+      "n_analyzed_with_coordinates": 577,
+      "analysis_mode": "layout_exploration",
+      "coverage": 0.048552675866711546,
+      "relationship_status": "computed",
+      "spearman_gc_vs_log10": -0.06341528522020887,
+      "relationship_feature": "gc_content_of_annotated_interval",
+      "relationship_n": 577
+    },
+    {
+      "region_type": "minus35",
+      "n_rows": 11884,
+      "n_samples_denominator": 11884,
+      "n_missing": 11270,
+      "n_not_applicable": 41,
+      "n_tool_inferred": 573,
+      "n_tool_inferred_not_used": 0,
+      "n_reliable_external_with_coordinates": 0,
+      "n_tool_inferred_with_coordinates": 573,
+      "n_analyzed_with_coordinates": 573,
+      "analysis_mode": "layout_exploration",
+      "coverage": 0.048216088858970045,
+      "relationship_status": "computed",
+      "spearman_gc_vs_log10": 0.0545640412054089,
+      "relationship_feature": "gc_content_of_annotated_interval",
+      "relationship_n": 573
+    },
+    {
+      "region_type": "spacer",
+      "n_rows": 11884,
+      "n_samples_denominator": 11884,
+      "n_missing": 11270,
+      "n_not_applicable": 0,
+      "n_tool_inferred": 614,
+      "n_tool_inferred_not_used": 0,
+      "n_reliable_external_with_coordinates": 0,
+      "n_tool_inferred_with_coordinates": 614,
+      "n_analyzed_with_coordinates": 614,
+      "analysis_mode": "layout_exploration",
+      "coverage": 0.05166610568832043,
+      "relationship_status": "computed",
+      "spearman_gc_vs_log10": -0.001002348254417151,
+      "relationship_feature": "gc_content_of_annotated_interval",
+      "relationship_n": 614
+    },
+    {
+      "region_type": "UP_element",
+      "n_rows": 11884,
+      "n_samples_denominator": 11884,
+      "n_missing": 11270,
+      "n_not_applicable": 608,
+      "n_tool_inferred": 6,
+      "n_tool_inferred_not_used": 0,
+      "n_reliable_external_with_coordinates": 0,
+      "n_tool_inferred_with_coordinates": 6,
+      "n_analyzed_with_coordinates": 6,
+      "analysis_mode": "layout_exploration",
+      "coverage": 0.0005048805116122518,
+      "relationship_status": "computed",
+      "spearman_gc_vs_log10": -0.3188740696088466,
+      "relationship_feature": "gc_content_of_annotated_interval",
+      "relationship_n": 6
+    },
+    {
+      "region_type": "TSS",
+      "n_rows": 11884,
+      "n_samples_denominator": 11884,
+      "n_missing": 11270,
+      "n_not_applicable": 314,
+      "n_tool_inferred": 300,
+      "n_tool_inferred_not_used": 0,
+      "n_reliable_external_with_coordinates": 0,
+      "n_tool_inferred_with_coordinates": 300,
+      "n_analyzed_with_coordinates": 300,
+      "analysis_mode": "layout_exploration",
+      "coverage": 0.02524402558061259,
+      "relationship_status": "computed",
+      "spearman_gc_vs_log10": 0.053885925899842785,
+      "relationship_feature": "gc_content_of_annotated_interval",
+      "relationship_n": 300
+    }
+  ],
+  "motif_relationships": [
+    {
+      "region_type": "minus35",
+      "consensus": "TTGACA",
+      "n": 573,
+      "relationship_status": "computed",
+      "spearman_consensus_identity_vs_log10": -0.013433667674391548
+    },
+    {
+      "region_type": "minus10",
+      "consensus": "TATAAT",
+      "n": 577,
+      "relationship_status": "computed",
+      "spearman_consensus_identity_vs_log10": 0.05270069456063314
+    }
+  ],
+  "coordinate_basis": "canonical dataset layout assumption; tool_inferred"
+}

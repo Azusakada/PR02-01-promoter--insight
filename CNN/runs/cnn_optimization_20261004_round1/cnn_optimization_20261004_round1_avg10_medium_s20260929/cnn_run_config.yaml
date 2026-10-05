@@ -1,0 +1,44 @@
+schema_version: 2.0.0
+task_id: cnn_ecoli50_m2_m3
+run_id: cnn_optimization_20261004_round1_avg10_medium_s20260929
+evidence_level: preliminary
+data:
+  samples: data/01_Ecoli_strength/data_v1.tsv
+  splits: data/01_Ecoli_strength/split_manifest.tsv
+  split_id: ecoli50_random_20260928_v1
+  expected_samples: 11884
+  transform: data/01_Ecoli_strength/label_transform.json
+model:
+  sequence_length: 50
+  channels:
+  - A
+  - C
+  - G
+  - T
+  conv_channels:
+  - 32
+  - 64
+  kernel_sizes:
+  - 7
+  - 5
+  hidden_dim: 32
+  dropout: 0.4
+  pooling: adaptive_avg
+  pooled_length: 10
+training:
+  seed: 20260929
+  device: cpu
+  num_threads: 4
+  batch_size: 128
+  max_epochs: 100
+  patience: 15
+  min_delta: 1.0e-05
+  learning_rate: 0.0003
+  weight_decay: 0.01
+  gradient_clip: 5.0
+  num_workers: 0
+  deterministic: true
+prediction:
+  subset: val
+  allow_test: false
+output_dir: CNN/runs/cnn_optimization_20261004_round1/cnn_optimization_20261004_round1_avg10_medium_s20260929

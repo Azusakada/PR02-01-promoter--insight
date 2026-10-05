@@ -52,6 +52,15 @@ def checked_predictions(path, data, subset='val', require_coverage=True):
             require(pred.loc[ok,['predicted_value','predicted_value_log10']].isna().all().all(), 'Uncalibrated Tx_rate cannot be strength prediction')
     else:
         require(pred.loc[ok,'model_checkpoint'].notna().all(), 'Missing checkpoint reference')
+    # The public contract also checks raw/log10 consistency, normalized targets
+    # and transform IDs. Local display checks must not bypass that interface.
+    import sys
+    sys.path.insert(0,str(ROOT))
+    from pr02.common import DATA, SPLITS as SHARED_SPLITS, TRANSFORM, v
+    if require_coverage:
+        v.bundle_check(DATA,SHARED_SPLITS,transform=TRANSFORM,predictions=path)
+    else:
+        v.load_table('predictions',path)  # historical success-only calibration adapter
     return pred
 
 

@@ -1,0 +1,125 @@
+{
+  "study": {
+    "study_id": "cnn_optimization_20261004_round1",
+    "base_config": "CNN/configs/cnn_run_config.yaml",
+    "output_dir": "CNN/runs/cnn_optimization_20261004_round1",
+    "selection_metric": "val_mse_normalized",
+    "search_seed": 20260928,
+    "stability_seeds": [
+      20260929,
+      20260930
+    ],
+    "stability_top_k": 2,
+    "max_epochs": 100,
+    "patience": 15,
+    "candidates": [
+      {
+        "name": "small_dense",
+        "model": {
+          "conv_channels": [
+            8,
+            16
+          ],
+          "hidden_dim": 16,
+          "dropout": 0.3
+        },
+        "training": {
+          "learning_rate": 0.001,
+          "weight_decay": 0.01
+        }
+      },
+      {
+        "name": "medium_dense_regularized",
+        "model": {
+          "conv_channels": [
+            16,
+            32
+          ],
+          "hidden_dim": 32,
+          "dropout": 0.5
+        },
+        "training": {
+          "learning_rate": 0.0003,
+          "weight_decay": 0.01
+        }
+      },
+      {
+        "name": "avg10_small",
+        "model": {
+          "conv_channels": [
+            16,
+            32
+          ],
+          "hidden_dim": 32,
+          "dropout": 0.3,
+          "pooling": "adaptive_avg",
+          "pooled_length": 10
+        },
+        "training": {
+          "learning_rate": 0.001,
+          "weight_decay": 0.001
+        }
+      },
+      {
+        "name": "avg10_medium",
+        "model": {
+          "conv_channels": [
+            32,
+            64
+          ],
+          "hidden_dim": 32,
+          "dropout": 0.4,
+          "pooling": "adaptive_avg",
+          "pooled_length": 10
+        },
+        "training": {
+          "learning_rate": 0.0003,
+          "weight_decay": 0.01
+        }
+      },
+      {
+        "name": "avg5_medium",
+        "model": {
+          "conv_channels": [
+            32,
+            64
+          ],
+          "hidden_dim": 32,
+          "dropout": 0.3,
+          "pooling": "adaptive_avg",
+          "pooled_length": 5
+        },
+        "training": {
+          "learning_rate": 0.001,
+          "weight_decay": 0.001
+        }
+      },
+      {
+        "name": "max10_small",
+        "model": {
+          "conv_channels": [
+            16,
+            32
+          ],
+          "hidden_dim": 32,
+          "dropout": 0.3,
+          "pooling": "adaptive_max",
+          "pooled_length": 10
+        },
+        "training": {
+          "learning_rate": 0.001,
+          "weight_decay": 0.001
+        }
+      }
+    ]
+  },
+  "study_config_sha256": "d0a916d52d7cedb572545a26c909a4cf9b830e2205490bf29fbe5314ca50680b",
+  "data_sha256": "0599c5b29198c78c481d035bf32596a53411310f401463a62e160bfdbe93ca7e",
+  "splits_sha256": "5d162f64e68a305749033e5f9e7f4d5bdfeb6b28af757883446f75682f9fd9b0",
+  "transform_sha256": "1784286ed1f086c1f0d26e4b44f9cd170adc9d47a091c2cdf1f3635861b97557",
+  "fit_subset": "train",
+  "selection_subset": "val",
+  "test_evaluated": false,
+  "selection_rule": "Search seed ranks six configurations by minimum validation MSE. Repeat top two using both predeclared additional seeds; select configuration by mean validation MSE over all three seeds. Deliver its search-seed checkpoint, never the best-scoring seed. Scores are preliminary validation estimates.",
+  "source_base_config_sha256": "e3c87ee0fe5034c82a878d14861ea75a8f765b9eecbd2b02f15ab9ec5628cad1"
+}

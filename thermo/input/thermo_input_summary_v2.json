@@ -1,0 +1,31 @@
+{
+  "status": "passed",
+  "input_version": "thermo_input_both_strands_v2",
+  "n_total": 11884,
+  "n_ready": 11883,
+  "n_blocked": 1,
+  "source": {
+    "kind": "legacy_inputs",
+    "path": "thermo/input/calculator_inputs.tsv",
+    "sha256": "c446d04da3c922bf92e2043ad0f14de449007cd1e3c71accce352eaa85ab30f8"
+  },
+  "output": {
+    "kind": "calculator_inputs",
+    "path": "thermo/input/calculator_inputs_both_strands_v2.tsv",
+    "sha256": "cfe7a9aad6916d34682a25579e9fe0af549d2625ac47e43bac8e0904d1a0b31b"
+  },
+  "change": "Explicit both_strands policy matches the existing integrated adapter. Sequence, coordinates, request IDs and blocked failures unchanged.",
+  "published_historical_inputs_preserved": true,
+  "check": {
+    "samples": 11884,
+    "split_ids": [
+      "ecoli50_random_20260928_v1"
+    ],
+    "checked": [
+      "dataset",
+      "splits",
+      "calculator_inputs"
+    ],
+    "limitations": "未验证原始数据、NPY/NPZ、训练过程、工具适用性或生物学依据。"
+  }
+}

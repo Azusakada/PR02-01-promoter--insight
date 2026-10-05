@@ -1,0 +1,43 @@
+{
+  "schema_version": "2.0.0",
+  "dataset_id": "course_ecoli50_strength",
+  "data_version": "ecoli50_strength_v1",
+  "n_input": 11884,
+  "n_retained": 11884,
+  "n_removed": 0,
+  "inputs": [
+    {
+      "kind": "raw_sequence",
+      "path": "data/raw_ecoli50/promoter.npy",
+      "sha256": "e71911452431acb620478f0de5ae896481be5618e7a7f9712125cd98cb8e37ab"
+    },
+    {
+      "kind": "raw_strength",
+      "path": "data/raw_ecoli50/gene_expression.npy",
+      "sha256": "a1426fa5e5806fceff2c041218b781b6dc1f0cc84b39cf4ef626d02965fd9ce5"
+    }
+  ],
+  "operations": [
+    "uppercase sequence",
+    "parse positive finite strength",
+    "compute log10",
+    "stable IDs from original one-based source row; no sorting or filtering"
+  ],
+  "artifacts": [
+    {
+      "kind": "dataset",
+      "path": "runs/data_rebuild_20261005_v1/data_v1.tsv",
+      "sha256": "0599c5b29198c78c481d035bf32596a53411310f401463a62e160bfdbe93ca7e"
+    },
+    {
+      "kind": "cleaning_log",
+      "path": "runs/data_rebuild_20261005_v1/cleaning_log.csv",
+      "sha256": "1ed87804dfad072024f0258e6770accbd4ea84770e3418a7161ee8f6046076d8"
+    },
+    {
+      "kind": "profile",
+      "path": "configs/data_ecoli50_v1.json",
+      "sha256": "4613e16ba4c8698497f495103969c9d3d2f2a12e5a75d1830ecbb511aa7de07b"
+    }
+  ]
+}

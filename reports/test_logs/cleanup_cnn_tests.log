@@ -1,0 +1,28 @@
+test_channels_positions_and_dtype (test_cnn.EncodingTests.test_channels_positions_and_dtype) ... ok
+test_invalid_pooling_rejected_and_legacy_weights_compatible (test_cnn.EncodingTests.test_invalid_pooling_rejected_and_legacy_weights_compatible) ... ok
+test_model_shapes_and_log10_wrapper_gradients (test_cnn.EncodingTests.test_model_shapes_and_log10_wrapper_gradients) ... ok
+test_pooling_preserves_input_gradients_and_reload (test_cnn.EncodingTests.test_pooling_preserves_input_gradients_and_reload) ... ok
+test_rank_ties_negative_r2_and_undefined (test_cnn.EncodingTests.test_rank_ties_negative_r2_and_undefined) ... ok
+test_reject_legacy_and_ambiguous_sequences (test_cnn.EncodingTests.test_reject_legacy_and_ambiguous_sequences) ... ok
+test_transform_extrapolation_and_overflow_failed_row (test_cnn.EncodingTests.test_transform_extrapolation_and_overflow_failed_row) ... ok
+epoch=001 train_mse=0.129036 val_mse=0.013461 best=1
+epoch=002 train_mse=0.119758 val_mse=0.011274 best=2
+epoch=003 train_mse=0.110521 val_mse=0.011011 best=3
+test_checkpoint_tampering_and_output_overwrite_rejected (test_cnn.IntegrationTests.test_checkpoint_tampering_and_output_overwrite_rejected) ... ok
+test_complete_training_and_prediction_contract (test_cnn.IntegrationTests.test_complete_training_and_prediction_contract) ... ok
+test_data_order_is_not_an_identity (test_cnn.IntegrationTests.test_data_order_is_not_an_identity) ... ok
+test_failure_coverage_and_order (test_cnn.IntegrationTests.test_failure_coverage_and_order) ... ok
+test_partial_prediction_bundle_preserves_failed_request (test_cnn.IntegrationTests.test_partial_prediction_bundle_preserves_failed_request) ... ok
+test_pooled_training_checkpoint_and_prediction_contract (test_cnn.IntegrationTests.test_pooled_training_checkpoint_and_prediction_contract) ... epoch=001 train_mse=0.112677 val_mse=0.011454 best=1
+epoch=002 train_mse=0.109603 val_mse=0.012985 best=1
+epoch=003 train_mse=0.105778 val_mse=0.015490 best=1
+ok
+test_prediction_config_model_conflict_rejected (test_cnn.IntegrationTests.test_prediction_config_model_conflict_rejected) ... ok
+test_test_requires_explicit_frozen_plan_opt_in (test_cnn.IntegrationTests.test_test_requires_explicit_frozen_plan_opt_in) ... ok
+test_train_only_transform_and_wrong_hash_rejected (test_cnn.IntegrationTests.test_train_only_transform_and_wrong_hash_rejected) ... ok
+test_unknown_and_duplicate_request_ids_rejected (test_cnn.IntegrationTests.test_unknown_and_duplicate_request_ids_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 17 tests in 26.603s
+
+OK

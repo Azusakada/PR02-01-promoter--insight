@@ -1,8 +1,8 @@
 # PR02 01 五人项目当前交付
 
-日期 2026-10-03。仓库 D:\PR02-01-promoter--insight。默认配置 project_config.json，发布入口 main，成员开发分支保留。
+更新日期 2026-10-05。仓库 D:\PR02-01-promoter--insight。默认配置 project_config.json，发布入口 main，成员开发分支保留。本次整合在 csy 开发，统一交付入口为 main；清理和发布验收见 REPOSITORY_CLEANUP_20261005.md。
 
-已整合 main 数据/KNN、member-b 热力学、csy CNN、liqihang Ridge/SVR 和 feature/eda-annotation-m2m3。李玘航主线已到位；工程集成和已确认问题修复已完成，可靠注释及 M4 研究仍待推进。
+已整合 main 数据/KNN、member-b 热力学、csy CNN、liqihang Ridge/SVR 和 feature/eda-annotation-m2m3。李玘航主线已到位，区域探索分析已接入；M4 归因、突变与消融仍待推进。
 
 ## 当前验证集结果
 
@@ -12,7 +12,7 @@
 |---|---:|---:|---:|---:|
 | knn_physchem_full | 0.017841 | 0.123234 | 0.467671 | 1783/1783 |
 | thermo_regseq2 | 0.029041 | 0.151955 | 0.464151 | 1782/1783 |
-| cnn_1d | 0.054623 | 0.207132 | 0.457034 | 1783/1783 |
+| cnn_1d | 0.073950 | 0.227578 | 0.453482 | 1783/1783 |
 | kmer3_ridge | 0.052757 | 0.219489 | 0.459778 | 1783/1783 |
 | kmer3_svr | 0.009121 | 0.227552 | 0.446457 | 1783/1783 |
 
@@ -29,7 +29,7 @@ CNN/KNN/Ridge/SVR 基于原 50 bp，热力学使用补取的 150 bp，信息范�
 - 新增图表注册和过期预测检查；已发布验证报告保持只读，防止跨环境诊断数值变化破坏索引哈希。
 - 五方法图改为多行布局，62 项误差指标复算并实际检查 3 张图。已有非空输出拒绝覆盖。
 
-验收为 86 项 unittest 测试与 4 项 k-mer 检查，共 90 项；详细日志见 reports/test_logs。数据、模型、校准、统一指标与图表清单验收见 reports/integration_validation.json。干净检出证据见 reports/clean_checkout_verification.json。
+此前 main 集成验收为 90 项；本轮新增检查与修复见 reports/REPOSITORY_AUDIT_20261005.md。数据、模型、校准、统一指标与图表验收见 reports/integration_validation.json。reports/clean_checkout_verification.json 为此前 main 的证据，本轮独立交付快照验收另行记录。
 
 ## 成员职责
 
@@ -39,10 +39,22 @@ CNN/KNN/Ridge/SVR 基于原 50 bp，热力学使用补取的 150 bp，信息范�
 | 李玘航 | k-mer 特征、Ridge、SVR、搜索与预测 | 传统 ML 对照及后续泛化 |
 | 田惠今 | 热力学推断、train 校准、失败与覆盖 | 多重定位及实验适用性说明 |
 | 陈思远 | CNN、五线集成、管理与验收 | CNN 泛化、消融、归因与突变 |
-| 胡昊铭 | EDA、注释来源审查、五方法误差与案例 | 恢复可靠区域注释与盒区关系分析 |
+| 胡昊铭 | EDA、来源审查、五方法误差与案例、区域特征与强度分析 | 区域组合、可变位置和间隔分析；来源资料可得时完善 |
+
+## 2026-10-05 区域分析修订
+
+已接入胡昊铭提交 3c779b9 的分析代码，修正多来源匹配被合并为“唯一”的问题，完整保存原始记录编号。614 条位置一致匹配中，608 条来源唯一、6 条多来源但换算位置相同。区域使用 tool_inferred 记录推定性质，并显式启用探索统计，可靠外部注释另行计数。
+
+新增三张中文图及源表，报告先讲 −10 的 A/T 富集、−35 特征较弱，以及简单特征与强度关系较弱的发现；方法和范围集中说明。中期无需等待新增实验注释。见 [区域分析报告](../analysis_m2m3/reports/region_analysis_20261005_v2/region_relationship.md)。
 
 ## 当前路径
 
-results/current.json 注册唯一当前结果，旧结果归档到 history。不可覆盖的模型运行、五方法比较和误差图由 project_config.json 绑定。新增实验依照 README 创建新 tag，完成图像检查后再 publish。
+results/current.json 注册唯一当前结果。history 保留复现必需的原交付，重复旧结果移出工作树；恢复方法见清理说明。不可覆盖的模型运行、五方法比较和误差图由 project_config.json 绑定。新增实验依照 README 创建新 tag，完成图像检查后再 publish。
 
-本轮新增临时文件和检出副本在 D:\CodexAnalysis\PR02-01\20261003-main；复用原有 Python 环境，未新建 C 盘大型运行环境。未清理现有缓存。
+本轮新增临时文件和交付快照在 D:\CodexAnalysis\PR02-01\20261005-repository-audit；复用原有 Python 环境，未新建 C 盘大型运行环境。
+
+## 2026-10-05 全仓审查与默认入口更新
+
+主表和 split 的重建与原文件逐字节一致，原始数组、清洗脚本和划分配置已进入仓库。k-mer 新导出补齐公共索引字段；热力学新输入显式声明正反方向扫描，历史输入保持原记录。统一 verify 增加配置与模型身份检查、原始数据追溯、三个分析运行的数值复算。
+
+默认 CNN 采用已选定的 avg5_medium 模型，五方法总表与误差图已重新生成并通过验收。比较运行为 comparison_val_five_methods_20261005_v3；旧默认配置与结果按清理说明归档，当前工作树只保留有效比较。完整中期文字和演示安排见 [中期报告](MIDTERM_REPORT_20261005.md)。仓库尚无 PPT 文件，汇报前需据此完成排版和试讲。

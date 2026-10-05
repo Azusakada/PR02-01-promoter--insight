@@ -1,2 +1,0 @@
-run_id,n_requested,n_success,n_failed,coverage,n_train,n_val,n_test
-thermo_regseq2_ecoli50_v1,11884,11883,1,0.999916,8318,1782,1783

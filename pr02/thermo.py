@@ -9,8 +9,16 @@ from .common import (ROOT, DATA, SPLITS, artifact, load_bundle, prediction_base,
                      run_dir, relative, v, write_json, write_manifest, write_table)
 from .metrics import metric_rows
 
-INPUTS = ROOT/'thermo/input/calculator_inputs.tsv'
+INPUTS = ROOT/'thermo/input/calculator_inputs_both_strands_v2.tsv'
 METHOD = 'thermo_regseq2'
+
+
+def check_execution_policy(inputs):
+    """This adapter implements a scan of both strands, not fixed-TSS inference."""
+    for row in inputs:
+        if row['input_status']=='ready':
+            v.require(row['tss_mode']=='scan' and row['orientation_policy']=='both_strands',
+                      'Ready thermo inputs must declare scan + both_strands: '+row['sample_id'])
 
 
 def select_state(output, length):
@@ -66,6 +74,7 @@ def run(run_id='thermo_regseq2_integrated_20261002_v2'):
     samples,groups,transform = load_bundle()
     v.bundle_check(DATA,SPLITS,calculator_inputs=INPUTS)
     inputs = v.load_table('calculator_inputs', INPUTS)
+    check_execution_policy(inputs)
     master = {r['sample_id']:r for r in samples}
     v.require(len(inputs)==len(master) and {r['sample_id'] for r in inputs}==set(master), 'Incomplete thermo requests')
     subset_map = {r['sample_id']:sub for sub,rs in groups.items() for r in rs}

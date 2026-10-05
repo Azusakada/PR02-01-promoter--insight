@@ -15,7 +15,7 @@ from pr02_cnn.common import ROOT, artifact, fresh_dir, resolve, v, write_json, w
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("--run-dir", type=Path, default=ROOT / "CNN/runs/cnn_ecoli50_preliminary_20261002_v1")
+    p.add_argument("--run-dir", type=Path, required=True, help="Explicit new run directory; existing analysis is never overwritten")
     args = p.parse_args()
     run = resolve(args.run_dir)
     output = run / "analysis"

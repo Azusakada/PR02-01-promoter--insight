@@ -1,7 +1,0 @@
-dataset_id,run_id,method_name,split_id,evaluation_subset,metric_name,target_scale,value,n_requested,n_success,n_used,metric_status,reason,evidence_level,comparison_set_id,schema_version,data_version
-course_ecoli50_strength,cnn_ecoli50_integrated_20261002_v2,cnn_1d,ecoli50_random_20260928_v1,val_all,mae,log10,0.45696063584236696,1783,1783,1783,ok,,preliminary,cnn_val_2675cc14f094a804,2.0.0,ecoli50_strength_v1
-course_ecoli50_strength,cnn_ecoli50_integrated_20261002_v2,cnn_1d,ecoli50_random_20260928_v1,val_all,r2,log10,0.054609513958060574,1783,1783,1783,ok,,preliminary,cnn_val_2675cc14f094a804,2.0.0,ecoli50_strength_v1
-course_ecoli50_strength,cnn_ecoli50_integrated_20261002_v2,cnn_1d,ecoli50_random_20260928_v1,val_all,spearman,log10,0.2072548572307143,1783,1783,1783,ok,,preliminary,cnn_val_2675cc14f094a804,2.0.0,ecoli50_strength_v1
-course_ecoli50_strength,cnn_ecoli50_integrated_20261002_v2,cnn_1d,ecoli50_random_20260928_v1,val_all,mae,raw,1398.0495005119624,1783,1783,1783,ok,,preliminary,cnn_val_2675cc14f094a804,2.0.0,ecoli50_strength_v1
-course_ecoli50_strength,cnn_ecoli50_integrated_20261002_v2,cnn_1d,ecoli50_random_20260928_v1,val_all,r2,raw,-0.009905576816588768,1783,1783,1783,ok,,preliminary,cnn_val_2675cc14f094a804,2.0.0,ecoli50_strength_v1
-course_ecoli50_strength,cnn_ecoli50_integrated_20261002_v2,cnn_1d,ecoli50_random_20260928_v1,val_all,spearman,raw,0.2072548572307143,1783,1783,1783,ok,,preliminary,cnn_val_2675cc14f094a804,2.0.0,ecoli50_strength_v1

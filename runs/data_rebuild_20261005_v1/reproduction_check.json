@@ -1,0 +1,21 @@
+{
+  "status": "passed",
+  "source_arrays_verified": true,
+  "canonical_reproduction": {
+    "dataset_bytes": true,
+    "split_bytes": true,
+    "transform_semantics": true
+  },
+  "check": {
+    "samples": 11884,
+    "split_ids": [
+      "ecoli50_random_20260928_v1"
+    ],
+    "checked": [
+      "dataset",
+      "splits",
+      "label_transform"
+    ],
+    "limitations": "未验证原始数据、NPY/NPZ、训练过程、工具适用性或生物学依据。"
+  }
+}

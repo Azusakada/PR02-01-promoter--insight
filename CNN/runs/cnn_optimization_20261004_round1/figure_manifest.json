@@ -1,0 +1,20 @@
+{
+  "figure": {
+    "kind": "figure",
+    "path": "CNN/runs/cnn_optimization_20261004_round1/optimization_summary.png",
+    "sha256": "ef3ff7e182642754467ad8e3ed7f711199ab2c50acc3e3b82d3a4854f78f2a0b"
+  },
+  "history": {
+    "kind": "source",
+    "path": "CNN/runs/cnn_optimization_20261004_round1/cnn_optimization_20261004_round1_avg5_medium_s20260928/training_history.csv",
+    "sha256": "d39f808fdaf5e0a9f797f453cb055121abf813f2d99359fee533f5f80005a454"
+  },
+  "seeds": {
+    "kind": "source",
+    "path": "CNN/runs/cnn_optimization_20261004_round1/seed_plot_source.csv",
+    "sha256": "06f62763e8da8acef88000d3b11494a500999f3722067204d5d2fc6a73d66f21"
+  },
+  "visual_review": "passed",
+  "visual_review_date": "2026-10-04",
+  "visual_review_notes": "Reviewed rendered PNG: labels and legend readable; selected epoch 11 matches history; all three points per finalist visible; mean and sample SD match seed source; no clipping."
+}

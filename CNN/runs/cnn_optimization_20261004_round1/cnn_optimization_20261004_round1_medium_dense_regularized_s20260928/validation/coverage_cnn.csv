@@ -1,0 +1,2 @@
+run_id,subset,n_requested,n_success,n_failed,n_used,coverage
+cnn_optimization_20261004_round1_medium_dense_regularized_s20260928,val,1783,1783,0,1783,1.0

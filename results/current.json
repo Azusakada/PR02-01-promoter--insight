@@ -1,7 +1,7 @@
 {
   "schema_version": "2.0.0",
-  "published_at": "2026-10-03T21:51:05.406391+08:00",
-  "comparison_run_id": "comparison_val_five_methods_20261003_v2",
+  "published_at": "2026-10-05T14:31:00.270271+08:00",
+  "comparison_run_id": "comparison_val_five_methods_20261005_v3",
   "evidence_level": "preliminary",
   "test_metrics_enabled": false,
   "data": {
@@ -55,18 +55,18 @@
     },
     {
       "method_name": "cnn_1d",
-      "run_id": "cnn_ecoli50_integrated_20261002_v2",
+      "run_id": "cnn_optimization_20261004_round1_avg5_medium_s20260928",
       "n_requested": 1783,
       "n_success": 1783,
       "original": {
         "kind": "predictions",
-        "path": "CNN/runs/cnn_ecoli50_integrated_20261002_v2/validation/predictions_cnn.csv",
-        "sha256": "04755f52dff6f781c62931af7493c653f0cb1a801c345998c22320feb60ccbfd"
+        "path": "CNN/runs/cnn_optimization_20261004_round1/cnn_optimization_20261004_round1_avg5_medium_s20260928/validation/predictions_cnn.csv",
+        "sha256": "5f347a87bd638569309f5c66d089d77ff96805a3bb0584dea7005a094cd2a516"
       },
       "current": {
         "kind": "predictions",
         "path": "results/predictions/cnn_1d_val.csv",
-        "sha256": "04755f52dff6f781c62931af7493c653f0cb1a801c345998c22320feb60ccbfd"
+        "sha256": "5f347a87bd638569309f5c66d089d77ff96805a3bb0584dea7005a094cd2a516"
       }
     },
     {
@@ -104,19 +104,19 @@
   ],
   "comparison_manifest": {
     "kind": "run_manifest",
-    "path": "runs/comparison_val_five_methods_20261003_v2/run_manifest.json",
-    "sha256": "a240bfe454baa89143de89426a744ef4cff59566e4163d52e44e91706d3ad660"
+    "path": "runs/comparison_val_five_methods_20261005_v3/run_manifest.json",
+    "sha256": "aaedcf35ad5c5d9924ac5001190bd05674921ca45bc368e87d7d7672e5415180"
   },
   "artifacts": [
     {
       "kind": "current_result",
       "path": "results/metrics.csv",
-      "sha256": "a79ef5bc9082c7f6a7519fe9977204ea28ceb530e60f88668cd1f968e614c74e"
+      "sha256": "ca45e29909706002500bc551b0dc0f92d1e667f8a56f4209923fb35b2ec5c9f4"
     },
     {
       "kind": "current_result",
       "path": "results/coverage_summary.csv",
-      "sha256": "df637629d6c06725dd7c1d596acefdfd0d99476c98de4ca66528b63aa1952c31"
+      "sha256": "54fac51b7ed3dfed61a0692148361f72de52d9e411239416437cdf082747f2a5"
     },
     {
       "kind": "current_result",
@@ -126,12 +126,12 @@
     {
       "kind": "current_result",
       "path": "results/performance_summary.csv",
-      "sha256": "d1af45a269b8ccc598f5e80b06e8933b43f20cf4295af47d0341f7ad7c462261"
+      "sha256": "ecc3f3709fda238a95aad93925c2ff86b97be67d512378571e0a2b658d3d522d"
     },
     {
       "kind": "current_result",
       "path": "results/metrics_unique_context.csv",
-      "sha256": "3acab4d262a2dce7ad392b1cbc15a298e0e1423451f7d89a10724bbb8493f7f3"
+      "sha256": "e9e106d4c7f8dab63bff230c6aa6381c5f7d614783b9dbac6d88081ff4d33d8f"
     },
     {
       "kind": "current_result",
@@ -141,8 +141,8 @@
   ],
   "validation": {
     "kind": "validation",
-    "path": "runs/comparison_val_five_methods_20261003_v2/integration_validation.json",
-    "sha256": "b6f67a24bb00ec3391991d359317671ab40e051fcf1ccc4c7fbc8a853e4a022d"
+    "path": "runs/comparison_val_five_methods_20261005_v3/integration_validation.json",
+    "sha256": "663af8e1ee39a92c40242e34d422ea5c1a6f6f8450479855b04fdeef329195de"
   },
   "legacy_entrypoints": [
     {
@@ -234,8 +234,30 @@
     },
     {
       "kind": "analysis_errors",
-      "path": "runs/error_m3_five_methods_20261003_v2/run_manifest.json",
-      "sha256": "9ab745c4f10cf134ede9cad0fc231b8ea5a6ad5c74f10dab74599fd55427ea08"
+      "path": "runs/error_m3_five_methods_20261005_v3/run_manifest.json",
+      "sha256": "757cce110a7b201cdf6f2e7ccb201bfc80e1b408364747fef65ad69958aaf761"
+    },
+    {
+      "kind": "analysis_regions",
+      "path": "analysis_m2m3/reports/region_analysis_20261005_v2/run_manifest.json",
+      "sha256": "bcd2d7a3455a055b19981c6d1dd6748f32cc285969e980d0efb0b6b4d7531ed4"
+    }
+  ],
+  "data_sources": [
+    {
+      "kind": "data_profile",
+      "path": "configs/data_ecoli50_v1.json",
+      "sha256": "4613e16ba4c8698497f495103969c9d3d2f2a12e5a75d1830ecbb511aa7de07b"
+    },
+    {
+      "kind": "raw_sequence",
+      "path": "data/raw_ecoli50/promoter.npy",
+      "sha256": "e71911452431acb620478f0de5ae896481be5618e7a7f9712125cd98cb8e37ab"
+    },
+    {
+      "kind": "raw_strength",
+      "path": "data/raw_ecoli50/gene_expression.npy",
+      "sha256": "a1426fa5e5806fceff2c041218b781b6dc1f0cc84b39cf4ef626d02965fd9ce5"
     }
   ]
 }

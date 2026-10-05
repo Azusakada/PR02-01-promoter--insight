@@ -15,8 +15,8 @@ regseq2 的工具输入表（契约表 calculator_inputs，schema 2.0.0）。
 
 输出
 ----
-thermo/input/calculator_inputs.tsv
-thermo/input/thermo_input_summary.json
+thermo/input/calculator_inputs_both_strands_v2.tsv
+thermo/input/thermo_input_summary_v2.json
 
 用法
 ----
@@ -31,12 +31,12 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(HERE)
 DATA_V1 = os.path.join(REPO, "data", "01_Ecoli_strength", "data_v1.tsv")
 CONTEXT_MAP = os.path.join(HERE, "input", "context_map.tsv")
-OUT_TSV = os.path.join(HERE, "input", "calculator_inputs.tsv")
-OUT_JSON = os.path.join(HERE, "input", "thermo_input_summary.json")
+OUT_TSV = os.path.join(HERE, "input", "calculator_inputs_both_strands_v2.tsv")
+OUT_JSON = os.path.join(HERE, "input", "thermo_input_summary_v2.json")
 
 DATASET_ID = "course_ecoli50_strength"
 SCHEMA_VERSION = "2.0.0"
-INPUT_VERSION = "thermo_input_v1"
+INPUT_VERSION = "thermo_input_both_strands_v2"
 CONTEXT_FLANK = 50
 CACHE_DIR = os.path.join(HERE, ".cache")
 
@@ -80,6 +80,8 @@ def circular_slice(genome, start, end):
 
 
 def main():
+    if os.path.exists(OUT_TSV) or os.path.exists(OUT_JSON):
+        raise ValueError("Output already exists; preserve frozen inputs and choose new output paths")
     hdr1, data = read_tsv(DATA_V1)
     _, cmap = read_tsv(CONTEXT_MAP)
     cmap_by_id = {r["sample_id"]: r for r in cmap}
@@ -99,7 +101,7 @@ def main():
                 "sequence_length": L, "input_origin": "original50",
                 "source_sequence_start_0index": 0, "context_source_ref": "",
                 "tss_mode": "scan", "tss_position_1index": "",
-                "tss_evidence_ref": "", "orientation_policy": "as_provided",
+                "tss_evidence_ref": "", "orientation_policy": "both_strands",
                 "feasibility_ref": "thermo/thermo_applicability.md",
                 "input_status": "blocked",
                 "error_reason": "no_exact_match_in_reference_genome_50bp_too_short_for_scan",
@@ -125,7 +127,7 @@ def main():
             "source_sequence_start_0index": CONTEXT_FLANK,
             "context_source_ref": ref, "tss_mode": "scan",
             "tss_position_1index": "", "tss_evidence_ref": "",
-            "orientation_policy": "as_provided",
+            "orientation_policy": "both_strands",
             "feasibility_ref": "thermo/thermo_applicability.md",
             "input_status": "ready", "error_reason": "",
             "input_version": INPUT_VERSION, "schema_version": SCHEMA_VERSION,

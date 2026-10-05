@@ -24,10 +24,10 @@ def check_hashes(entries):
 def verify(output, reviewed=()):
     output = Path(output).resolve()
     relative(output)
-    meta = json.loads((output / 'run_manifest.json').read_text())
+    meta = json.loads((output / 'run_manifest.json').read_text(encoding='utf-8'))
     check_hashes(meta['inputs'])
     check_hashes(meta['artifacts'])
-    figures = json.loads((output / 'figure_manifest.json').read_text())
+    figures = json.loads((output / 'figure_manifest.json').read_text(encoding='utf-8'))
     for fig in figures:
         check_hashes(fig['source_tables'])
         check_hashes(fig['images'])
@@ -62,6 +62,9 @@ def verify(output, reviewed=()):
             value = {'r2': r2_score, 'mae': mean_absolute_error, 'spearman': lambda a, b: spearmanr(a, b).statistic}[row.metric_name](y, p)
             require(np.isclose(value, row.value, rtol=1e-10, atol=1e-12), 'Recomputed metric mismatch')
         results.update(metric_recomputation='pass', requested_ids=len(requested), common_ids=len(common), metrics_checked=len(metrics))
+    elif (output / 'region_coverage.json').exists():
+        from verify_region import verify_regions
+        results.update(verify_regions(output, data, meta))
     else:
         samples = pd.read_csv(output / 'source_tables/eda_samples.tsv', sep='\t')
         require(samples.sample_id.is_unique and set(samples.sample_id) == set(data.sample_id), 'EDA ID mismatch')

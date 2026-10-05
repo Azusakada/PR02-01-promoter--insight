@@ -1,0 +1,133 @@
+{
+  "date": "2026-10-05",
+  "base_commit": "895bac210cc65165727a65ac0da4269edafc0e9b",
+  "archive": "D:\\CodexAnalysis\\PR02-01\\20261005-cleanup\\obsolete_artifacts_before_cleanup.zip",
+  "archive_sha256": "9eb2115d6c1f5f77e0e318dc0970bd5070e86317ea03ba7f8bdc9758972598b2",
+  "archive_bytes": 21193186,
+  "backup_content_verified": true,
+  "obsolete_file_count": 290,
+  "obsolete_bytes": 100708335,
+  "cache_file_count": 93,
+  "cache_bytes": 25726791,
+  "obsolete_paths": [
+    "runs/comparison_val_five_methods_20261003_v1",
+    "runs/comparison_val_five_methods_20261003_v2",
+    "runs/comparison_val_integrated_20261002_v2",
+    "runs/error_m3_five_methods_20261003_v1",
+    "runs/error_m3_five_methods_20261003_v2",
+    "runs/error_m3_integrated_20261002_v2",
+    "runs/error_m3_integrated_20261002_v3",
+    "analysis_m2m3/runs",
+    "thermo/results",
+    "CNN/runs/cnn_ecoli50_integrated_20261002_v2",
+    "CNN/runs/cnn_ecoli50_preliminary_20261002_v1",
+    "CNN/runs/cnn_smoke_20261002_v1",
+    "CNN/verification",
+    "history/current_results_comparison_val_five_methods_20261003_v1",
+    "history/current_results_comparison_val_five_methods_20261003_v2",
+    "history/current_results_comparison_val_integrated_20261002_v2",
+    "history/data_bytes_before_lf_20261002_v1",
+    "history/main_standard_exports_20261002_v1",
+    "history/source_before_integration_20261002_v1",
+    "history/project_config_before_midterm_20261005.json"
+  ],
+  "working_tree_reduction_bytes": 126435126,
+  "current_comparison": "comparison_val_five_methods_20261005_v3",
+  "current_predictions_unchanged": true,
+  "validation_status": "passed",
+  "remote_push_status": "pending",
+  "archive_policy": "reversible move outside repository; tracked versions also recoverable from Git history",
+  "total_tests": 108,
+  "tests": [
+    {
+      "name": "analysis_tests",
+      "exit_code": 0,
+      "command": [
+        "C:\\Users\\admin\\Documents\\Codex\\2026-10-02\\wo-shi\\work\\cnn_env\\Scripts\\python.exe",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "analysis_m2m3/tests",
+        "-v"
+      ],
+      "log": "reports/test_logs/cleanup_analysis_tests.log",
+      "n_tests": 20,
+      "log_sha256": "d2af0baad5dba0393bed5bf492dae086bf8116e05a947bb55b68f40b5b52352c"
+    },
+    {
+      "name": "cnn_tests",
+      "exit_code": 0,
+      "command": [
+        "C:\\Users\\admin\\Documents\\Codex\\2026-10-02\\wo-shi\\work\\cnn_env\\Scripts\\python.exe",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "CNN/tests",
+        "-v"
+      ],
+      "log": "reports/test_logs/cleanup_cnn_tests.log",
+      "n_tests": 17,
+      "log_sha256": "15085c92cce41fa6adcbf39644afb1e03e652eb4b11fe7b3093cc92b24652572"
+    },
+    {
+      "name": "contract_tests",
+      "exit_code": 0,
+      "command": [
+        "C:\\Users\\admin\\Documents\\Codex\\2026-10-02\\wo-shi\\work\\cnn_env\\Scripts\\python.exe",
+        "contracts/scripts/validate.py",
+        "self-test"
+      ],
+      "log": "reports/test_logs/cleanup_contract_tests.log",
+      "n_tests": 48,
+      "log_sha256": "c8fe5ed11fa09b8e4dcaeaa3af5429069743e708cbe60a5203bd1e8f2a50f74a"
+    },
+    {
+      "name": "kmer_checks",
+      "exit_code": 0,
+      "command": [
+        "C:\\Users\\admin\\Documents\\Codex\\2026-10-02\\wo-shi\\work\\cnn_env\\Scripts\\python.exe",
+        "Ridge/src/test_kmer.py"
+      ],
+      "log": "reports/test_logs/cleanup_kmer_checks.log",
+      "n_tests": 4,
+      "log_sha256": "e37da62b5c596d06f54b1da894d8480049387d7573362ca7d85f1db956d6d7dd"
+    },
+    {
+      "name": "project_verify",
+      "exit_code": 0,
+      "command": [
+        "C:\\Users\\admin\\Documents\\Codex\\2026-10-02\\wo-shi\\work\\cnn_env\\Scripts\\python.exe",
+        "-m",
+        "pr02",
+        "verify"
+      ],
+      "log": "reports/test_logs/cleanup_project_verify.log",
+      "log_sha256": "e366c7d649bcff65851f0c7dc3b8410dd21c9d27fa284289911c0614ab39fd1a"
+    },
+    {
+      "name": "root_tests",
+      "exit_code": 0,
+      "command": [
+        "C:\\Users\\admin\\Documents\\Codex\\2026-10-02\\wo-shi\\work\\cnn_env\\Scripts\\python.exe",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-v"
+      ],
+      "log": "reports/test_logs/cleanup_root_tests.log",
+      "n_tests": 19,
+      "log_sha256": "fe309152e0b6c0a58b7a0cd6bf205bf4ed2ee939bab10ded3ac89e0465f192a0"
+    }
+  ],
+  "frozen_files_unchanged": true,
+  "frozen_file_hashes": {
+    "results/current.json": "adff579c186d2e6d2aeb11847a4f3287ba29544dedcf3638013632875d23862b",
+    "project_config.json": "381e0b49fee7fda7c3cb2adef2af53d02f37509802a89a4f1699525fd3f8bd69",
+    "reports/integration_validation.json": "663af8e1ee39a92c40242e34d422ea5c1a6f6f8450479855b04fdeef329195de",
+    "runs/comparison_val_five_methods_20261005_v3/integration_validation.json": "663af8e1ee39a92c40242e34d422ea5c1a6f6f8450479855b04fdeef329195de"
+  }
+}

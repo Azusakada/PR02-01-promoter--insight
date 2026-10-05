@@ -1,2 +1,0 @@
-run_id,subset,n_requested,n_success,n_failed,n_used,coverage
-cnn_ecoli50_integrated_20261002_v2,val,1783,1783,0,1783,1.0

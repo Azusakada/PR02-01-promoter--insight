@@ -1,0 +1,26 @@
+{
+  "subset": "val",
+  "target_scale": "log10",
+  "fit_protocol": "train only for every method",
+  "comparison_set_id": "val_common_c160e9c1f4fe6842",
+  "n_common": 1782,
+  "prediction_files": [
+    "runs/knn_physchem_integrated_20261002_v2/predictions_knn_val.csv",
+    "runs/thermo_regseq2_integrated_20261002_v2/predictions/thermo_val_calibrated.csv",
+    "CNN/runs/cnn_optimization_20261004_round1/cnn_optimization_20261004_round1_avg5_medium_s20260928/validation/predictions_cnn.csv",
+    "runs/ridge_kmer_integrated_20261003_v1/predictions_ridge_val.csv",
+    "runs/svr_kmer_integrated_20261003_v1/predictions_svr_val.csv"
+  ],
+  "test_metrics_enabled": false,
+  "information_scope": {
+    "cnn_1d": "provided 50bp",
+    "knn_physchem_full": "8 derived features from provided 50bp",
+    "thermo_regseq2": "150bp reference-genome recovered context",
+    "kmer3_ridge": "k-mer counts from provided 50bp",
+    "kmer3_svr": "k-mer counts from provided 50bp"
+  },
+  "unique_context_sensitivity": {
+    "n_common": 1767,
+    "comparison_set_id": "val_unique_context_04fd5b370db79657"
+  }
+}

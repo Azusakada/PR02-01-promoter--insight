@@ -12,6 +12,24 @@ from pr02.kmer import count_matrix, checked_feature, selected_candidates
 
 
 class KmerIntegrationTests(unittest.TestCase):
+    def test_rebuilt_feature_bundle_passes_the_shared_index_contract(self):
+        from pr02.common import ROOT
+        from pr02.kmer import build_features
+        (ROOT/'work').mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(dir=ROOT/'work') as directory:
+            output=Path(directory)/'features'
+            build_features(output)
+            rows=v.load_table('feature_index',output/'feature_index.tsv')
+            self.assertEqual(len(rows),11884)
+            meta=json.loads((output/'feature_manifest.json').read_text(encoding='utf-8'))
+            self.assertTrue({'feature_index','physchem_features','vocabulary'}<={a['kind'] for a in meta['artifacts']})
+            # Corrupt the identity while leaving the row mapping unchanged.
+            p=output/'feature_index.tsv'
+            p.write_text(p.read_text(encoding='utf-8').replace('ecoli50_strength_v1','wrong_version'),encoding='utf-8')
+            from pr02.kmer import validate_features
+            with self.assertRaisesRegex(v.ContractError,'数据身份'):
+                validate_features(output)
+
     def test_new_method_changes_comparison_identity_even_when_ids_match(self):
         from pr02.comparison import comparison_id
         row=dict(dataset_id='d',data_version='v',split_id='s',method_name='m1',run_id='r1')

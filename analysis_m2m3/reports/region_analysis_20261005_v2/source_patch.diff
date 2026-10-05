@@ -1,0 +1,390 @@
+diff --git a/CNN/README.md b/CNN/README.md
+index 3eb29e1..bbe1e5d 100644
+--- a/CNN/README.md
++++ b/CNN/README.md
+@@ -32,6 +32,24 @@ python -m venv .venv
+   本仓库没有旧 CNN，当前是新增的 50 bp 实现。
+ - `Log10Predictor` 是可微分的 log10 输出包装，供 M4 后续归因使用；输入梯度为 `(N,4,50)`。
+ 
++## 一轮有限优化
++
++```powershell
++python CNN/optimize_cnn.py --study-config CNN/configs/cnn_optimization_round1.yaml
++```
++
++该计划预先固定 6 个配置、一个搜索种子和两个额外复跑种子。搜索比较小网络、
++更强正则化和位置池化；按验证 MSE 选出两个配置，再比较三个种子的平均验证 MSE。
++交付选定配置的原搜索种子模型，不挑分数最高的种子。全部尝试、训练日志、逐样本
++验证预测和选择依据保存到计划的独立输出目录。输出非空时拒绝覆盖；复现实验须
++给计划设置新的 study_id/output_dir。测试集不参与本轮模型选择。
++
++模型新增可选 `pooling: adaptive_avg` / `adaptive_max` 和 `pooled_length`（1 到 50）。
++它们在两层卷积后压缩位置维度，减少全连接层参数；输入及输入梯度仍为 `(N,4,50)`。
++不提供这些字段时保持原有 flatten 结构，原 checkpoint 可以继续加载。
++本轮选择后仍属 preliminary；同一验证集同时用于配置选择和结果报告，不能当作
++独立测试效果。完整结果见 `optimization_report_20261004.md`。
++
+ ## 固定数据和标签尺度
+ 
+ 输入路径和 split_id 在 `configs/cnn_run_config.yaml` 中显式声明。所有连接使用
+diff --git a/CNN/pr02_cnn/model.py b/CNN/pr02_cnn/model.py
+index 1339076..0244c0d 100644
+--- a/CNN/pr02_cnn/model.py
++++ b/CNN/pr02_cnn/model.py
+@@ -17,12 +17,26 @@ class PromoterCNN(nn.Module):
+             raise ValueError("模型维度必须是正整数")
+         if not 0 <= cfg["dropout"] < 1:
+             raise ValueError("dropout范围为[0,1)")
++        pooling = cfg.get("pooling", "flatten")
++        pooled_length = cfg.get("pooled_length", 50)
++        if type(pooled_length) is not int or not 1 <= pooled_length <= 50:
++            raise ValueError("pooled_length必须是1到50的整数")
++        if pooling == "flatten":
++            if pooled_length != 50:
++                raise ValueError("flatten必须保留全部50个位置")
++            self.pool = nn.Identity()
++        elif pooling == "adaptive_avg":
++            self.pool = nn.AdaptiveAvgPool1d(pooled_length)
++        elif pooling == "adaptive_max":
++            self.pool = nn.AdaptiveMaxPool1d(pooled_length)
++        else:
++            raise ValueError("pooling必须为flatten/adaptive_avg/adaptive_max")
+         self.features = nn.Sequential(
+             nn.Conv1d(4, widths[0], kernels[0], padding=kernels[0] // 2), nn.ReLU(),
+             nn.Conv1d(widths[0], widths[1], kernels[1], padding=kernels[1] // 2), nn.ReLU(),
+         )
+         self.regressor = nn.Sequential(
+-            nn.Flatten(), nn.Linear(widths[1] * 50, cfg["hidden_dim"]), nn.ReLU(),
++            nn.Flatten(), nn.Linear(widths[1] * pooled_length, cfg["hidden_dim"]), nn.ReLU(),
+             nn.Dropout(cfg["dropout"]), nn.Linear(cfg["hidden_dim"], 1),
+         )
+ 
+@@ -30,7 +44,7 @@ class PromoterCNN(nn.Module):
+         if x.ndim != 3 or x.shape[1:] != (4, 50):
+             raise ValueError(f"输入shape错误: {tuple(x.shape)}，要求(N,4,50)")
+         # No sigmoid: validation/test targets may lie outside the train range.
+-        return self.regressor(self.features(x)).squeeze(-1)
++        return self.regressor(self.pool(self.features(x))).squeeze(-1)
+ 
+ 
+ class Log10Predictor(nn.Module):
+diff --git a/CNN/tests/test_cnn.py b/CNN/tests/test_cnn.py
+index 694b7ae..9455b6c 100644
+--- a/CNN/tests/test_cnn.py
++++ b/CNN/tests/test_cnn.py
+@@ -51,6 +51,33 @@ class EncodingTests(unittest.TestCase):
+         self.assertIsNone(compute_metrics([1, 1], [1, 2])["r2"][0])
+         self.assertIsNone(compute_metrics([1, 2], [3, 3])["spearman"][0])
+ 
++    def test_pooling_preserves_input_gradients_and_reload(self):
++        cfg = config(ROOT / "CNN/configs/cnn_run_config.yaml")["model"]
++        for pooling, length in [("flatten", 50), ("adaptive_avg", 10), ("adaptive_max", 5)]:
++            with self.subTest(pooling=pooling):
++                options = {**cfg, "pooling": pooling, "pooled_length": length}
++                model = PromoterCNN(options).eval()
++                x = one_hot("ACGT" * 12 + "AC").unsqueeze(0).requires_grad_()
++                y = Log10Predictor(model, {"min_log10": 1., "max_log10": 5.})(x)
++                y.sum().backward()
++                self.assertEqual(tuple(x.grad.shape), (1, 4, 50))
++                self.assertTrue(torch.isfinite(x.grad).all())
++                restored = PromoterCNN(options).eval()
++                restored.load_state_dict(model.state_dict())
++                self.assertTrue(torch.equal(model(x), restored(x)))
++
++    def test_invalid_pooling_rejected_and_legacy_weights_compatible(self):
++        cfg = config(ROOT / "CNN/configs/cnn_run_config.yaml")["model"]
++        old = PromoterCNN(cfg).eval()
++        explicit = PromoterCNN({**cfg, "pooling": "flatten", "pooled_length": 50}).eval()
++        explicit.load_state_dict(old.state_dict())
++        x = one_hot("ACGT" * 12 + "AC").unsqueeze(0)
++        self.assertTrue(torch.equal(old(x), explicit(x)))
++        for extra in [{"pooling": "unknown"}, {"pooled_length": 0}, {"pooled_length": 51},
++                      {"pooled_length": True}, {"pooling": "flatten", "pooled_length": 10}]:
++            with self.subTest(extra=extra), self.assertRaises(ValueError):
++                PromoterCNN({**cfg, **extra})
++
+     def test_transform_extrapolation_and_overflow_failed_row(self):
+         transform = {"min_log10": 2., "max_log10": 4., "transform_id": "test_transform"}
+         self.assertEqual(label.normalise_strength(1e5, transform), 1.5)
+@@ -128,6 +155,23 @@ class IntegrationTests(unittest.TestCase):
+         self.assertEqual(transform, self.transform)
+         self.assertEqual({r["sample_id"] for r in groups["train"]}, set(self.transform["train_ids"]))
+ 
++    def test_pooled_training_checkpoint_and_prediction_contract(self):
++        cfg = copy.deepcopy(self.cfg)
++        cfg["run_id"] = "synthetic_pooled_test"
++        cfg["model"].update(pooling="adaptive_avg", pooled_length=10)
++        path = self.folder / "pooled_config.yaml"
++        path.write_text(yaml.safe_dump(cfg, sort_keys=False), encoding="utf-8")
++        model = fit_cnn(self.folder / "train.tsv", self.folder / "val.tsv",
++                        self.transform_path, path, self.folder / "pooled_model")
++        bundle = predict_sequences(self.folder / "val.tsv", model, path, self.folder / "pooled_predictions")
++        rows = v.load_table("predictions", bundle.predictions)
++        self.assertEqual(len(rows), len(self.groups["val"]))
++        self.assertTrue(all(r["prediction_status"] == "ok" for r in rows))
++        restored, metadata = load_model(model)
++        self.assertEqual(metadata["model_config"]["pooled_length"], 10)
++        self.assertFalse(metadata["test_used"])
++        self.assertTrue(metadata["smoke_validation"]["save_load_equal"])
++
+     def test_train_only_transform_and_wrong_hash_rejected(self):
+         bad = copy.deepcopy(self.transform)
+         bad["train_ids"].append(self.groups["val"][0]["sample_id"])
+diff --git a/analysis_m2m3/tests/test_analysis.py b/analysis_m2m3/tests/test_analysis.py
+index 9a36794..3a83663 100644
+--- a/analysis_m2m3/tests/test_analysis.py
++++ b/analysis_m2m3/tests/test_analysis.py
+@@ -16,6 +16,8 @@ from common import DATASET, ROOT, load_data
+ import common
+ from eda import label_transform
+ from error_analysis import attach_calibration, checked_predictions, metric_value
++from region_annotation import REGION_TYPES, build_annotations, summarize_regions
++from map_81bp import LAYOUT, build_mapped_annotations, classify_matches, index_windows, map_interval
+ 
+ INPUTS = ROOT/'analysis_m2m3/inputs/thermo_member_b_89fcc66'
+ KNN = ROOT/'KNN/results/predictions_knn_ecoli_full_val.csv'
+@@ -39,10 +41,16 @@ class AnalysisTests(unittest.TestCase):
+     def test_dirty_repository_captures_shared_source_patch(self):
+         for content in (b'diff --git a/pr02/comparison.py b/pr02/comparison.py\n', b''):
+             with self.subTest(content=content), tempfile.TemporaryDirectory() as tmp:
+-                with patch.object(common, 'ROOT', Path(tmp)), patch.object(common, 'GIT', 'git'), \
+-                        patch.object(common.subprocess, 'check_output', side_effect=[
+-                            'a' * 40, ' M pr02/comparison.py\n', content]) as git:
+-                    run = common.Run(Path(tmp) / 'run', 'M3', 'test', self.data, [], {})
++                root = Path(tmp).resolve()
++                git_results = iter(['a' * 40, ' M pr02/comparison.py\n', content])
++                real_check_output = common.subprocess.check_output
++                def side_effect(args, *args_, **kwargs):
++                    if args and args[0] == 'git':
++                        return next(git_results)
++                    return real_check_output(args, *args_, **kwargs)
++                with patch.object(common, 'ROOT', root), patch.object(common, 'GIT', 'git'), \
++                        patch.object(common.subprocess, 'check_output', side_effect=side_effect) as git:
++                    run = common.Run(root / 'run', 'M3', 'test', self.data, [], {})
+                     self.assertTrue(run.meta['dirty_worktree'])
+                     self.assertEqual((run.output / 'source_patch.diff').read_bytes(), content)
+                     self.assertEqual(run.meta['source_patch'], 'run/source_patch.diff')
+@@ -119,6 +127,176 @@ class AnalysisTests(unittest.TestCase):
+             self.assertEqual(len(joined),len(raw))
+             self.assertEqual(int(joined.prediction_status.eq('failed').sum()),1)
+ 
++    def test_missing_annotations_leave_coordinates_empty(self):
++        annotations=build_annotations(self.data)
++        self.assertEqual(len(annotations),len(self.data)*len(REGION_TYPES))
++        self.assertTrue(annotations.annotation_status.eq('missing').all())
++        self.assertTrue(annotations.strand.eq('unknown').all())
++        self.assertTrue(annotations.start_0index.isna().all())
++        self.assertTrue(annotations.end_0index_exclusive.isna().all())
++        self.assertTrue(annotations.score.isna().all())
++        summary=summarize_regions(self.data,annotations)
++        self.assertEqual(len(summary),len(REGION_TYPES))
++        for row in summary:
++            self.assertEqual(row['n_reliable_external_with_coordinates'],0)
++            self.assertEqual(row['coverage'],0)
++            self.assertEqual(row['relationship_status'],'not_computed_no_reliable_coordinates')
++            self.assertNotIn('spearman_gc_vs_log10',row)
++
++    def test_reliable_coordinates_can_report_spearman(self):
++        samples=pd.DataFrame({
++            'sample_id':['s1','s2','s3','s4'],
++            'source_row':[1,2,3,4],
++            'sequence':['AAAAAA'+'C'*44,'GGGGGG'+'A'*44,'AAAGGG'+'T'*44,'GGGAAA'+'C'*44],
++            'target_log10':[1.0,3.0,2.0,2.2],
++            'dataset_id':'course_ecoli50_strength',
++            'data_version':'ecoli50_strength_v1',
++            'schema_version':'2.0.0',
++        })
++        annotations=build_annotations(samples)
++        mask=annotations.region_type.eq('minus10')
++        annotations.loc[mask,'annotation_status']='reliable_external'
++        annotations.loc[mask,'strand']='forward'
++        annotations.loc[mask,'start_0index']=0
++        annotations.loc[mask,'end_0index_exclusive']=6
++        annotations.loc[mask,'evidence_ref']='unit-test'
++        summary={row['region_type']:row for row in summarize_regions(samples,annotations)}
++        self.assertEqual(summary['minus10']['relationship_status'],'computed')
++        self.assertEqual(summary['minus10']['n_samples_denominator'],4)
++        self.assertEqual(summary['minus10']['coverage'],1)
++        self.assertIn('spearman_gc_vs_log10',summary['minus10'])
++        self.assertEqual(summary['TSS']['relationship_status'],'not_computed_no_reliable_coordinates')
++        self.assertNotIn('spearman_gc_vs_log10',summary['TSS'])
++
++    def test_tool_inferred_boxes_are_not_used_for_strength(self):
++        samples=self.data.iloc[:3].copy()
++        annotations=build_annotations(samples)
++        mask=annotations.region_type.eq('minus35')
++        annotations.loc[mask,'annotation_status']='tool_inferred'
++        annotations.loc[mask,'strand']='forward'
++        annotations.loc[mask,'start_0index']=0
++        annotations.loc[mask,'end_0index_exclusive']=6
++        annotations.loc[mask,'evidence_ref']='unit-test'
++        row=next(item for item in summarize_regions(samples,annotations) if item['region_type']=='minus35')
++        self.assertEqual(row['n_tool_inferred_not_used'],3)
++        self.assertEqual(row['n_reliable_external_with_coordinates'],0)
++        self.assertNotIn('spearman_gc_vs_log10',row)
++
++    def _layout_promoter(self):
++        sequence = 'A'*25 + 'TTGACA' + 'C'*17 + 'TATAAT' + 'G'*6 + 'A' + 'T'*20
++        self.assertEqual(len(sequence), 81)
++        self.assertEqual(sequence[LAYOUT['minus35'][0]:LAYOUT['minus35'][1]], 'TTGACA')
++        self.assertEqual(sequence[LAYOUT['minus10'][0]:LAYOUT['minus10'][1]], 'TATAAT')
++        return sequence
++
++    def test_unique_forward_match_transfers_minus10(self):
++        promoter = self._layout_promoter()
++        window = promoter[10:60]
++        samples = pd.DataFrame({
++            'sample_id':['s1'], 'source_row':[1], 'sequence':[window],
++            'dataset_id':'course_ecoli50_strength', 'data_version':'ecoli50_strength_v1', 'schema_version':'2.0.0',
++        })
++        ecoli = pd.DataFrame({'seq_id':[1], 'seq':[promoter], 'label':[1]})
++        audit, usable = classify_matches(samples, index_windows(ecoli), {})
++        self.assertEqual(audit.match_status.iloc[0], 'position_consistent_positive')
++        annotations = build_mapped_annotations(samples, usable)
++        minus10 = annotations[annotations.region_type.eq('minus10')].iloc[0]
++        self.assertEqual(minus10.annotation_status, 'tool_inferred')
++        self.assertEqual(int(minus10.start_0index), 38)
++        self.assertEqual(int(minus10.end_0index_exclusive), 44)
++        self.assertEqual(minus10.strand, 'forward')
++        self.assertEqual(window[38:44], 'TATAAT')
++        tss = annotations[annotations.region_type.eq('TSS')].iloc[0]
++        self.assertEqual(tss.annotation_status, 'not_applicable')
++        self.assertTrue(pd.isna(tss.start_0index))
++
++    def test_reverse_match_puts_minus35_downstream_of_minus10(self):
++        promoter = self._layout_promoter()
++        original = 10
++        window = promoter[original:original+50].translate(str.maketrans('ACGT','TGCA'))[::-1]
++        samples = pd.DataFrame({
++            'sample_id':['s1'], 'source_row':[1], 'sequence':[window],
++            'dataset_id':'course_ecoli50_strength', 'data_version':'ecoli50_strength_v1', 'schema_version':'2.0.0',
++        })
++        ecoli = pd.DataFrame({'seq_id':[1], 'seq':[promoter], 'label':[1]})
++        audit, usable = classify_matches(samples, index_windows(ecoli), {})
++        self.assertEqual(audit.strand.iloc[0], 'reverse')
++        annotations = build_mapped_annotations(samples, usable)
++        minus10 = annotations[annotations.region_type.eq('minus10')].iloc[0]
++        minus35 = annotations[annotations.region_type.eq('minus35')].iloc[0]
++        self.assertEqual(minus10.strand, 'reverse')
++        self.assertGreater(int(minus35.start_0index), int(minus10.start_0index))
++        self.assertEqual(map_interval(*LAYOUT['minus10'], original, 'reverse', 81), (int(minus10.start_0index), int(minus10.end_0index_exclusive)))
++
++    def test_ambiguous_or_negative_match_stays_missing(self):
++        promoter = self._layout_promoter()
++        window = promoter[10:60]
++        other = 'G'*5 + window + 'G'*26
++        self.assertEqual(len(other), 81)
++        samples = pd.DataFrame({
++            'sample_id':['unique_neg','ambiguous'], 'source_row':[1,2],
++            'sequence':[window, window],
++            'dataset_id':'course_ecoli50_strength', 'data_version':'ecoli50_strength_v1', 'schema_version':'2.0.0',
++        })
++        negative = pd.DataFrame({'seq_id':[9], 'seq':[promoter], 'label':[0]})
++        positive = pd.DataFrame({'seq_id':[1,2], 'seq':[promoter, other], 'label':[1,1]})
++        audit, usable = classify_matches(samples.iloc[:1], {}, index_windows(negative))
++        self.assertEqual(audit.match_status.iloc[0], 'negative_only')
++        self.assertEqual(usable, {})
++        audit, usable = classify_matches(samples.iloc[1:], index_windows(positive), {})
++        self.assertEqual(audit.match_status.iloc[0], 'ambiguous_positive')
++        annotations = build_mapped_annotations(samples.iloc[1:], usable)
++        self.assertTrue(annotations.annotation_status.eq('missing').all())
++        self.assertTrue(annotations.strand.eq('unknown').all())
++
++    def test_different_parent_records_at_same_position_keep_all_sources(self):
++        promoter = self._layout_promoter()
++        different_parent = 'G' + promoter[1:]
++        samples = pd.DataFrame({
++            'sample_id':['same_position'], 'source_row':[1], 'sequence':[promoter[10:60]],
++            'dataset_id':'course_ecoli50_strength', 'data_version':'ecoli50_strength_v1', 'schema_version':'2.0.0',
++        })
++        parents = pd.DataFrame({'seq_id':[11,22], 'seq':[promoter,different_parent], 'label':[1,1]})
++        audit, usable = classify_matches(samples, index_windows(parents), {})
++        row = audit.iloc[0]
++        self.assertEqual(row.match_status, 'position_consistent_positive')
++        self.assertEqual(row.n_positive_loci, 2)
++        self.assertEqual(row.n_positive_positions, 1)
++        self.assertEqual(row.n_positive_parents, 2)
++        self.assertEqual(json.loads(row.positive_parent_ids), ['11','22'])
++        annotation = build_mapped_annotations(samples, usable)
++        minus10 = annotation[annotation.region_type.eq('minus10')].iloc[0]
++        self.assertIn('seq_id=11,22', minus10.evidence_ref)
++        self.assertEqual(minus10.annotation_status, 'tool_inferred')
++
++    def test_inferred_relationships_require_explicit_mode_and_keep_evidence_separate(self):
++        samples = self.data.iloc[:5].copy()
++        annotations = build_annotations(samples)
++        selected = annotations.region_type.eq('minus10')
++        annotations.loc[selected, 'annotation_status'] = 'tool_inferred'
++        annotations.loc[selected, 'strand'] = 'forward'
++        annotations.loc[selected, 'start_0index'] = 0
++        annotations.loc[selected, 'end_0index_exclusive'] = 6
++        default = next(r for r in summarize_regions(samples, annotations) if r['region_type']=='minus10')
++        enabled = next(r for r in summarize_regions(samples, annotations, include_inferred=True) if r['region_type']=='minus10')
++        self.assertNotIn('spearman_gc_vs_log10', default)
++        self.assertEqual(enabled['n_reliable_external_with_coordinates'], 0)
++        self.assertEqual(enabled['n_tool_inferred_with_coordinates'], 5)
++        self.assertEqual(enabled['relationship_n'], 5)
++        self.assertEqual(enabled['analysis_mode'], 'layout_exploration')
++
++    def test_positive_and_negative_parent_overlap_is_audited_and_excluded(self):
++        promoter = self._layout_promoter()
++        samples = self.data.iloc[:1].copy()
++        samples['sequence'] = promoter[10:60]
++        positive = pd.DataFrame({'seq_id':[11], 'seq':[promoter], 'label':[1]})
++        negative = pd.DataFrame({'seq_id':[22], 'seq':[promoter], 'label':[0]})
++        audit, usable = classify_matches(samples, index_windows(positive), index_windows(negative))
++        self.assertEqual(audit.match_status.iloc[0], 'both')
++        self.assertEqual(json.loads(audit.positive_parent_ids.iloc[0]), ['11'])
++        self.assertEqual(json.loads(audit.negative_parent_ids.iloc[0]), ['22'])
++        self.assertFalse(usable)
++
+ 
+ if __name__=='__main__':
+     unittest.main()
+diff --git a/analysis_m2m3/verify_run.py b/analysis_m2m3/verify_run.py
+index 0e802d9..1acf39b 100644
+--- a/analysis_m2m3/verify_run.py
++++ b/analysis_m2m3/verify_run.py
+@@ -24,10 +24,10 @@ def check_hashes(entries):
+ def verify(output, reviewed=()):
+     output = Path(output).resolve()
+     relative(output)
+-    meta = json.loads((output / 'run_manifest.json').read_text())
++    meta = json.loads((output / 'run_manifest.json').read_text(encoding='utf-8'))
+     check_hashes(meta['inputs'])
+     check_hashes(meta['artifacts'])
+-    figures = json.loads((output / 'figure_manifest.json').read_text())
++    figures = json.loads((output / 'figure_manifest.json').read_text(encoding='utf-8'))
+     for fig in figures:
+         check_hashes(fig['source_tables'])
+         check_hashes(fig['images'])
+@@ -62,6 +62,9 @@ def verify(output, reviewed=()):
+             value = {'r2': r2_score, 'mae': mean_absolute_error, 'spearman': lambda a, b: spearmanr(a, b).statistic}[row.metric_name](y, p)
+             require(np.isclose(value, row.value, rtol=1e-10, atol=1e-12), 'Recomputed metric mismatch')
+         results.update(metric_recomputation='pass', requested_ids=len(requested), common_ids=len(common), metrics_checked=len(metrics))
++    elif (output / 'region_coverage.json').exists():
++        from verify_region import verify_regions
++        results.update(verify_regions(output, data, meta))
+     else:
+         samples = pd.read_csv(output / 'source_tables/eda_samples.tsv', sep='\t')
+         require(samples.sample_id.is_unique and set(samples.sample_id) == set(data.sample_id), 'EDA ID mismatch')
+diff --git a/reports/OPEN_ITEMS.md b/reports/OPEN_ITEMS.md
+index f476a6e..2293ed5 100644
+--- a/reports/OPEN_ITEMS.md
++++ b/reports/OPEN_ITEMS.md
+@@ -6,6 +6,8 @@
+ 
+ 胡昊铭继续追溯来源；李宇飞维护公共数据，田惠今核对热力学的上下文和方向适用性。参考上下文有 75 条多重命中和 1 条未定位，报告完整与唯一匹配子集的范围。若无法恢复实验坐标，由组内向教师确认推断区域分析或补充可信基准数据的可接受范围。
+ 
++2026-10-04 补充：陈思远转述教师说明“如果没有特殊说明，所有微生物的 promoter 序列都是（−35，−10）”。针对当前大肠杆菌课程项目，记录为默认结构约定。胡昊铭可以先开展按这一结构寻找候选区域的探索分析，注明方法、假设和推定性质；此前“暂不可计算”的结论仅限于使用逐条可靠注释的分析，不能理解为所有区域分析都必须停工。该说明本身尚未给出每条 50 bp 序列的取窗和排列规则，不据此赋予固定真实坐标或改为 reliable_external。原始包的作图代码使用 −50..−1 标签，可作为取窗线索。详细解释见 [教师说明与盒区分析调整](TEACHER_PROMOTER_CLARIFICATION_20261004.md)。
++
+ ## Ridge 与 SVR 已完成集成
+ 
+ 李玘航交付已完成工程验收，k-mer Ridge 和补充 SVR 均注册到默认配置，原搜索与历史结果保留。后续传统 ML 改进继续由其负责；不再把 Ridge 写为缺失交付。
+@@ -14,4 +16,6 @@
+ 
+ 陈思远继续 CNN 多种子稳定性、泛化对照、少量结构/正则化改进、消融、归因与突变实验；其他方法由各负责人提供对照，统一评价由李宇飞与陈思远协调。
+ 
++2026-10-04 已完成 CNN 第一轮 6 个配置、10 次训练和两个候选的三个种子复跑，17 项 CNN 测试、独立指标复算及选定模型重载一致性通过。见 [优化报告](../CNN/optimization_report_20261004.md)。该轮仍是验证集初步实验，未评价本轮测试集，也未切换全组当前成绩索引。
++
+ 当前成绩属于 preliminary。传统基线历史上已输出 test 成绩；后续正式评估应明确这段历史，预先冻结实验与评价方案，避免继续用相同 test 选参，并考虑更严格划分或新的适用基准。可靠区域解释依赖注释证据，不将计算预测变化说成实验因果机制。

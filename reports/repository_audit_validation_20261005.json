@@ -1,0 +1,120 @@
+{
+  "status": "passed",
+  "checked_date": "2026-10-05",
+  "branch": "csy",
+  "remote_push_performed": false,
+  "project_config_sha256": "381e0b49fee7fda7c3cb2adef2af53d02f37509802a89a4f1699525fd3f8bd69",
+  "comparison_run_id": "comparison_val_five_methods_20261005_v3",
+  "teacher_requirement_basis": {
+    "document": "project-pool.pdf",
+    "project": "PR02-01",
+    "project_pages": [
+      44,
+      45,
+      46,
+      47
+    ],
+    "shared_repository_requirement_page": 9
+  },
+  "midterm_status": {
+    "experiment_and_code_ready": true,
+    "integrated_report_ready": true,
+    "ppt_present_in_repository": false,
+    "m4_attribution_mutation_ablation_complete": false
+  },
+  "tests": [
+    {
+      "name": "root_tests",
+      "exit_code": 0,
+      "n_tests": 19,
+      "log": "reports/test_logs/repository_audit_root_tests_20261005.log"
+    },
+    {
+      "name": "analysis_tests",
+      "exit_code": 0,
+      "n_tests": 20,
+      "log": "reports/test_logs/repository_audit_analysis_tests_20261005.log"
+    },
+    {
+      "name": "cnn_tests",
+      "exit_code": 0,
+      "n_tests": 17,
+      "command": "python -m unittest discover -s CNN/tests -v",
+      "evidence": "Passed during this audit; later edits to CNN were documentation-only"
+    },
+    {
+      "name": "contract_tests",
+      "exit_code": 0,
+      "n_tests": 48,
+      "command": "python contracts/scripts/validate.py self-test",
+      "evidence": "Passed during this audit"
+    },
+    {
+      "name": "kmer_checks",
+      "exit_code": 0,
+      "n_tests": 4,
+      "command": "python Ridge/src/test_kmer.py",
+      "evidence": "Passed during this audit"
+    }
+  ],
+  "total_checks": 108,
+  "data_reproduction": {
+    "status": "passed",
+    "source_arrays_verified": true,
+    "canonical_reproduction": {
+      "dataset_bytes": true,
+      "split_bytes": true,
+      "transform_semantics": true
+    },
+    "check": {
+      "samples": 11884,
+      "split_ids": [
+        "ecoli50_random_20260928_v1"
+      ],
+      "checked": [
+        "dataset",
+        "splits",
+        "label_transform"
+      ],
+      "limitations": "未验证原始数据、NPY/NPZ、训练过程、工具适用性或生物学依据。"
+    }
+  },
+  "integrated_verification": {
+    "status": "passed",
+    "n_checks": 28,
+    "path": "reports/integration_validation.json"
+  },
+  "delivery_snapshot": {
+    "status": "passed",
+    "exit_code": 0,
+    "snapshot_tree": "ce1e9ce1889ec1d2f7e7c61532e48bf72875bfd7",
+    "first_party_python_files": 56,
+    "syntax_errors": 0,
+    "archive_sha256": "d1b9d2152f0b6f9f243361e7e41763259c80443286c6481e9d4334bd1a101d61",
+    "source_index_unchanged": true,
+    "existing_dependency_runtime_reused": true,
+    "published_validation_unchanged": true,
+    "log": "D:\\CodexAnalysis\\PR02-01\\20261005-repository-audit\\delivery_snapshot_verify.log",
+    "snapshot": "D:\\CodexAnalysis\\PR02-01\\20261005-repository-audit\\delivery_snapshot"
+  },
+  "git_diff_check": "passed",
+  "real_git_index_still_matches_head": true,
+  "figure_visual_review": {
+    "new_error_figures": [
+      "m3_prediction_scatter",
+      "m3_residuals",
+      "m3_group_errors"
+    ],
+    "status": "passed"
+  },
+  "fixes": [
+    "reproducible original-data processing and frozen splits",
+    "complete versioned feature-index export",
+    "explicit thermo scan/both-strands policy",
+    "configured model/prediction identity checks",
+    "normalized prediction contract checks",
+    "analysis numeric checks in unified verify",
+    "optimized CNN in current five-method comparison",
+    "consistent current documentation and midterm report"
+  ]
+}

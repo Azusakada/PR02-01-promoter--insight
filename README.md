@@ -2,7 +2,7 @@
 
 本仓库保存 PR02-01 M2/M3 阶段的可复现数据与实验交付物。
 
-当前主线为 `main`：已整合数据/KNN、热力学、CNN、Ridge/SVR 与 EDA/误差分析。成员继续在各自分支开发，统一验收后进入主线。
+统一整合版本包含五方法基线、CNN 优化、区域分析修订和接口修复。`csy` 用于集成开发，`main` 用于全组发布；成员继续在各自分支开发。
 当前有效配置是 [project_config.json](project_config.json)，共同结果见 `results/`，验证和任务状态见 `reports/`。
 
 ## 统一入口
@@ -44,7 +44,7 @@ git add -f -- runs/knn_my_experiment_v1 runs/thermo_my_experiment_v1 runs/compar
 ```
 
 单独步骤：`python -m pr02 run-knn`、`python -m pr02 run-thermo`、
-`python -m pr02 run-ridge-svr`、`python CNN/run_cnn.py train --config CNN/configs/cnn_run_config.yaml`、
+`python -m pr02 run-ridge-svr`、`python CNN/run_cnn.py train --config CNN/configs/cnn_optimized_round1.yaml`、
 `python -m pr02 evaluate`、`python -m pr02 analyze`。
 默认配置对应已交付运行；再次运行会拒绝覆盖，须先生成新 tag。
 
@@ -62,6 +62,17 @@ python Ridge/src/test_kmer.py
 - `data/01_Ecoli_strength/split_manifest.tsv`：固定 train/val/test 划分。
 - `data/01_Ecoli_strength/label_transform.json`：训练集拟合的 `log10(strength)` 标签变换契约。
 - `data/01_Ecoli_strength/data_cleaning_log.md`：数据清洗、标签处理和运行记录。
+
+## 数据处理复现与中期材料
+
+原始课程 NPY 数组保存在 `data/raw_ecoli50/`，来源、哈希和划分规则在 `configs/data_ecoli50_v1.json`。`pr02/data.py` 重建主表、固定划分、清洗逐行记录和 train-only 标签变换；实测主表及 split 与当前版本逐字节一致。
+
+```powershell
+python -m pr02 rebuild-data --output runs/data_rebuild_NEW
+```
+
+- [中期报告与演示安排](reports/MIDTERM_REPORT_20261005.md)：统一成绩、数据分析、分工、汇报顺序和演示命令。
+- [仓库审查与修复清单](reports/REPOSITORY_AUDIT_20261005.md)：老师要求的逐项验收、接口修复、目录职责和剩余交付。
 
 ## E. coli KNN 回归
 
@@ -113,9 +124,11 @@ Ridge/SVR 同样来自原 50 bp，因此同样本比较不意味着所有方法�
 - `reports/integration_validation.json`：数据、运行、校准、模型重载及独立指标复算。
 - `reports/PROJECT_STATUS.md`：分工、验收与交接。
 - `reports/OPEN_ITEMS.md`：可靠注释、测量来源和 M4 待办。
-- `runs/eda_m2_integrated_20261002_v2/`、`runs/error_m3_five_methods_20261003_v2/`：当前 EDA 和五方法误差 / 案例图，附源表与人工图像 QA。
-- `history/`、旧运行目录：历史版本，不能当作当前标准产物。
+- `runs/eda_m2_integrated_20261002_v2/`、`runs/error_m3_five_methods_20261005_v3/`：当前 EDA 和五方法误差 / 案例图，附源表与人工图像 QA。
+- [启动子区域特征与强度分析](analysis_m2m3/reports/region_analysis_20261005_v2/region_relationship.md)：三张中文图、来源匹配记录、区域统计和运行快照；[中期汇报说明](reports/MIDTERM_REGION_UPDATE_20261005.md)。
+- [清理与归档说明](reports/REPOSITORY_CLEANUP_20261005.md)：当前保留范围、旧产物恢复方法和验收记录。
+- `history/`：保留传统 ML 原交付 ZIP；旧版重复运行已移出当前工作树，Git 历史可追溯。
 
 团队修改共同数据 / split / transform 前须发布新版本；新增方法提交完整 val 预测、失败状态、
 train-only 模型及 run_manifest，再注册到统一配置。每次新增方法或数据版本都重新生成评价集合。
-提交前执行适用测试和 `python -m pr02 verify`；用自己的开发分支提交集成变更，按组内发布授权完成验收后合入 main。`verify` 为只读验收，不重写已发布的验证证据；发布索引同时绑定图表运行清单。
+提交前执行适用测试和 `python -m pr02 verify`；该入口同时复算 EDA、误差分析和区域分析的数值，核对配置与实际模型身份；用自己的开发分支提交集成变更，按组内发布授权完成验收后合入 main。`verify` 为只读验收，不重写已发布的验证证据；发布索引同时绑定图表运行清单。

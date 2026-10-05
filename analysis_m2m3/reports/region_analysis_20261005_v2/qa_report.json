@@ -1,0 +1,18 @@
+{
+  "checked_at": "2026-10-05T05:51:02.908366+00:00",
+  "checks": {
+    "input_and_artifact_hashes": "pass",
+    "figure_source_and_image_hashes": "pass",
+    "region_identity_and_coordinates": "pass",
+    "region_samples_checked": 11884,
+    "annotation_rows_checked": 59420,
+    "region_metrics_independently_recomputed": 7,
+    "parent_identity_policy": "position-consistent; all source records retained"
+  },
+  "manually_reviewed_figure_ids": [
+    "region_base_frequencies",
+    "consensus_strength_groups",
+    "region_sample_distributions"
+  ],
+  "limitations": "Does not prove model training or biological causality."
+}

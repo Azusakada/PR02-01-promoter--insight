@@ -8,6 +8,8 @@ python -m pr02 run-thermo
 python -m pr02 evaluate
 ```
 
+新版生成器与统一运行使用 `input/calculator_inputs_both_strands_v2.tsv`，显式声明 `scan + both_strands`；旧 `calculator_inputs.tsv` 为历史运行输入，其方向字段描述已在新版修正。新执行器拒绝把单方向或固定 TSS 请求静默按双方向扫描。序列、原 50 bp 位置及失败请求保持一致。
+
 前者默认运行 ID 已存在时拒绝覆盖。新实验先 `python -m pr02 new-run --tag 新的英文tag`，用新配置运行。
 旧 run_thermo.py / evaluate_thermo.py 是以上入口的兼容包装，不再接受 --rebuild-from-raw 来复用旧错误结果。
 

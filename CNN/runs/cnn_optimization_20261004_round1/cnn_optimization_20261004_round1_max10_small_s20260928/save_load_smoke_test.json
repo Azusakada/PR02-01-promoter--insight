@@ -1,0 +1,32 @@
+{
+  "status": "passed",
+  "evidence_level": "smoke",
+  "performance_claim": false,
+  "input_shape": [
+    4,
+    4,
+    50
+  ],
+  "feature_shape": [
+    4,
+    32,
+    50
+  ],
+  "output_shape": [
+    4
+  ],
+  "channels": [
+    "A",
+    "C",
+    "G",
+    "T"
+  ],
+  "forward": true,
+  "finite_loss": true,
+  "backward_finite": true,
+  "optimizer_updates_parameters": true,
+  "save_load_equal": true,
+  "repeat_prediction_equal": true,
+  "max_abs_reload_difference": 0.0,
+  "device": "cpu"
+}

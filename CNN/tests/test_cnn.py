@@ -51,6 +51,33 @@ class EncodingTests(unittest.TestCase):
         self.assertIsNone(compute_metrics([1, 1], [1, 2])["r2"][0])
         self.assertIsNone(compute_metrics([1, 2], [3, 3])["spearman"][0])
 
+    def test_pooling_preserves_input_gradients_and_reload(self):
+        cfg = config(ROOT / "CNN/configs/cnn_run_config.yaml")["model"]
+        for pooling, length in [("flatten", 50), ("adaptive_avg", 10), ("adaptive_max", 5)]:
+            with self.subTest(pooling=pooling):
+                options = {**cfg, "pooling": pooling, "pooled_length": length}
+                model = PromoterCNN(options).eval()
+                x = one_hot("ACGT" * 12 + "AC").unsqueeze(0).requires_grad_()
+                y = Log10Predictor(model, {"min_log10": 1., "max_log10": 5.})(x)
+                y.sum().backward()
+                self.assertEqual(tuple(x.grad.shape), (1, 4, 50))
+                self.assertTrue(torch.isfinite(x.grad).all())
+                restored = PromoterCNN(options).eval()
+                restored.load_state_dict(model.state_dict())
+                self.assertTrue(torch.equal(model(x), restored(x)))
+
+    def test_invalid_pooling_rejected_and_legacy_weights_compatible(self):
+        cfg = config(ROOT / "CNN/configs/cnn_run_config.yaml")["model"]
+        old = PromoterCNN(cfg).eval()
+        explicit = PromoterCNN({**cfg, "pooling": "flatten", "pooled_length": 50}).eval()
+        explicit.load_state_dict(old.state_dict())
+        x = one_hot("ACGT" * 12 + "AC").unsqueeze(0)
+        self.assertTrue(torch.equal(old(x), explicit(x)))
+        for extra in [{"pooling": "unknown"}, {"pooled_length": 0}, {"pooled_length": 51},
+                      {"pooled_length": True}, {"pooling": "flatten", "pooled_length": 10}]:
+            with self.subTest(extra=extra), self.assertRaises(ValueError):
+                PromoterCNN({**cfg, **extra})
+
     def test_transform_extrapolation_and_overflow_failed_row(self):
         transform = {"min_log10": 2., "max_log10": 4., "transform_id": "test_transform"}
         self.assertEqual(label.normalise_strength(1e5, transform), 1.5)
@@ -127,6 +154,23 @@ class IntegrationTests(unittest.TestCase):
         _, groups, transform = load_bundle(cfg)
         self.assertEqual(transform, self.transform)
         self.assertEqual({r["sample_id"] for r in groups["train"]}, set(self.transform["train_ids"]))
+
+    def test_pooled_training_checkpoint_and_prediction_contract(self):
+        cfg = copy.deepcopy(self.cfg)
+        cfg["run_id"] = "synthetic_pooled_test"
+        cfg["model"].update(pooling="adaptive_avg", pooled_length=10)
+        path = self.folder / "pooled_config.yaml"
+        path.write_text(yaml.safe_dump(cfg, sort_keys=False), encoding="utf-8")
+        model = fit_cnn(self.folder / "train.tsv", self.folder / "val.tsv",
+                        self.transform_path, path, self.folder / "pooled_model")
+        bundle = predict_sequences(self.folder / "val.tsv", model, path, self.folder / "pooled_predictions")
+        rows = v.load_table("predictions", bundle.predictions)
+        self.assertEqual(len(rows), len(self.groups["val"]))
+        self.assertTrue(all(r["prediction_status"] == "ok" for r in rows))
+        restored, metadata = load_model(model)
+        self.assertEqual(metadata["model_config"]["pooled_length"], 10)
+        self.assertFalse(metadata["test_used"])
+        self.assertTrue(metadata["smoke_validation"]["save_load_equal"])
 
     def test_train_only_transform_and_wrong_hash_rejected(self):
         bad = copy.deepcopy(self.transform)

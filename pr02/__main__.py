@@ -16,6 +16,8 @@ def main(argv=None):
     sub.add_parser('run-ridge-svr')
     sub.add_parser('analyze')
     sub.add_parser('validate-data')
+    cmd = sub.add_parser('rebuild-data')
+    cmd.add_argument('--output',type=Path,required=True)
     sub.add_parser('run-all')
     sub.add_parser('verify')
     sub.add_parser('publish')
@@ -36,6 +38,9 @@ def main(argv=None):
             create(args.tag,resolve(args.config))
         elif args.command=='validate-data':
             print(v.bundle_check(DATA,SPLITS,transform=TRANSFORM))
+        elif args.command=='rebuild-data':
+            from .data import rebuild
+            print(rebuild(resolve(args.output)))
         elif args.command=='run-knn':
             from .knn import run
             run(args.run_id or cfg['runs']['knn'])

@@ -1,0 +1,24 @@
+{
+  "schema_version": "2.0.0",
+  "dataset_id": "course_ecoli50_strength",
+  "data_version": "ecoli50_strength_v1",
+  "split_id": "ecoli50_random_20260928_v1",
+  "seed": 20260928,
+  "expected_samples": 11884,
+  "raw_files": {
+    "sequence": {
+      "filename": "promoter.npy",
+      "sha256": "e71911452431acb620478f0de5ae896481be5618e7a7f9712125cd98cb8e37ab"
+    },
+    "strength": {
+      "filename": "gene_expression.npy",
+      "sha256": "a1426fa5e5806fceff2c041218b781b6dc1f0cc84b39cf4ef626d02965fd9ce5"
+    }
+  },
+  "source_archive": "promoter.zip",
+  "source_members": {
+    "sequence": "promoter/strenth/data/promoter.npy",
+    "strength": "promoter/strenth/data/gene_expression.npy"
+  },
+  "source_ancestry_evidence": "analysis_m2m3/inputs/source_audit_20261001/source_audit.json"
+}

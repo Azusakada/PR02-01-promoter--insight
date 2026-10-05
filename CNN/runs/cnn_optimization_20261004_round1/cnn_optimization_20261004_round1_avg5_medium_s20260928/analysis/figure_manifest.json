@@ -1,0 +1,30 @@
+{
+  "title": "CNN validation predictions and residuals",
+  "run_id": "cnn_optimization_20261004_round1_avg5_medium_s20260928",
+  "data_version": "ecoli50_strength_v1",
+  "split_id": "ecoli50_random_20260928_v1",
+  "subset": "val",
+  "target_scale": "log10",
+  "n_samples": 1783,
+  "annotation_status": "missing",
+  "evidence_level": "preliminary",
+  "source": {
+    "kind": "source_table",
+    "path": "CNN/runs/cnn_optimization_20261004_round1/cnn_optimization_20261004_round1_avg5_medium_s20260928/analysis/validation_plot_source.tsv",
+    "sha256": "85de547992700487f078442357e533f6de954cc429cfb0f015f3781f11e3c661"
+  },
+  "predictions": {
+    "kind": "predictions",
+    "path": "CNN/runs/cnn_optimization_20261004_round1/cnn_optimization_20261004_round1_avg5_medium_s20260928/validation/predictions_cnn.csv",
+    "sha256": "5f347a87bd638569309f5c66d089d77ff96805a3bb0584dea7005a094cd2a516"
+  },
+  "figure": {
+    "kind": "figure",
+    "path": "CNN/runs/cnn_optimization_20261004_round1/cnn_optimization_20261004_round1_avg5_medium_s20260928/analysis/validation_diagnostics.png",
+    "sha256": "09d5153e97633705260c52d2b6a3f0da332736aa58239cad5f09b90847e31235"
+  },
+  "visual_review": "passed",
+  "caption": "All successful validation samples; no outliers removed. Residual = observed - predicted.",
+  "visual_review_date": "2026-10-04",
+  "visual_review_notes": "Reviewed rendered PNG: all 1783 validation samples; axes and zero/identity guides readable; no clipping; compressed predictions and underprediction of high-strength samples remain visible."
+}

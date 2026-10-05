@@ -6,3 +6,7 @@ work/
 CNN/runs/
 runs/
 *.tmp
+
+# Legacy standalone outputs; register accepted runs explicitly.
+analysis_m2m3/runs/
+thermo/results/

@@ -1,0 +1,203 @@
+{
+  "stage": "M2",
+  "task_id": "huhaoming_region_analysis",
+  "run_id": "region_analysis_20261005_v2",
+  "method_name": "descriptive_analysis",
+  "dataset_id": "course_ecoli50_strength",
+  "data_version": "ecoli50_strength_v1",
+  "schema_version": "2.0.0",
+  "split_id": "ecoli50_random_20260928_v1",
+  "evidence_level": "preliminary",
+  "execution_status": "success",
+  "seed": 20260928,
+  "created_at": "2026-10-05T05:48:45.456916+00:00",
+  "command": [
+    "C:\\Users\\admin\\Documents\\Codex\\2026-10-02\\wo-shi\\work\\cnn_env\\Scripts\\python.exe",
+    "analysis_m2m3/map_81bp.py",
+    "--output",
+    "analysis_m2m3/reports/region_analysis_20261005_v2"
+  ],
+  "code_commit": "895bac210cc65165727a65ac0da4269edafc0e9b",
+  "dirty_worktree": true,
+  "environment": {
+    "python": "3.12.14",
+    "platform": "Windows-11-10.0.22621-SP0",
+    "packages": {
+      "numpy": "2.5.3",
+      "pandas": "3.0.6",
+      "scipy": "1.18.1",
+      "matplotlib": "3.11.2",
+      "scikit-learn": "1.9.1"
+    }
+  },
+  "parameters": {
+    "upstream_commit": "3c779b9d07f369432604551b2b020287b224232d",
+    "annotation_version": "region_map_81bp_20261005_v2",
+    "coordinate_basis": "canonical dataset layout assumption",
+    "parent_matching_policy": "all positive parent matches must have identical offset, strand, and length; negative overlap excluded",
+    "reference_tss_1based": 61,
+    "layout_81bp_0based_end_exclusive": {
+      "UP_element": [
+        0,
+        21
+      ],
+      "minus35": [
+        25,
+        31
+      ],
+      "spacer": [
+        31,
+        48
+      ],
+      "minus10": [
+        48,
+        54
+      ],
+      "TSS": [
+        60,
+        61
+      ]
+    },
+    "annotation_status": "tool_inferred",
+    "feature_source": "computed_from_sequence",
+    "inference": "descriptive relationships, no model fitting or selection"
+  },
+  "fit_subsets": [],
+  "selection_subsets": [],
+  "evaluation_subsets": [],
+  "inputs": [
+    {
+      "path": "data/01_Ecoli_strength/data_v1.tsv",
+      "sha256": "0599c5b29198c78c481d035bf32596a53411310f401463a62e160bfdbe93ca7e"
+    },
+    {
+      "path": "data/01_Ecoli_strength/split_manifest.tsv",
+      "sha256": "5d162f64e68a305749033e5f9e7f4d5bdfeb6b28af757883446f75682f9fd9b0"
+    },
+    {
+      "path": "data/02_reg_and_gen_six_species/Escherichia coli/Dataset.csv",
+      "sha256": "5bad20aef49e68d00bce978ea92996c6d16dbc2c027276eff597c6ddce3c6fb3"
+    }
+  ],
+  "source_patch": "analysis_m2m3/reports/region_analysis_20261005_v2/source_patch.diff",
+  "upstream_commit": "3c779b9d07f369432604551b2b020287b224232d",
+  "source_snapshot": [
+    "analysis_m2m3/reports/region_analysis_20261005_v2/source_code/map_81bp.py",
+    "analysis_m2m3/reports/region_analysis_20261005_v2/source_code/region_annotation.py",
+    "analysis_m2m3/reports/region_analysis_20261005_v2/source_code/region_presentation.py",
+    "analysis_m2m3/reports/region_analysis_20261005_v2/source_code/common.py"
+  ],
+  "annotation_version": "region_map_81bp_20261005_v2",
+  "artifacts": [
+    {
+      "kind": "tsv",
+      "path": "analysis_m2m3/reports/region_analysis_20261005_v2/annotations.tsv",
+      "sha256": "00fd3f1aad5038c1f2c1d04db136d4dc967bb37ff5828246e7f4269b6ba9dc9a"
+    },
+    {
+      "kind": "json",
+      "path": "analysis_m2m3/reports/region_analysis_20261005_v2/biological_summary.json",
+      "sha256": "7e3f4a965027352bb0073fc577d86336c039d18cc830ef903e4e1b1812a5d344"
+    },
+    {
+      "kind": "json",
+      "path": "analysis_m2m3/reports/region_analysis_20261005_v2/figure_manifest.json",
+      "sha256": "1169be2f3ea64900c06c6e151e6ded09b1a98e2325ad0c729c8915a723b117a8"
+    },
+    {
+      "kind": "png",
+      "path": "analysis_m2m3/reports/region_analysis_20261005_v2/figures/consensus_strength_groups.png",
+      "sha256": "2de27a542e330889a1a3ac08d2ddad51e1c42aeec170e08aecf8fcaa0284fa15"
+    },
+    {
+      "kind": "svg",
+      "path": "analysis_m2m3/reports/region_analysis_20261005_v2/figures/consensus_strength_groups.svg",
+      "sha256": "1fe103b1b7e65025270587299b6bf785f5bd76183f28ccac091d569855bc840b"
+    },
+    {
+      "kind": "png",
+      "path": "analysis_m2m3/reports/region_analysis_20261005_v2/figures/region_base_frequencies.png",
+      "sha256": "a55ef6b690e03706a9a693d29f744de8b102bb16b8e85dec979763c2489be79f"
+    },
+    {
+      "kind": "svg",
+      "path": "analysis_m2m3/reports/region_analysis_20261005_v2/figures/region_base_frequencies.svg",
+      "sha256": "5d6fd1cdb802c7f2402e50ed0d9685491a6056b3de33121fdf654312e009f380"
+    },
+    {
+      "kind": "png",
+      "path": "analysis_m2m3/reports/region_analysis_20261005_v2/figures/region_sample_distributions.png",
+      "sha256": "55e26e84f92c003ddeea2f20020279d376a8a8396288095a3c961a351562becc"
+    },
+    {
+      "kind": "svg",
+      "path": "analysis_m2m3/reports/region_analysis_20261005_v2/figures/region_sample_distributions.svg",
+      "sha256": "f2ccda8af63ad8b29ce84ec33628e2cda35dc050ae5efc99357cfbaec059d9b5"
+    },
+    {
+      "kind": "tsv",
+      "path": "analysis_m2m3/reports/region_analysis_20261005_v2/match_audit.tsv",
+      "sha256": "86b4b515fb7629873bf4e37302ca8d715191ddbdabca1789795d66bee23b4fc8"
+    },
+    {
+      "kind": "json",
+      "path": "analysis_m2m3/reports/region_analysis_20261005_v2/qa_report.json",
+      "sha256": "484edb8c5edf4e8bfa54ab7b88c51ae8d2caa7262e4342b382372403797d7983"
+    },
+    {
+      "kind": "json",
+      "path": "analysis_m2m3/reports/region_analysis_20261005_v2/region_coverage.json",
+      "sha256": "573ea5f7ec41c3d4289b41a7eeab0ae90b9b3ae0a22243e1cec3ec8e24c19fe9"
+    },
+    {
+      "kind": "md",
+      "path": "analysis_m2m3/reports/region_analysis_20261005_v2/region_relationship.md",
+      "sha256": "f843636eb1c7b95d00a8155209fddcd8c6263fbce6acbd920a80fee134fb0c81"
+    },
+    {
+      "kind": "py",
+      "path": "analysis_m2m3/reports/region_analysis_20261005_v2/source_code/common.py",
+      "sha256": "16ad51345065bcc6b0cfa192338559fd76079dc5416614626c27ea7415c76e59"
+    },
+    {
+      "kind": "py",
+      "path": "analysis_m2m3/reports/region_analysis_20261005_v2/source_code/map_81bp.py",
+      "sha256": "863fbcddde4b65da34cd9f7fe49cae282686dc0d49563b9d9b154686f4c8880a"
+    },
+    {
+      "kind": "py",
+      "path": "analysis_m2m3/reports/region_analysis_20261005_v2/source_code/region_annotation.py",
+      "sha256": "c4b78306b90f285f162c5962ca4b422fa415b8c2faceafc7aa0a3226c715685d"
+    },
+    {
+      "kind": "py",
+      "path": "analysis_m2m3/reports/region_analysis_20261005_v2/source_code/region_presentation.py",
+      "sha256": "44a4fff36faac2edb2764ed45ee1f24078f899b7a59b4a45ee5670ac06906cca"
+    },
+    {
+      "kind": "source_patch",
+      "path": "analysis_m2m3/reports/region_analysis_20261005_v2/source_patch.diff",
+      "sha256": "9791f93a696b6c8b511d7e0f23c0c6297f0f9f2ecfe4b3a0cd5a10450365de95"
+    },
+    {
+      "kind": "csv",
+      "path": "analysis_m2m3/reports/region_analysis_20261005_v2/source_tables/consensus_group_summary.csv",
+      "sha256": "bab001bf6b2b6787a9e9b9886f238f0a7f8841e763661646963598a71d1fe824"
+    },
+    {
+      "kind": "csv",
+      "path": "analysis_m2m3/reports/region_analysis_20261005_v2/source_tables/region_base_frequencies.csv",
+      "sha256": "7631df367c4cddf811a1b64346c286cdef6de0a493398032cb528a3d6f81eb80"
+    },
+    {
+      "kind": "tsv",
+      "path": "analysis_m2m3/reports/region_analysis_20261005_v2/source_tables/region_feature_samples.tsv",
+      "sha256": "0fa51f267ac48defdd7b5cfdd70c5ad0d4a7821bb330f30e7a2e168c4b4b204e"
+    },
+    {
+      "kind": "tsv",
+      "path": "analysis_m2m3/reports/region_analysis_20261005_v2/source_tables/sequence_feature_samples.tsv",
+      "sha256": "1b4cd252e36631d3e7cb6823a1ee577ac07e6c41126a4ee22275e565e7efeefb"
+    }
+  ]
+}

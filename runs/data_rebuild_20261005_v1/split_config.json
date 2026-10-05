@@ -1,0 +1,21 @@
+{
+  "schema_version": "2.0.0",
+  "split_id": "ecoli50_random_20260928_v1",
+  "seed": 20260928,
+  "strategy": "sklearn two-stage train_test_split: 70/30, then heldout 50/50; source order",
+  "counts": {
+    "train": 8318,
+    "val": 1783,
+    "test": 1783
+  },
+  "samples": {
+    "kind": "dataset",
+    "path": "runs/data_rebuild_20261005_v1/data_v1.tsv",
+    "sha256": "0599c5b29198c78c481d035bf32596a53411310f401463a62e160bfdbe93ca7e"
+  },
+  "splits": {
+    "kind": "splits",
+    "path": "runs/data_rebuild_20261005_v1/split_manifest.tsv",
+    "sha256": "5d162f64e68a305749033e5f9e7f4d5bdfeb6b28af757883446f75682f9fd9b0"
+  }
+}

@@ -1,0 +1,25 @@
+test_ambiguous_or_negative_match_stays_missing (test_analysis.AnalysisTests.test_ambiguous_or_negative_match_stays_missing) ... ok
+test_calibration_accepts_new_full_request_table (test_analysis.AnalysisTests.test_calibration_accepts_new_full_request_table) ... ok
+test_calibration_verified_and_failed_request_preserved (test_analysis.AnalysisTests.test_calibration_verified_and_failed_request_preserved) ... ok
+test_constant_rank_metric_is_undefined (test_analysis.AnalysisTests.test_constant_rank_metric_is_undefined) ... ok
+test_different_parent_records_at_same_position_keep_all_sources (test_analysis.AnalysisTests.test_different_parent_records_at_same_position_keep_all_sources) ... ok
+test_dirty_repository_captures_shared_source_patch (test_analysis.AnalysisTests.test_dirty_repository_captures_shared_source_patch) ... ok
+test_inferred_relationships_require_explicit_mode_and_keep_evidence_separate (test_analysis.AnalysisTests.test_inferred_relationships_require_explicit_mode_and_keep_evidence_separate) ... ok
+test_missing_annotations_leave_coordinates_empty (test_analysis.AnalysisTests.test_missing_annotations_leave_coordinates_empty) ... ok
+test_missing_requested_id_rejected (test_analysis.AnalysisTests.test_missing_requested_id_rejected) ... ok
+test_modified_shared_transform_is_rejected (test_analysis.AnalysisTests.test_modified_shared_transform_is_rejected) ... ok
+test_normalized_cnn_prediction_must_use_shared_transform (test_analysis.AnalysisTests.test_normalized_cnn_prediction_must_use_shared_transform) ... ok
+test_positive_and_negative_parent_overlap_is_audited_and_excluded (test_analysis.AnalysisTests.test_positive_and_negative_parent_overlap_is_audited_and_excluded) ... ok
+test_prediction_alignment_is_by_id_not_row (test_analysis.AnalysisTests.test_prediction_alignment_is_by_id_not_row) ... ok
+test_raw_thermo_is_not_numeric_strength (test_analysis.AnalysisTests.test_raw_thermo_is_not_numeric_strength) ... ok
+test_reliable_coordinates_can_report_spearman (test_analysis.AnalysisTests.test_reliable_coordinates_can_report_spearman) ... ok
+test_reverse_match_puts_minus35_downstream_of_minus10 (test_analysis.AnalysisTests.test_reverse_match_puts_minus35_downstream_of_minus10) ... ok
+test_tool_inferred_boxes_are_not_used_for_strength (test_analysis.AnalysisTests.test_tool_inferred_boxes_are_not_used_for_strength) ... ok
+test_transform_uses_train_and_does_not_clip (test_analysis.AnalysisTests.test_transform_uses_train_and_does_not_clip) ... ok
+test_unique_forward_match_transfers_minus10 (test_analysis.AnalysisTests.test_unique_forward_match_transfers_minus10) ... ok
+test_unknown_id_and_true_label_rejected (test_analysis.AnalysisTests.test_unknown_id_and_true_label_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 20 tests in 4.101s
+
+OK

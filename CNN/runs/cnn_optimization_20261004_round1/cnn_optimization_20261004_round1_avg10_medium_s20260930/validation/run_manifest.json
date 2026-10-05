@@ -1,0 +1,136 @@
+{
+  "dataset_id": "course_ecoli50_strength",
+  "schema_version": "2.0.0",
+  "stage": "M3",
+  "task_id": "cnn_ecoli50_m2_m3",
+  "run_id": "cnn_optimization_20261004_round1_avg10_medium_s20260930",
+  "method_name": "cnn_1d",
+  "data_version": "ecoli50_strength_v1",
+  "split_id": "ecoli50_random_20260928_v1",
+  "evidence_level": "preliminary",
+  "execution_status": "success",
+  "seed": 20260930,
+  "created_at": "2026-10-04T19:58:18.883510+08:00",
+  "command": [
+    "C:\\Users\\admin\\Documents\\Codex\\2026-10-02\\wo-shi\\work\\cnn_env\\Scripts\\python.exe",
+    "CNN/optimize_cnn.py"
+  ],
+  "code_commit": "895bac210cc65165727a65ac0da4269edafc0e9b",
+  "dirty_worktree": true,
+  "environment": {
+    "python": "3.12.14",
+    "platform": "Windows-11-10.0.22621-SP0",
+    "packages": {
+      "torch": "2.14.1+cpu",
+      "numpy": "2.5.3",
+      "PyYAML": "6.0.3"
+    },
+    "device": "cpu",
+    "git_branch": "csy"
+  },
+  "parameters": {
+    "schema_version": "2.0.0",
+    "task_id": "cnn_ecoli50_m2_m3",
+    "run_id": "cnn_optimization_20261004_round1_avg10_medium_s20260930",
+    "evidence_level": "preliminary",
+    "data": {
+      "samples": "data/01_Ecoli_strength/data_v1.tsv",
+      "splits": "data/01_Ecoli_strength/split_manifest.tsv",
+      "split_id": "ecoli50_random_20260928_v1",
+      "expected_samples": 11884,
+      "transform": "data/01_Ecoli_strength/label_transform.json"
+    },
+    "model": {
+      "sequence_length": 50,
+      "channels": [
+        "A",
+        "C",
+        "G",
+        "T"
+      ],
+      "conv_channels": [
+        32,
+        64
+      ],
+      "kernel_sizes": [
+        7,
+        5
+      ],
+      "hidden_dim": 32,
+      "dropout": 0.4,
+      "pooling": "adaptive_avg",
+      "pooled_length": 10
+    },
+    "training": {
+      "seed": 20260930,
+      "device": "cpu",
+      "num_threads": 4,
+      "batch_size": 128,
+      "max_epochs": 100,
+      "patience": 15,
+      "min_delta": 1e-05,
+      "learning_rate": 0.0003,
+      "weight_decay": 0.01,
+      "gradient_clip": 5.0,
+      "num_workers": 0,
+      "deterministic": true
+    },
+    "prediction": {
+      "subset": "val",
+      "allow_test": false
+    },
+    "output_dir": "CNN/runs/cnn_optimization_20261004_round1/cnn_optimization_20261004_round1_avg10_medium_s20260930"
+  },
+  "fit_subsets": [],
+  "selection_subsets": [],
+  "evaluation_subsets": [
+    "val"
+  ],
+  "artifacts": [
+    {
+      "kind": "predictions",
+      "path": "CNN/runs/cnn_optimization_20261004_round1/cnn_optimization_20261004_round1_avg10_medium_s20260930/validation/predictions_cnn.csv",
+      "sha256": "6c54cf06346c67b44815e5f7a44c16c766ce53b96019e663a483765b5c812e78"
+    },
+    {
+      "kind": "metrics",
+      "path": "CNN/runs/cnn_optimization_20261004_round1/cnn_optimization_20261004_round1_avg10_medium_s20260930/validation/metrics_cnn.csv",
+      "sha256": "6284f58de122745c44afe6dc6569df61caa33a06ef1c20bbbff36ca00563660c"
+    },
+    {
+      "kind": "prediction_qc",
+      "path": "CNN/runs/cnn_optimization_20261004_round1/cnn_optimization_20261004_round1_avg10_medium_s20260930/validation/prediction_qc.json",
+      "sha256": "9094ea63859c8764b139e154253eedcc2656bbbac35c3f492ced272be6cf60be"
+    },
+    {
+      "kind": "coverage",
+      "path": "CNN/runs/cnn_optimization_20261004_round1/cnn_optimization_20261004_round1_avg10_medium_s20260930/validation/coverage_cnn.csv",
+      "sha256": "e8f7f791772556f5e0950ac3f2b03791c122ae81d3656fc220683145e3006686"
+    },
+    {
+      "kind": "used_ids",
+      "path": "CNN/runs/cnn_optimization_20261004_round1/cnn_optimization_20261004_round1_avg10_medium_s20260930/validation/common_eval_ids_cnn.tsv",
+      "sha256": "208a27c5160f454cfc355fe210b5680359829f5cddc7623e2666632be12ad809"
+    },
+    {
+      "kind": "model_manifest",
+      "path": "CNN/runs/cnn_optimization_20261004_round1/cnn_optimization_20261004_round1_avg10_medium_s20260930/model_manifest.json",
+      "sha256": "111267c0aa6a75d976c35255786f22cd50bfdc06ecab13f7b5411912513a2126"
+    },
+    {
+      "kind": "source_patch",
+      "path": "CNN/runs/cnn_optimization_20261004_round1/cnn_optimization_20261004_round1_avg10_medium_s20260930/validation/source_patch.diff",
+      "sha256": "b362a8e528a4643cca57f3d3eef5f192085a24c372dac150f617652c4c00eac3"
+    },
+    {
+      "kind": "source_snapshot",
+      "path": "CNN/runs/cnn_optimization_20261004_round1/cnn_optimization_20261004_round1_avg10_medium_s20260930/validation/source_snapshot.zip",
+      "sha256": "b42399bc66a47813b66fadae4968d0da1cc93e5f23c8961c7530a2288d6623a3"
+    },
+    {
+      "kind": "source_files",
+      "path": "CNN/runs/cnn_optimization_20261004_round1/cnn_optimization_20261004_round1_avg10_medium_s20260930/validation/source_files.json",
+      "sha256": "9c3c5b23db15f9b996466f0f283fee3e614c0b5d0b6da0594c35e9565632e9d2"
+    }
+  ]
+}

@@ -1,0 +1,1389 @@
+diff --git a/.gitattributes b/.gitattributes
+index 4ce436c..f0e2c05 100644
+--- a/.gitattributes
++++ b/.gitattributes
+@@ -18,6 +18,7 @@ history/** -text
+ CNN/runs/** -text
+ analysis_m2m3/runs/** -text
+ analysis_m2m3/inputs/** -text
++analysis_m2m3/reports/region_analysis_*/** -text
+ KNN/results/** -text
+ thermo/results/** -text
+ Ridge/data_snapshot/** -text
+diff --git a/CNN/README.md b/CNN/README.md
+index 3eb29e1..bbe1e5d 100644
+--- a/CNN/README.md
++++ b/CNN/README.md
+@@ -32,6 +32,24 @@ python -m venv .venv
+   本仓库没有旧 CNN，当前是新增的 50 bp 实现。
+ - `Log10Predictor` 是可微分的 log10 输出包装，供 M4 后续归因使用；输入梯度为 `(N,4,50)`。
+ 
++## 一轮有限优化
++
++```powershell
++python CNN/optimize_cnn.py --study-config CNN/configs/cnn_optimization_round1.yaml
++```
++
++该计划预先固定 6 个配置、一个搜索种子和两个额外复跑种子。搜索比较小网络、
++更强正则化和位置池化；按验证 MSE 选出两个配置，再比较三个种子的平均验证 MSE。
++交付选定配置的原搜索种子模型，不挑分数最高的种子。全部尝试、训练日志、逐样本
++验证预测和选择依据保存到计划的独立输出目录。输出非空时拒绝覆盖；复现实验须
++给计划设置新的 study_id/output_dir。测试集不参与本轮模型选择。
++
++模型新增可选 `pooling: adaptive_avg` / `adaptive_max` 和 `pooled_length`（1 到 50）。
++它们在两层卷积后压缩位置维度，减少全连接层参数；输入及输入梯度仍为 `(N,4,50)`。
++不提供这些字段时保持原有 flatten 结构，原 checkpoint 可以继续加载。
++本轮选择后仍属 preliminary；同一验证集同时用于配置选择和结果报告，不能当作
++独立测试效果。完整结果见 `optimization_report_20261004.md`。
++
+ ## 固定数据和标签尺度
+ 
+ 输入路径和 split_id 在 `configs/cnn_run_config.yaml` 中显式声明。所有连接使用
+diff --git a/CNN/pr02_cnn/model.py b/CNN/pr02_cnn/model.py
+index 1339076..0244c0d 100644
+--- a/CNN/pr02_cnn/model.py
++++ b/CNN/pr02_cnn/model.py
+@@ -17,12 +17,26 @@ class PromoterCNN(nn.Module):
+             raise ValueError("模型维度必须是正整数")
+         if not 0 <= cfg["dropout"] < 1:
+             raise ValueError("dropout范围为[0,1)")
++        pooling = cfg.get("pooling", "flatten")
++        pooled_length = cfg.get("pooled_length", 50)
++        if type(pooled_length) is not int or not 1 <= pooled_length <= 50:
++            raise ValueError("pooled_length必须是1到50的整数")
++        if pooling == "flatten":
++            if pooled_length != 50:
++                raise ValueError("flatten必须保留全部50个位置")
++            self.pool = nn.Identity()
++        elif pooling == "adaptive_avg":
++            self.pool = nn.AdaptiveAvgPool1d(pooled_length)
++        elif pooling == "adaptive_max":
++            self.pool = nn.AdaptiveMaxPool1d(pooled_length)
++        else:
++            raise ValueError("pooling必须为flatten/adaptive_avg/adaptive_max")
+         self.features = nn.Sequential(
+             nn.Conv1d(4, widths[0], kernels[0], padding=kernels[0] // 2), nn.ReLU(),
+             nn.Conv1d(widths[0], widths[1], kernels[1], padding=kernels[1] // 2), nn.ReLU(),
+         )
+         self.regressor = nn.Sequential(
+-            nn.Flatten(), nn.Linear(widths[1] * 50, cfg["hidden_dim"]), nn.ReLU(),
++            nn.Flatten(), nn.Linear(widths[1] * pooled_length, cfg["hidden_dim"]), nn.ReLU(),
+             nn.Dropout(cfg["dropout"]), nn.Linear(cfg["hidden_dim"], 1),
+         )
+ 
+@@ -30,7 +44,7 @@ class PromoterCNN(nn.Module):
+         if x.ndim != 3 or x.shape[1:] != (4, 50):
+             raise ValueError(f"输入shape错误: {tuple(x.shape)}，要求(N,4,50)")
+         # No sigmoid: validation/test targets may lie outside the train range.
+-        return self.regressor(self.features(x)).squeeze(-1)
++        return self.regressor(self.pool(self.features(x))).squeeze(-1)
+ 
+ 
+ class Log10Predictor(nn.Module):
+diff --git a/CNN/tests/test_cnn.py b/CNN/tests/test_cnn.py
+index 694b7ae..9455b6c 100644
+--- a/CNN/tests/test_cnn.py
++++ b/CNN/tests/test_cnn.py
+@@ -51,6 +51,33 @@ class EncodingTests(unittest.TestCase):
+         self.assertIsNone(compute_metrics([1, 1], [1, 2])["r2"][0])
+         self.assertIsNone(compute_metrics([1, 2], [3, 3])["spearman"][0])
+ 
++    def test_pooling_preserves_input_gradients_and_reload(self):
++        cfg = config(ROOT / "CNN/configs/cnn_run_config.yaml")["model"]
++        for pooling, length in [("flatten", 50), ("adaptive_avg", 10), ("adaptive_max", 5)]:
++            with self.subTest(pooling=pooling):
++                options = {**cfg, "pooling": pooling, "pooled_length": length}
++                model = PromoterCNN(options).eval()
++                x = one_hot("ACGT" * 12 + "AC").unsqueeze(0).requires_grad_()
++                y = Log10Predictor(model, {"min_log10": 1., "max_log10": 5.})(x)
++                y.sum().backward()
++                self.assertEqual(tuple(x.grad.shape), (1, 4, 50))
++                self.assertTrue(torch.isfinite(x.grad).all())
++                restored = PromoterCNN(options).eval()
++                restored.load_state_dict(model.state_dict())
++                self.assertTrue(torch.equal(model(x), restored(x)))
++
++    def test_invalid_pooling_rejected_and_legacy_weights_compatible(self):
++        cfg = config(ROOT / "CNN/configs/cnn_run_config.yaml")["model"]
++        old = PromoterCNN(cfg).eval()
++        explicit = PromoterCNN({**cfg, "pooling": "flatten", "pooled_length": 50}).eval()
++        explicit.load_state_dict(old.state_dict())
++        x = one_hot("ACGT" * 12 + "AC").unsqueeze(0)
++        self.assertTrue(torch.equal(old(x), explicit(x)))
++        for extra in [{"pooling": "unknown"}, {"pooled_length": 0}, {"pooled_length": 51},
++                      {"pooled_length": True}, {"pooling": "flatten", "pooled_length": 10}]:
++            with self.subTest(extra=extra), self.assertRaises(ValueError):
++                PromoterCNN({**cfg, **extra})
++
+     def test_transform_extrapolation_and_overflow_failed_row(self):
+         transform = {"min_log10": 2., "max_log10": 4., "transform_id": "test_transform"}
+         self.assertEqual(label.normalise_strength(1e5, transform), 1.5)
+@@ -128,6 +155,23 @@ class IntegrationTests(unittest.TestCase):
+         self.assertEqual(transform, self.transform)
+         self.assertEqual({r["sample_id"] for r in groups["train"]}, set(self.transform["train_ids"]))
+ 
++    def test_pooled_training_checkpoint_and_prediction_contract(self):
++        cfg = copy.deepcopy(self.cfg)
++        cfg["run_id"] = "synthetic_pooled_test"
++        cfg["model"].update(pooling="adaptive_avg", pooled_length=10)
++        path = self.folder / "pooled_config.yaml"
++        path.write_text(yaml.safe_dump(cfg, sort_keys=False), encoding="utf-8")
++        model = fit_cnn(self.folder / "train.tsv", self.folder / "val.tsv",
++                        self.transform_path, path, self.folder / "pooled_model")
++        bundle = predict_sequences(self.folder / "val.tsv", model, path, self.folder / "pooled_predictions")
++        rows = v.load_table("predictions", bundle.predictions)
++        self.assertEqual(len(rows), len(self.groups["val"]))
++        self.assertTrue(all(r["prediction_status"] == "ok" for r in rows))
++        restored, metadata = load_model(model)
++        self.assertEqual(metadata["model_config"]["pooled_length"], 10)
++        self.assertFalse(metadata["test_used"])
++        self.assertTrue(metadata["smoke_validation"]["save_load_equal"])
++
+     def test_train_only_transform_and_wrong_hash_rejected(self):
+         bad = copy.deepcopy(self.transform)
+         bad["train_ids"].append(self.groups["val"][0]["sample_id"])
+diff --git a/README.md b/README.md
+index b6f910b..c1fda2a 100644
+--- a/README.md
++++ b/README.md
+@@ -114,6 +114,7 @@ Ridge/SVR 同样来自原 50 bp，因此同样本比较不意味着所有方法
+ - `reports/PROJECT_STATUS.md`：分工、验收与交接。
+ - `reports/OPEN_ITEMS.md`：可靠注释、测量来源和 M4 待办。
+ - `runs/eda_m2_integrated_20261002_v2/`、`runs/error_m3_five_methods_20261003_v2/`：当前 EDA 和五方法误差 / 案例图，附源表与人工图像 QA。
++- [启动子区域特征与强度分析](analysis_m2m3/reports/region_analysis_20261005_v2/region_relationship.md)：三张中文图、来源匹配记录、区域统计和运行快照；[中期汇报说明](reports/MIDTERM_REGION_UPDATE_20261005.md)。
+ - `history/`、旧运行目录：历史版本，不能当作当前标准产物。
+ 
+ 团队修改共同数据 / split / transform 前须发布新版本；新增方法提交完整 val 预测、失败状态、
+diff --git a/analysis_m2m3/README.md b/analysis_m2m3/README.md
+index 6f76b38..d2273df 100644
+--- a/analysis_m2m3/README.md
++++ b/analysis_m2m3/README.md
+@@ -1,21 +1,36 @@
+-# M2 数据探索与 M3 误差分析
++# M2 数据探索与 M3 分析交接
+ 
+-胡昊铭的 EDA、注释来源核查、预测可视化和案例分析已接入全组项目。使用根 requirements.txt 的 Python 3.12 环境和公共 data_v1、split、transform。
++胡昊铭的数据探索、来源核查、模型误差与案例分析已接入公共 data_v1、split 和 transform。2026-10-05 在 csy 增加区域分析修订版：修正来源匹配与注释标记，补齐中文图表、源表和可复现记录。
+ 
+-当前 EDA 位于 runs/eda_m2_integrated_20261002_v2，共 5 张图；当前误差分析位于 runs/error_m3_five_methods_20261003_v2，共 3 张图，包含 KNN、热力学、CNN、Ridge 和 SVR，附各方法预测、覆盖、精确 ID、分组误差和案例源表。
++## 当前报告
+ 
+-project_config.json 注册图表运行，results/current.json 绑定其 manifest。创建新配置后用 python -m pr02 analyze 生成该配置的误差分析；默认配置对应已有成果，重复执行会拒绝覆盖。run-all 生成新图后等待实际视觉核查，再用同一配置 publish。
++- 数据探索：`runs/eda_m2_integrated_20261002_v2/`，5 张图，11,884 条样本。
++- 五方法误差与案例：`runs/error_m3_five_methods_20261003_v2/`，3 张图，KNN、热力学、CNN、Ridge、SVR 使用共同 val 1,782 条；完整请求 1,783 条。
++- [区域特征与强度报告](reports/region_analysis_20261005_v2/region_relationship.md)：字母频率、模式相似度分组、样本分布三张中文图，附原始记录编号、覆盖统计、重复抽样区间和实际运行脚本快照。
++- [中期汇报与修订说明](../reports/MIDTERM_REGION_UPDATE_20261005.md)：可直接用于汇报的文字和本轮修改清单。
++
++区域报告先讲发现：−10 区富含 A/T，−35 的字母特征较弱，简单特征与强度的关系有限。方法、样本数和固定布局规则集中在方法说明与图注中。完整实验注释的补取属于后续来源完善，中期分析按现有数据推进。
++
++## 检查与复现
+ 
+ ```powershell
+ python -m unittest discover -s analysis_m2m3/tests -v
+-python analysis_m2m3/verify_run.py runs/eda_m2_integrated_20261002_v2
+-python analysis_m2m3/verify_run.py runs/error_m3_five_methods_20261003_v2
++python analysis_m2m3/verify_run.py analysis_m2m3/reports/region_analysis_20261005_v2
++python contracts/scripts/validate.py table annotations analysis_m2m3/reports/region_analysis_20261005_v2/annotations.tsv
+ ```
+ 
+---acknowledge-manually-reviewed 只能在实际逐张看过图后使用。当前图源表哈希、62 条误差指标复算和视觉检查均通过。主比较使用相同 1,782 条 val；完整请求 1,783 条，热力学失败保留在 coverage。共同比较 ID 与根评测一致，并绑定方法和预测版本。分组边界只用 train 确定。
++重新生成时指定新目录，已有非空运行不会覆盖：
++
++```powershell
++python analysis_m2m3/map_81bp.py --output analysis_m2m3/reports/region_analysis_reproduce_20261005
++```
++
++`map_81bp.py` 保留每条 81 bp 原始记录身份，只接受所有正样本匹配具有相同位置、方向和长度的情况；同时命中负样本的记录排除。按固定布局生成的区域标为 `tool_inferred`；`summarize_regions(..., include_inferred=True)` 显式开展探索统计，外部确认注释单独计数。
++
++实际逐张看过 PNG 后，使用 `verify_run.py --acknowledge-manually-reviewed` 记录图像验收。`project_config.json` 与 `results/current.json` 注册当前分析入口。新模型版本由 `python -m pr02 analyze` 生成对应误差图；通过验收后再 publish。
+ 
+-Ridge 和 SVR 已接入，CNN 也已正式接入。教师 M3 要求简单 ML 与热力学；Ridge 来自组内分工承诺，当前已完成工程验收。预测整体较弱，热力学使用 150 bp 参考上下文，其他方法来自 50 bp，不能称输入信息量完全相同。
++## 历史与来源
+ 
+-reports/annotation_source_review.md 和 inputs/source_audit_20261001 保留原始数据来源核查；inputs/thermo_member_b_89fcc66 和旧 runs 保存历史快照，不能作为当前结果入口。缺少可靠 TSS、实验方向及盒区坐标，计算推断不充当实验注释；具体研究待办见根 reports/OPEN_ITEMS.md。
++`reports/annotation_source_review.md` 和 `inputs/source_audit_20261001/` 是当时的来源核查记录。旧报告中“缺少可靠注释”的表述不代表当前探索分析停工。`inputs/thermo_member_b_89fcc66/` 及旧 runs 保存历史快照；当前误差分析读取正式的五方法预测。
+ 
+-EDA 新实验应显式传 --transform data/01_Ecoli_strength/label_transform.json；原 error_analysis.py 的任意方法读取和历史热力学校准适配功能继续保留，默认新流程读取完整校准 val 文件。
++教师 M3 要求简单 ML 与热力学，组内承诺的 Ridge 已完成工程验收。热力学使用补取的 150 bp 上下文，其他方法来自 50 bp；预测尺度与输入范围见各运行记录。后续工作见根 `reports/OPEN_ITEMS.md`。
+diff --git a/analysis_m2m3/error_analysis.py b/analysis_m2m3/error_analysis.py
+index 90c2cad..97ea640 100644
+--- a/analysis_m2m3/error_analysis.py
++++ b/analysis_m2m3/error_analysis.py
+@@ -52,6 +52,15 @@ def checked_predictions(path, data, subset='val', require_coverage=True):
+             require(pred.loc[ok,['predicted_value','predicted_value_log10']].isna().all().all(), 'Uncalibrated Tx_rate cannot be strength prediction')
+     else:
+         require(pred.loc[ok,'model_checkpoint'].notna().all(), 'Missing checkpoint reference')
++    # The public contract also checks raw/log10 consistency, normalized targets
++    # and transform IDs. Local display checks must not bypass that interface.
++    import sys
++    sys.path.insert(0,str(ROOT))
++    from pr02.common import DATA, SPLITS as SHARED_SPLITS, TRANSFORM, v
++    if require_coverage:
++        v.bundle_check(DATA,SHARED_SPLITS,transform=TRANSFORM,predictions=path)
++    else:
++        v.load_table('predictions',path)  # historical success-only calibration adapter
+     return pred
+ 
+ 
+diff --git a/analysis_m2m3/reports/handoff.md b/analysis_m2m3/reports/handoff.md
+index b501073..cb87114 100644
+--- a/analysis_m2m3/reports/handoff.md
++++ b/analysis_m2m3/reports/handoff.md
+@@ -1,11 +1,19 @@
+-# 胡昊铭 M2 M3 当前交接
++# 胡昊铭 M2/M3 当前交接
+ 
+-2026-10-03，原 feature/eda-annotation-m2m3 交付已合并。当前使用公共标签变换和项目注册的五方法 val 预测，不再使用旧 KNN/热力学快照作为默认比较。
++更新日期：2026-10-05。此前 EDA 和五方法误差分析已经整合；本次在 csy 接入区域分析代码并修订，尚未推送 main。
+ 
+-- EDA：runs/eda_m2_integrated_20261002_v2，5 张图及源表，11,884 条样本。
+-- 误差与案例：runs/error_m3_five_methods_20261003_v2，3 张图及源表，五方法共同 val 1,782 条；完整请求 1,783 条。
+-- 验收：10 项分析测试通过，62 条指标独立复算；图像与源表哈希、实际视觉检查通过。版本、尺度、人数和失败状态随 manifest 保存。
+-- 解释范围：所有方法仍表现较弱，高强度样本普遍低估；单次 val 排名不是稳定优势或生物学机制证据。
+-- 剩余职责：追溯可靠 TSS、实验方向、盒区坐标、强度单位和实验条件；与李宇飞、田惠今协同核对公共数据和热力学适用性。
++- 数据探索：runs/eda_m2_integrated_20261002_v2，5 张图及源表，11,884 条样本。
++- 误差与案例：runs/error_m3_five_methods_20261003_v2，3 张图及源表，五方法共同 val 1,782 条，完整请求 1,783 条。
++- 区域分析：reports/region_analysis_20261005_v2，3 张中文图、原始来源编号、注释表、源表、覆盖统计和完整运行记录。
+ 
+-教师要求与组内承诺分别记录：M3 要求简单 ML 与热力学，组内承诺的 Ridge 已到位。旧两方法图和首次验收报告保留历史性质，不代表当前全组状态。后续新模型版本必须生成新图及新比较 ID，不能改写已发布 run。
++## 本次结果与修订
++
++−10 区的 A/T 比例为 71.5%，同批完整序列为 59.6%；−35 的前两个位置偏向 T。区域 GC 比例和简单模式相似度与强度关系较弱。正文先讲这些发现，方法和范围集中说明。
++
++614 条位置一致的正样本匹配中，608 条来源唯一、6 条存在多个来源但换算位置一致；全部来源保留。−10 可分析 577 条，−35 可分析 573 条。固定布局生成的区域使用 tool_inferred，探索统计显式启用，与可靠外部注释分别计数。
++
++## 后续职责
++
++中期基于现有数据完成交付；补取实验注释不作为前置条件。下一步可分析区域组合、允许不同位置和间隔，并在来源材料可得时完善注释。新模型版本应生成对应的新误差图和比较 ID。
++
++本次上游提交为 3c779b9d07f369432604551b2b020287b224232d；代码修订与新输出保存在 csy。现有 EDA、模型预测和已发布误差运行保留原版本。
+diff --git a/analysis_m2m3/tests/test_analysis.py b/analysis_m2m3/tests/test_analysis.py
+index 9a36794..bd4f60f 100644
+--- a/analysis_m2m3/tests/test_analysis.py
++++ b/analysis_m2m3/tests/test_analysis.py
+@@ -16,12 +16,25 @@ from common import DATASET, ROOT, load_data
+ import common
+ from eda import label_transform
+ from error_analysis import attach_calibration, checked_predictions, metric_value
++from region_annotation import REGION_TYPES, build_annotations, summarize_regions
++from map_81bp import LAYOUT, build_mapped_annotations, classify_matches, index_windows, map_interval
+ 
+ INPUTS = ROOT/'analysis_m2m3/inputs/thermo_member_b_89fcc66'
+ KNN = ROOT/'KNN/results/predictions_knn_ecoli_full_val.csv'
+ 
+ 
+ class AnalysisTests(unittest.TestCase):
++    def test_normalized_cnn_prediction_must_use_shared_transform(self):
++        from pr02.common import read_json
++        cfg=read_json(ROOT/'project_config.json')
++        path=next(ROOT/p for p in cfg['validation_predictions'] if '/validation/predictions_cnn.csv' in p)
++        pred=pd.read_csv(path)
++        pred.loc[0,'predicted_value_normalized']+=0.1
++        with tempfile.TemporaryDirectory() as tmp:
++            bad=Path(tmp)/'wrong_transform.csv'; pred.to_csv(bad,index=False)
++            with self.assertRaisesRegex(ValueError,'预测反变换'):
++                checked_predictions(bad,self.data)
++
+     @classmethod
+     def setUpClass(cls):
+         cls.data=load_data()
+@@ -39,10 +52,16 @@ class AnalysisTests(unittest.TestCase):
+     def test_dirty_repository_captures_shared_source_patch(self):
+         for content in (b'diff --git a/pr02/comparison.py b/pr02/comparison.py\n', b''):
+             with self.subTest(content=content), tempfile.TemporaryDirectory() as tmp:
+-                with patch.object(common, 'ROOT', Path(tmp)), patch.object(common, 'GIT', 'git'), \
+-                        patch.object(common.subprocess, 'check_output', side_effect=[
+-                            'a' * 40, ' M pr02/comparison.py\n', content]) as git:
+-                    run = common.Run(Path(tmp) / 'run', 'M3', 'test', self.data, [], {})
++                root = Path(tmp).resolve()
++                git_results = iter(['a' * 40, ' M pr02/comparison.py\n', content])
++                real_check_output = common.subprocess.check_output
++                def side_effect(args, *args_, **kwargs):
++                    if args and args[0] == 'git':
++                        return next(git_results)
++                    return real_check_output(args, *args_, **kwargs)
++                with patch.object(common, 'ROOT', root), patch.object(common, 'GIT', 'git'), \
++                        patch.object(common.subprocess, 'check_output', side_effect=side_effect) as git:
++                    run = common.Run(root / 'run', 'M3', 'test', self.data, [], {})
+                     self.assertTrue(run.meta['dirty_worktree'])
+                     self.assertEqual((run.output / 'source_patch.diff').read_bytes(), content)
+                     self.assertEqual(run.meta['source_patch'], 'run/source_patch.diff')
+@@ -119,6 +138,176 @@ class AnalysisTests(unittest.TestCase):
+             self.assertEqual(len(joined),len(raw))
+             self.assertEqual(int(joined.prediction_status.eq('failed').sum()),1)
+ 
++    def test_missing_annotations_leave_coordinates_empty(self):
++        annotations=build_annotations(self.data)
++        self.assertEqual(len(annotations),len(self.data)*len(REGION_TYPES))
++        self.assertTrue(annotations.annotation_status.eq('missing').all())
++        self.assertTrue(annotations.strand.eq('unknown').all())
++        self.assertTrue(annotations.start_0index.isna().all())
++        self.assertTrue(annotations.end_0index_exclusive.isna().all())
++        self.assertTrue(annotations.score.isna().all())
++        summary=summarize_regions(self.data,annotations)
++        self.assertEqual(len(summary),len(REGION_TYPES))
++        for row in summary:
++            self.assertEqual(row['n_reliable_external_with_coordinates'],0)
++            self.assertEqual(row['coverage'],0)
++            self.assertEqual(row['relationship_status'],'not_computed_no_reliable_coordinates')
++            self.assertNotIn('spearman_gc_vs_log10',row)
++
++    def test_reliable_coordinates_can_report_spearman(self):
++        samples=pd.DataFrame({
++            'sample_id':['s1','s2','s3','s4'],
++            'source_row':[1,2,3,4],
++            'sequence':['AAAAAA'+'C'*44,'GGGGGG'+'A'*44,'AAAGGG'+'T'*44,'GGGAAA'+'C'*44],
++            'target_log10':[1.0,3.0,2.0,2.2],
++            'dataset_id':'course_ecoli50_strength',
++            'data_version':'ecoli50_strength_v1',
++            'schema_version':'2.0.0',
++        })
++        annotations=build_annotations(samples)
++        mask=annotations.region_type.eq('minus10')
++        annotations.loc[mask,'annotation_status']='reliable_external'
++        annotations.loc[mask,'strand']='forward'
++        annotations.loc[mask,'start_0index']=0
++        annotations.loc[mask,'end_0index_exclusive']=6
++        annotations.loc[mask,'evidence_ref']='unit-test'
++        summary={row['region_type']:row for row in summarize_regions(samples,annotations)}
++        self.assertEqual(summary['minus10']['relationship_status'],'computed')
++        self.assertEqual(summary['minus10']['n_samples_denominator'],4)
++        self.assertEqual(summary['minus10']['coverage'],1)
++        self.assertIn('spearman_gc_vs_log10',summary['minus10'])
++        self.assertEqual(summary['TSS']['relationship_status'],'not_computed_no_reliable_coordinates')
++        self.assertNotIn('spearman_gc_vs_log10',summary['TSS'])
++
++    def test_tool_inferred_boxes_are_not_used_for_strength(self):
++        samples=self.data.iloc[:3].copy()
++        annotations=build_annotations(samples)
++        mask=annotations.region_type.eq('minus35')
++        annotations.loc[mask,'annotation_status']='tool_inferred'
++        annotations.loc[mask,'strand']='forward'
++        annotations.loc[mask,'start_0index']=0
++        annotations.loc[mask,'end_0index_exclusive']=6
++        annotations.loc[mask,'evidence_ref']='unit-test'
++        row=next(item for item in summarize_regions(samples,annotations) if item['region_type']=='minus35')
++        self.assertEqual(row['n_tool_inferred_not_used'],3)
++        self.assertEqual(row['n_reliable_external_with_coordinates'],0)
++        self.assertNotIn('spearman_gc_vs_log10',row)
++
++    def _layout_promoter(self):
++        sequence = 'A'*25 + 'TTGACA' + 'C'*17 + 'TATAAT' + 'G'*6 + 'A' + 'T'*20
++        self.assertEqual(len(sequence), 81)
++        self.assertEqual(sequence[LAYOUT['minus35'][0]:LAYOUT['minus35'][1]], 'TTGACA')
++        self.assertEqual(sequence[LAYOUT['minus10'][0]:LAYOUT['minus10'][1]], 'TATAAT')
++        return sequence
++
++    def test_unique_forward_match_transfers_minus10(self):
++        promoter = self._layout_promoter()
++        window = promoter[10:60]
++        samples = pd.DataFrame({
++            'sample_id':['s1'], 'source_row':[1], 'sequence':[window],
++            'dataset_id':'course_ecoli50_strength', 'data_version':'ecoli50_strength_v1', 'schema_version':'2.0.0',
++        })
++        ecoli = pd.DataFrame({'seq_id':[1], 'seq':[promoter], 'label':[1]})
++        audit, usable = classify_matches(samples, index_windows(ecoli), {})
++        self.assertEqual(audit.match_status.iloc[0], 'position_consistent_positive')
++        annotations = build_mapped_annotations(samples, usable)
++        minus10 = annotations[annotations.region_type.eq('minus10')].iloc[0]
++        self.assertEqual(minus10.annotation_status, 'tool_inferred')
++        self.assertEqual(int(minus10.start_0index), 38)
++        self.assertEqual(int(minus10.end_0index_exclusive), 44)
++        self.assertEqual(minus10.strand, 'forward')
++        self.assertEqual(window[38:44], 'TATAAT')
++        tss = annotations[annotations.region_type.eq('TSS')].iloc[0]
++        self.assertEqual(tss.annotation_status, 'not_applicable')
++        self.assertTrue(pd.isna(tss.start_0index))
++
++    def test_reverse_match_puts_minus35_downstream_of_minus10(self):
++        promoter = self._layout_promoter()
++        original = 10
++        window = promoter[original:original+50].translate(str.maketrans('ACGT','TGCA'))[::-1]
++        samples = pd.DataFrame({
++            'sample_id':['s1'], 'source_row':[1], 'sequence':[window],
++            'dataset_id':'course_ecoli50_strength', 'data_version':'ecoli50_strength_v1', 'schema_version':'2.0.0',
++        })
++        ecoli = pd.DataFrame({'seq_id':[1], 'seq':[promoter], 'label':[1]})
++        audit, usable = classify_matches(samples, index_windows(ecoli), {})
++        self.assertEqual(audit.strand.iloc[0], 'reverse')
++        annotations = build_mapped_annotations(samples, usable)
++        minus10 = annotations[annotations.region_type.eq('minus10')].iloc[0]
++        minus35 = annotations[annotations.region_type.eq('minus35')].iloc[0]
++        self.assertEqual(minus10.strand, 'reverse')
++        self.assertGreater(int(minus35.start_0index), int(minus10.start_0index))
++        self.assertEqual(map_interval(*LAYOUT['minus10'], original, 'reverse', 81), (int(minus10.start_0index), int(minus10.end_0index_exclusive)))
++
++    def test_ambiguous_or_negative_match_stays_missing(self):
++        promoter = self._layout_promoter()
++        window = promoter[10:60]
++        other = 'G'*5 + window + 'G'*26
++        self.assertEqual(len(other), 81)
++        samples = pd.DataFrame({
++            'sample_id':['unique_neg','ambiguous'], 'source_row':[1,2],
++            'sequence':[window, window],
++            'dataset_id':'course_ecoli50_strength', 'data_version':'ecoli50_strength_v1', 'schema_version':'2.0.0',
++        })
++        negative = pd.DataFrame({'seq_id':[9], 'seq':[promoter], 'label':[0]})
++        positive = pd.DataFrame({'seq_id':[1,2], 'seq':[promoter, other], 'label':[1,1]})
++        audit, usable = classify_matches(samples.iloc[:1], {}, index_windows(negative))
++        self.assertEqual(audit.match_status.iloc[0], 'negative_only')
++        self.assertEqual(usable, {})
++        audit, usable = classify_matches(samples.iloc[1:], index_windows(positive), {})
++        self.assertEqual(audit.match_status.iloc[0], 'ambiguous_positive')
++        annotations = build_mapped_annotations(samples.iloc[1:], usable)
++        self.assertTrue(annotations.annotation_status.eq('missing').all())
++        self.assertTrue(annotations.strand.eq('unknown').all())
++
++    def test_different_parent_records_at_same_position_keep_all_sources(self):
++        promoter = self._layout_promoter()
++        different_parent = 'G' + promoter[1:]
++        samples = pd.DataFrame({
++            'sample_id':['same_position'], 'source_row':[1], 'sequence':[promoter[10:60]],
++            'dataset_id':'course_ecoli50_strength', 'data_version':'ecoli50_strength_v1', 'schema_version':'2.0.0',
++        })
++        parents = pd.DataFrame({'seq_id':[11,22], 'seq':[promoter,different_parent], 'label':[1,1]})
++        audit, usable = classify_matches(samples, index_windows(parents), {})
++        row = audit.iloc[0]
++        self.assertEqual(row.match_status, 'position_consistent_positive')
++        self.assertEqual(row.n_positive_loci, 2)
++        self.assertEqual(row.n_positive_positions, 1)
++        self.assertEqual(row.n_positive_parents, 2)
++        self.assertEqual(json.loads(row.positive_parent_ids), ['11','22'])
++        annotation = build_mapped_annotations(samples, usable)
++        minus10 = annotation[annotation.region_type.eq('minus10')].iloc[0]
++        self.assertIn('seq_id=11,22', minus10.evidence_ref)
++        self.assertEqual(minus10.annotation_status, 'tool_inferred')
++
++    def test_inferred_relationships_require_explicit_mode_and_keep_evidence_separate(self):
++        samples = self.data.iloc[:5].copy()
++        annotations = build_annotations(samples)
++        selected = annotations.region_type.eq('minus10')
++        annotations.loc[selected, 'annotation_status'] = 'tool_inferred'
++        annotations.loc[selected, 'strand'] = 'forward'
++        annotations.loc[selected, 'start_0index'] = 0
++        annotations.loc[selected, 'end_0index_exclusive'] = 6
++        default = next(r for r in summarize_regions(samples, annotations) if r['region_type']=='minus10')
++        enabled = next(r for r in summarize_regions(samples, annotations, include_inferred=True) if r['region_type']=='minus10')
++        self.assertNotIn('spearman_gc_vs_log10', default)
++        self.assertEqual(enabled['n_reliable_external_with_coordinates'], 0)
++        self.assertEqual(enabled['n_tool_inferred_with_coordinates'], 5)
++        self.assertEqual(enabled['relationship_n'], 5)
++        self.assertEqual(enabled['analysis_mode'], 'layout_exploration')
++
++    def test_positive_and_negative_parent_overlap_is_audited_and_excluded(self):
++        promoter = self._layout_promoter()
++        samples = self.data.iloc[:1].copy()
++        samples['sequence'] = promoter[10:60]
++        positive = pd.DataFrame({'seq_id':[11], 'seq':[promoter], 'label':[1]})
++        negative = pd.DataFrame({'seq_id':[22], 'seq':[promoter], 'label':[0]})
++        audit, usable = classify_matches(samples, index_windows(positive), index_windows(negative))
++        self.assertEqual(audit.match_status.iloc[0], 'both')
++        self.assertEqual(json.loads(audit.positive_parent_ids.iloc[0]), ['11'])
++        self.assertEqual(json.loads(audit.negative_parent_ids.iloc[0]), ['22'])
++        self.assertFalse(usable)
++
+ 
+ if __name__=='__main__':
+     unittest.main()
+diff --git a/analysis_m2m3/verify_run.py b/analysis_m2m3/verify_run.py
+index 0e802d9..1acf39b 100644
+--- a/analysis_m2m3/verify_run.py
++++ b/analysis_m2m3/verify_run.py
+@@ -24,10 +24,10 @@ def check_hashes(entries):
+ def verify(output, reviewed=()):
+     output = Path(output).resolve()
+     relative(output)
+-    meta = json.loads((output / 'run_manifest.json').read_text())
++    meta = json.loads((output / 'run_manifest.json').read_text(encoding='utf-8'))
+     check_hashes(meta['inputs'])
+     check_hashes(meta['artifacts'])
+-    figures = json.loads((output / 'figure_manifest.json').read_text())
++    figures = json.loads((output / 'figure_manifest.json').read_text(encoding='utf-8'))
+     for fig in figures:
+         check_hashes(fig['source_tables'])
+         check_hashes(fig['images'])
+@@ -62,6 +62,9 @@ def verify(output, reviewed=()):
+             value = {'r2': r2_score, 'mae': mean_absolute_error, 'spearman': lambda a, b: spearmanr(a, b).statistic}[row.metric_name](y, p)
+             require(np.isclose(value, row.value, rtol=1e-10, atol=1e-12), 'Recomputed metric mismatch')
+         results.update(metric_recomputation='pass', requested_ids=len(requested), common_ids=len(common), metrics_checked=len(metrics))
++    elif (output / 'region_coverage.json').exists():
++        from verify_region import verify_regions
++        results.update(verify_regions(output, data, meta))
+     else:
+         samples = pd.read_csv(output / 'source_tables/eda_samples.tsv', sep='\t')
+         require(samples.sample_id.is_unique and set(samples.sample_id) == set(data.sample_id), 'EDA ID mismatch')
+diff --git a/pr02/kmer.py b/pr02/kmer.py
+index 8315c39..d2427aa 100644
+--- a/pr02/kmer.py
++++ b/pr02/kmer.py
+@@ -64,8 +64,10 @@ def validate_features(directory=FEATURES):
+         v.require((directory/f'kmer{k}_vocabulary.txt').read_text(encoding='utf-8').splitlines()==[''.join(p) for p in itertools.product('ACGT',repeat=k)],'Vocabulary text mismatch')
+         result.append(dict(k=k,n_samples=len(ids),n_features=x.shape[1],all_counts_independently_recomputed=True))
+     v.require((directory/'sample_ids.txt').read_text(encoding='utf-8').splitlines()==[s['sample_id'] for s in samples], 'Feature ID text mismatch')
+-    index = read_table(directory/'feature_index.tsv',delimiter='\t')
+-    v.require([r['sample_id'] for r in index]==[s['sample_id'] for s in samples] and [int(r['row_index']) for r in index]==list(range(len(samples))), 'Feature index mismatch')
++    index = v.load_table('feature_index',directory/'feature_index.tsv')
++    v.bundle_check(DATA,SPLITS,feature_index=directory/'feature_index.tsv')
++    v.require(all(r['feature_version']=='kmer_count_acgt_lex_v1' for r in index),'Feature index encoding version mismatch')
++    v.require([r['sample_id'] for r in index]==[s['sample_id'] for s in samples] and [r['row_index'] for r in index]==list(range(len(samples))), 'Feature index mismatch')
+     phys = read_table(directory/'physchem8.tsv',delimiter='\t')
+     v.require([r['sample_id'] for r in phys]==[s['sample_id'] for s in samples], 'Physchem feature IDs/order mismatch')
+     from .knn import feature_map, FEATURES as PHYS_COLUMNS
+@@ -95,11 +97,21 @@ def build_features(output):
+         np.savez_compressed(output/f'kmer{k}.npz',X=count_matrix([s['sequence'] for s in samples],k),sample_ids=ids,vocabulary=vocabulary,k=np.asarray([k]))
+         (output/f'kmer{k}_vocabulary.txt').write_text(''.join(s+'\n' for s in vocabulary),encoding='utf-8',newline='\n')
+         entries.append(artifact('kmer_features',output/f'kmer{k}.npz'))
+-    write_table(output/'feature_index.tsv',[dict(sample_id=s,row_index=i) for i,s in enumerate(ids)],delimiter='\t')
++    write_table(output/'feature_index.tsv',[dict(dataset_id=s['dataset_id'],row_index=i,
++                sample_id=s['sample_id'],feature_version='kmer_count_acgt_lex_v1',
++                schema_version=s['schema_version'],data_version=s['data_version'])
++                for i,s in enumerate(samples)],delimiter='\t')
+     from .knn import feature_map, FEATURES as PHYS_COLUMNS
+     mapped=feature_map(samples)
+     write_table(output/'physchem8.tsv',[dict(sample_id=s['sample_id'],**dict(zip(PHYS_COLUMNS,mapped[s['sample_id']]))) for s in samples],delimiter='\t')
+-    write_json(output/'feature_manifest.json',dict(data=artifact('dataset',DATA),splits=artifact('splits',SPLITS),n_samples=len(samples),feature_version='kmer_count_acgt_lex_v1',artifacts=entries))
++    entries.extend(artifact(kind,output/name) for kind,name in [
++        ('feature_index','feature_index.tsv'),('sample_ids','sample_ids.npy'),
++        ('sample_ids_text','sample_ids.txt'),('physchem_features','physchem8.tsv')])
++    entries.extend(artifact('vocabulary',output/f'kmer{k}_vocabulary.txt') for k in [3,4,5])
++    write_json(output/'feature_manifest.json',dict(schema_version='2.0.0',
++               dataset_id=samples[0]['dataset_id'],data_version=samples[0]['data_version'],
++               data=artifact('dataset',DATA),splits=artifact('splits',SPLITS),n_samples=len(samples),
++               feature_version='kmer_count_acgt_lex_v1',artifacts=entries))
+     return validate_features(output)
+ 
+ 
+diff --git a/pr02/thermo.py b/pr02/thermo.py
+index f452494..be896de 100644
+--- a/pr02/thermo.py
++++ b/pr02/thermo.py
+@@ -9,10 +9,18 @@ from .common import (ROOT, DATA, SPLITS, artifact, load_bundle, prediction_base,
+                      run_dir, relative, v, write_json, write_manifest, write_table)
+ from .metrics import metric_rows
+ 
+-INPUTS = ROOT/'thermo/input/calculator_inputs.tsv'
++INPUTS = ROOT/'thermo/input/calculator_inputs_both_strands_v2.tsv'
+ METHOD = 'thermo_regseq2'
+ 
+ 
++def check_execution_policy(inputs):
++    """This adapter implements a scan of both strands, not fixed-TSS inference."""
++    for row in inputs:
++        if row['input_status']=='ready':
++            v.require(row['tss_mode']=='scan' and row['orientation_policy']=='both_strands',
++                      'Ready thermo inputs must declare scan + both_strands: '+row['sample_id'])
++
++
+ def select_state(output, length):
+     candidates = [(strand, int(mapped), state)
+                   for strand, key in [('forward','Forward_Predictions_per_TSS'),('reverse','Reverse_Predictions_per_TSS')]
+@@ -66,6 +74,7 @@ def run(run_id='thermo_regseq2_integrated_20261002_v2'):
+     samples,groups,transform = load_bundle()
+     v.bundle_check(DATA,SPLITS,calculator_inputs=INPUTS)
+     inputs = v.load_table('calculator_inputs', INPUTS)
++    check_execution_policy(inputs)
+     master = {r['sample_id']:r for r in samples}
+     v.require(len(inputs)==len(master) and {r['sample_id'] for r in inputs}==set(master), 'Incomplete thermo requests')
+     subset_map = {r['sample_id']:sub for sub,rs in groups.items() for r in rs}
+diff --git a/pr02/verify.py b/pr02/verify.py
+index 0195057..78bd0fa 100644
+--- a/pr02/verify.py
++++ b/pr02/verify.py
+@@ -2,6 +2,8 @@
+ from __future__ import annotations
+ import hashlib
+ import math
++import json
++import subprocess
+ import sys
+ import joblib
+ import numpy as np
+@@ -12,14 +14,53 @@ from .common import ROOT, DATA, SPLITS, TRANSFORM, load_bundle, read_json, read_
+ from .evaluate import align_predictions
+ 
+ 
++def check_prediction_sources(cfg, paths, frames):
++    """Reject a valid CSV that belongs to another run or CNN plan."""
++    import yaml
++    cnn = yaml.safe_load(resolve(cfg['cnn_config']).read_text(encoding='utf-8-sig'))
++    expected = {
++        'knn_physchem_full': (cfg['runs']['knn'], ROOT/'runs'/cfg['runs']['knn']/'predictions_knn_val.csv'),
++        'thermo_regseq2': (cfg['runs']['thermo'], ROOT/'runs'/cfg['runs']['thermo']/'predictions/thermo_val_calibrated.csv'),
++        'cnn_1d': (cnn['run_id'], resolve(cnn['output_dir'])/'validation/predictions_cnn.csv'),
++    }
++    for kind in ['ridge','svr']:
++        if kind in cfg['runs']:
++            directory=ROOT/'runs'/cfg['runs'][kind]
++            manifest=read_json(directory/'model_manifest.json')
++            expected[manifest['method_name']]=(cfg['runs'][kind],directory/f'predictions_{kind}_val.csv')
++    v.require(len(paths)==len(expected),'Prediction plan must include exactly the configured methods')
++    for path,rows in zip(paths,frames):
++        method=rows[0]['method_name']
++        v.require(method in expected,'Unconfigured prediction method: '+method)
++        run_id,source=expected[method]
++        v.require(path.resolve()==source.resolve() and rows[0]['run_id']==run_id,
++                  'Prediction source does not match configured run: '+method)
++    cnn_meta=read_json(resolve(cnn['output_dir'])/'model_manifest.json')
++    v.require(cnn_meta['model_id']==cnn['run_id'] and cnn_meta['model_config']==cnn['model']
++              and cnn_meta['seed']==cnn['training']['seed'],'CNN configuration does not match saved model')
++    return cnn
++
++
++def check_analysis(directory):
++    """Use the standalone numeric verifier without changing published artifacts."""
++    completed=subprocess.run([sys.executable,str(ROOT/'analysis_m2m3/verify_run.py'),str(directory)],
++                             cwd=ROOT,check=True,capture_output=True,text=True,encoding='utf-8')
++    return json.loads(completed.stdout)
++
++
+ def verify(cfg):
+     samples,groups,transform = load_bundle()
+     paths = [resolve(p) for p in cfg['validation_predictions']]
+     frames,common,_ = align_predictions(paths)
++    check_prediction_sources(cfg,paths,frames)
+     result = dict(status='passed',samples=len(samples),split_counts={s:len(rs) for s,rs in groups.items()},
+                   transform_id=transform['transform_id'],common_val_count=len(common),test_evaluated=False,checks=[])
+     def record(name,detail=True): result['checks'].append(dict(name=name,status='passed',detail=detail))
+     record('dataset_splits_shared_transform')
++    record('configured_prediction_sources_and_cnn_model')
++    from .thermo import INPUTS,check_execution_policy
++    record('thermo_input_bundle',v.bundle_check(DATA,SPLITS,calculator_inputs=INPUTS))
++    check_execution_policy(v.load_table('calculator_inputs',INPUTS))
+     knn_dir = ROOT/'runs'/cfg['runs']['knn']
+     thermo_dir = ROOT/'runs'/cfg['runs']['thermo']
+     comparison_dir = ROOT/'runs'/cfg['runs']['comparison']
+@@ -40,6 +81,9 @@ def verify(cfg):
+     calibration = read_json(thermo_dir/'thermo_calibration.json')
+     v.require(np.allclose([a,b],[calibration['coef_a'],calibration['intercept_b']],rtol=1e-10,atol=1e-10),'Calibration not reproduced')
+     v.require(calibration['n_fit']==len(tr) and {r['sample_id'] for r in tr}<={s['sample_id'] for s in groups['train']},'Calibration fit IDs wrong')
++    fit_hash=hashlib.sha256(''.join(s+'\n' for s in sorted(r['sample_id'] for r in tr)).encode()).hexdigest()
++    v.require(calibration['train_ids_sha256']==fit_hash and calibration['fit_subset']=='train',
++              'Calibration training identity mismatch')
+     for sub in ['train','val','test']:
+         raw = v.load_table('predictions',thermo_dir/f'predictions/thermo_{sub}_raw.csv')
+         cal = v.load_table('predictions',thermo_dir/f'predictions/thermo_{sub}_calibrated.csv')
+@@ -78,6 +122,11 @@ def verify(cfg):
+     from pr02_cnn.predict import load_model
+     from pr02_cnn.data import one_hot
+     model,meta = load_model(ModelArtifact(cnn_dir/'best_checkpoint.pt',cnn_dir/'model_manifest.json',cnn_dir/'cnn_run_config.yaml'),'cpu')
++    v.require(meta['samples_sha256']==v.sha256(DATA) and meta['splits_sha256']==v.sha256(SPLITS)
++              and meta['transform']==transform,'CNN model is bound to different frozen inputs')
++    for sub in ['train','val']:
++        ids=sorted(s['sample_id'] for s in groups[sub])
++        v.require(meta[sub]['ids']==ids and meta[sub]['n_samples']==len(ids), 'CNN fit/selection IDs mismatch')
+     model.eval()
+     torch.set_num_threads(4)
+     x = torch.stack([one_hot(s['sequence']) for s in groups['val']])
+@@ -103,6 +152,9 @@ def verify(cfg):
+     for name,path in cfg.get('analysis_runs',{}).items():
+         directory=resolve(path)
+         detail=v.run_check(directory/'run_manifest.json',ROOT)
++        analysis_meta=read_json(directory/'run_manifest.json')
++        v.require(all(analysis_meta[key]==transform[key] for key in ['dataset_id','data_version','split_id']),
++                  'Analysis uses another data version or split: '+name)
+         figures=read_json(directory/'figure_manifest.json')
+         v.require(all(f['visual_check_status']=='pass' for f in figures),'Analysis figures need manual review before publication: '+str(directory))
+         if name=='errors':
+@@ -114,9 +166,17 @@ def verify(cfg):
+             metric_ids={m['comparison_set_id'] for m in metric_table}
+             v.require(any(r['comparison_set_id'] in metric_ids for r in error_ids),'Error analysis comparison identity mismatch')
+         record('analysis_artifacts_and_visual_review:'+name,detail)
++        record('analysis_numeric_verification:'+name,check_analysis(directory))
+     current_index = ROOT/'results/current.json'
+     if current_index.exists():
+         registry = read_json(current_index)
++        if registry['comparison_run_id']==cfg['runs']['comparison']:
++            v.require({entry['original']['path'] for entry in registry['predictions']}==set(cfg['validation_predictions']),
++                      'Current registry and project prediction paths disagree')
++            v.require({entry['path'] for entry in registry.get('analysis',[])}==
++                      {resolve(path).relative_to(ROOT).as_posix()+'/run_manifest.json'
++                       for path in cfg.get('analysis_runs',{}).values()},
++                      'Current registry and project analysis paths disagree')
+         entries = [registry[key] for key in ['data','splits','label_transform','comparison_manifest','validation']]
+         entries.extend(registry['artifacts'])
+         entries.extend(registry.get('legacy_entrypoints',[]))
+diff --git a/project_config.json b/project_config.json
+index eb10f36..9280958 100644
+--- a/project_config.json
++++ b/project_config.json
+@@ -24,6 +24,7 @@
+   "test_metrics_enabled": false,
+   "analysis_runs": {
+     "eda": "runs/eda_m2_integrated_20261002_v2",
+-    "errors": "runs/error_m3_five_methods_20261003_v2"
++    "errors": "runs/error_m3_five_methods_20261003_v2",
++    "regions": "analysis_m2m3/reports/region_analysis_20261005_v2"
+   }
+ }
+diff --git a/reports/OPEN_ITEMS.md b/reports/OPEN_ITEMS.md
+index f476a6e..bebf20a 100644
+--- a/reports/OPEN_ITEMS.md
++++ b/reports/OPEN_ITEMS.md
+@@ -1,10 +1,14 @@
+ # PR02 01 尚需完成的研究任务
+ 
+-## 可靠注释与测量来源
++## 区域分析与后续来源完善
+ 
+ 主表可用于 strength 回归，但逐样本可靠 TSS、实验方向、−10/−35/spacer/UP 坐标、强度单位和实验条件仍未完整恢复。参考基因组定位和工具扫描不能替代实验注释。
+ 
+-胡昊铭继续追溯来源；李宇飞维护公共数据，田惠今核对热力学的上下文和方向适用性。参考上下文有 75 条多重命中和 1 条未定位，报告完整与唯一匹配子集的范围。若无法恢复实验坐标，由组内向教师确认推断区域分析或补充可信基准数据的可接受范围。
++2026-10-05 已在 csy 接入胡昊铭的区域分析并修订：614 条位置一致的正样本匹配，保留全部 81 bp 来源编号；−10 分析 577 条，−35 分析 573 条。新增字母频率、模式相似度分组和样本分布三张图，报告先讲发现，方法与数据范围集中说明。见 [区域分析报告](../analysis_m2m3/reports/region_analysis_20261005_v2/region_relationship.md)。
++
++中期按现有数据开展探索分析，补取实验注释不作为前置条件。胡昊铭负责后续区域组合和可变位置/间隔分析；来源资料可得时再完善。李宇飞维护公共数据，田惠今核对热力学的上下文适用性。参考上下文有 75 条多重命中和 1 条未定位，相应覆盖记录保留。
++
++2026-10-04 补充：陈思远转述教师说明“如果没有特殊说明，所有微生物的 promoter 序列都是（−35，−10）”。针对当前大肠杆菌课程项目，记录为默认结构约定。胡昊铭可以先开展按这一结构寻找候选区域的探索分析，注明方法、假设和推定性质；此前“暂不可计算”的结论仅限于使用逐条可靠注释的分析，不能理解为所有区域分析都必须停工。该说明本身尚未给出每条 50 bp 序列的取窗和排列规则，不据此赋予固定真实坐标或改为 reliable_external。原始包的作图代码使用 −50..−1 标签，可作为取窗线索。详细解释见 [教师说明与盒区分析调整](TEACHER_PROMOTER_CLARIFICATION_20261004.md)。
+ 
+ ## Ridge 与 SVR 已完成集成
+ 
+@@ -14,4 +18,6 @@
+ 
+ 陈思远继续 CNN 多种子稳定性、泛化对照、少量结构/正则化改进、消融、归因与突变实验；其他方法由各负责人提供对照，统一评价由李宇飞与陈思远协调。
+ 
++2026-10-04 已完成 CNN 第一轮 6 个配置、10 次训练和两个候选的三个种子复跑，17 项 CNN 测试、独立指标复算及选定模型重载一致性通过。见 [优化报告](../CNN/optimization_report_20261004.md)。该轮仍是验证集初步实验，未评价本轮测试集，也未切换全组当前成绩索引。
++
+ 当前成绩属于 preliminary。传统基线历史上已输出 test 成绩；后续正式评估应明确这段历史，预先冻结实验与评价方案，避免继续用相同 test 选参，并考虑更严格划分或新的适用基准。可靠区域解释依赖注释证据，不将计算预测变化说成实验因果机制。
+diff --git a/reports/PROJECT_STATUS.md b/reports/PROJECT_STATUS.md
+index 22ea4b0..940d3e1 100644
+--- a/reports/PROJECT_STATUS.md
++++ b/reports/PROJECT_STATUS.md
+@@ -1,6 +1,6 @@
+ # PR02 01 五人项目当前交付
+ 
+-日期 2026-10-03。仓库 D:\PR02-01-promoter--insight。默认配置 project_config.json，发布入口 main，成员开发分支保留。
++更新日期 2026-10-05。仓库 D:\PR02-01-promoter--insight。默认配置 project_config.json，发布入口 main，成员开发分支保留。本次区域分析修订在本地 csy，尚未推送 main。
+ 
+ 已整合 main 数据/KNN、member-b 热力学、csy CNN、liqihang Ridge/SVR 和 feature/eda-annotation-m2m3。李玘航主线已到位；工程集成和已确认问题修复已完成，可靠注释及 M4 研究仍待推进。
+ 
+@@ -39,7 +39,13 @@ CNN/KNN/Ridge/SVR 基于原 50 bp，热力学使用补取的 150 bp，信息范
+ | 李玘航 | k-mer 特征、Ridge、SVR、搜索与预测 | 传统 ML 对照及后续泛化 |
+ | 田惠今 | 热力学推断、train 校准、失败与覆盖 | 多重定位及实验适用性说明 |
+ | 陈思远 | CNN、五线集成、管理与验收 | CNN 泛化、消融、归因与突变 |
+-| 胡昊铭 | EDA、注释来源审查、五方法误差与案例 | 恢复可靠区域注释与盒区关系分析 |
++| 胡昊铭 | EDA、来源审查、五方法误差与案例、区域特征与强度分析 | 区域组合、可变位置和间隔分析；来源资料可得时完善 |
++
++## 2026-10-05 区域分析修订
++
++已接入胡昊铭提交 3c779b9 的分析代码，修正多来源匹配被合并为“唯一”的问题，完整保存原始记录编号。614 条位置一致匹配中，608 条来源唯一、6 条多来源但换算位置相同。区域使用 tool_inferred 记录推定性质，并显式启用探索统计，可靠外部注释另行计数。
++
++新增三张中文图及源表，报告先讲 −10 的 A/T 富集、−35 特征较弱，以及简单特征与强度关系较弱的发现；方法和范围集中说明。中期无需等待新增实验注释。见 [区域分析报告](../analysis_m2m3/reports/region_analysis_20261005_v2/region_relationship.md)。
+ 
+ ## 当前路径
+ 
+diff --git a/results/current.json b/results/current.json
+index 6695b70..c2a8989 100644
+--- a/results/current.json
++++ b/results/current.json
+@@ -1,241 +1,246 @@
+-{
+-  "schema_version": "2.0.0",
+-  "published_at": "2026-10-03T21:51:05.406391+08:00",
+-  "comparison_run_id": "comparison_val_five_methods_20261003_v2",
+-  "evidence_level": "preliminary",
+-  "test_metrics_enabled": false,
+-  "data": {
+-    "kind": "dataset",
+-    "path": "data/01_Ecoli_strength/data_v1.tsv",
+-    "sha256": "0599c5b29198c78c481d035bf32596a53411310f401463a62e160bfdbe93ca7e"
+-  },
+-  "splits": {
+-    "kind": "splits",
+-    "path": "data/01_Ecoli_strength/split_manifest.tsv",
+-    "sha256": "5d162f64e68a305749033e5f9e7f4d5bdfeb6b28af757883446f75682f9fd9b0"
+-  },
+-  "label_transform": {
+-    "kind": "label_transform",
+-    "path": "data/01_Ecoli_strength/label_transform.json",
+-    "sha256": "1784286ed1f086c1f0d26e4b44f9cd170adc9d47a091c2cdf1f3635861b97557"
+-  },
+-  "transform_id": "log10mm_59711a1c2217859e",
+-  "predictions": [
+-    {
+-      "method_name": "knn_physchem_full",
+-      "run_id": "knn_physchem_integrated_20261002_v2",
+-      "n_requested": 1783,
+-      "n_success": 1783,
+-      "original": {
+-        "kind": "predictions",
+-        "path": "runs/knn_physchem_integrated_20261002_v2/predictions_knn_val.csv",
+-        "sha256": "885d22fbd464f83f35df2c80886bd9b801e3feffdda2a9548314c1b9769d9b99"
+-      },
+-      "current": {
+-        "kind": "predictions",
+-        "path": "results/predictions/knn_physchem_full_val.csv",
+-        "sha256": "885d22fbd464f83f35df2c80886bd9b801e3feffdda2a9548314c1b9769d9b99"
+-      }
+-    },
+-    {
+-      "method_name": "thermo_regseq2",
+-      "run_id": "thermo_regseq2_integrated_20261002_v2",
+-      "n_requested": 1783,
+-      "n_success": 1782,
+-      "original": {
+-        "kind": "predictions",
+-        "path": "runs/thermo_regseq2_integrated_20261002_v2/predictions/thermo_val_calibrated.csv",
+-        "sha256": "9539011545d787a6832cd6d7ec830f4f1cbe0d8efaeeaef8691feb336b9f6e1f"
+-      },
+-      "current": {
+-        "kind": "predictions",
+-        "path": "results/predictions/thermo_regseq2_val.csv",
+-        "sha256": "9539011545d787a6832cd6d7ec830f4f1cbe0d8efaeeaef8691feb336b9f6e1f"
+-      }
+-    },
+-    {
+-      "method_name": "cnn_1d",
+-      "run_id": "cnn_ecoli50_integrated_20261002_v2",
+-      "n_requested": 1783,
+-      "n_success": 1783,
+-      "original": {
+-        "kind": "predictions",
+-        "path": "CNN/runs/cnn_ecoli50_integrated_20261002_v2/validation/predictions_cnn.csv",
+-        "sha256": "04755f52dff6f781c62931af7493c653f0cb1a801c345998c22320feb60ccbfd"
+-      },
+-      "current": {
+-        "kind": "predictions",
+-        "path": "results/predictions/cnn_1d_val.csv",
+-        "sha256": "04755f52dff6f781c62931af7493c653f0cb1a801c345998c22320feb60ccbfd"
+-      }
+-    },
+-    {
+-      "method_name": "kmer3_ridge",
+-      "run_id": "ridge_kmer_integrated_20261003_v1",
+-      "n_requested": 1783,
+-      "n_success": 1783,
+-      "original": {
+-        "kind": "predictions",
+-        "path": "runs/ridge_kmer_integrated_20261003_v1/predictions_ridge_val.csv",
+-        "sha256": "11ff56bc53dff64c48de59cf81810ceffa0211bc53756c36f7a7c5154540609c"
+-      },
+-      "current": {
+-        "kind": "predictions",
+-        "path": "results/predictions/kmer3_ridge_val.csv",
+-        "sha256": "11ff56bc53dff64c48de59cf81810ceffa0211bc53756c36f7a7c5154540609c"
+-      }
+-    },
+-    {
+-      "method_name": "kmer3_svr",
+-      "run_id": "svr_kmer_integrated_20261003_v1",
+-      "n_requested": 1783,
+-      "n_success": 1783,
+-      "original": {
+-        "kind": "predictions",
+-        "path": "runs/svr_kmer_integrated_20261003_v1/predictions_svr_val.csv",
+-        "sha256": "d8caccf434915bedda00476e33ecd1df8e367036b335dc316c27a35553ec546d"
+-      },
+-      "current": {
+-        "kind": "predictions",
+-        "path": "results/predictions/kmer3_svr_val.csv",
+-        "sha256": "d8caccf434915bedda00476e33ecd1df8e367036b335dc316c27a35553ec546d"
+-      }
+-    }
+-  ],
+-  "comparison_manifest": {
+-    "kind": "run_manifest",
+-    "path": "runs/comparison_val_five_methods_20261003_v2/run_manifest.json",
+-    "sha256": "a240bfe454baa89143de89426a744ef4cff59566e4163d52e44e91706d3ad660"
+-  },
+-  "artifacts": [
+-    {
+-      "kind": "current_result",
+-      "path": "results/metrics.csv",
+-      "sha256": "a79ef5bc9082c7f6a7519fe9977204ea28ceb530e60f88668cd1f968e614c74e"
+-    },
+-    {
+-      "kind": "current_result",
+-      "path": "results/coverage_summary.csv",
+-      "sha256": "df637629d6c06725dd7c1d596acefdfd0d99476c98de4ca66528b63aa1952c31"
+-    },
+-    {
+-      "kind": "current_result",
+-      "path": "results/common_eval_ids.tsv",
+-      "sha256": "df203b98dd937e165804d6f0dbda43ec9d41f20864327dfec43e9892b4a03c4f"
+-    },
+-    {
+-      "kind": "current_result",
+-      "path": "results/performance_summary.csv",
+-      "sha256": "d1af45a269b8ccc598f5e80b06e8933b43f20cf4295af47d0341f7ad7c462261"
+-    },
+-    {
+-      "kind": "current_result",
+-      "path": "results/metrics_unique_context.csv",
+-      "sha256": "3acab4d262a2dce7ad392b1cbc15a298e0e1423451f7d89a10724bbb8493f7f3"
+-    },
+-    {
+-      "kind": "current_result",
+-      "path": "results/unique_context_eval_ids.tsv",
+-      "sha256": "fe73b1f88337cc41aaccb641c487e34e0750c7bf18129c5b9a980f97ab98189c"
+-    }
+-  ],
+-  "validation": {
+-    "kind": "validation",
+-    "path": "runs/comparison_val_five_methods_20261003_v2/integration_validation.json",
+-    "sha256": "b6f67a24bb00ec3391991d359317671ab40e051fcf1ccc4c7fbc8a853e4a022d"
+-  },
+-  "legacy_entrypoints": [
+-    {
+-      "kind": "current_knn_alias",
+-      "path": "KNN/results/predictions_knn.csv",
+-      "sha256": "885d22fbd464f83f35df2c80886bd9b801e3feffdda2a9548314c1b9769d9b99"
+-    },
+-    {
+-      "kind": "current_knn_alias",
+-      "path": "KNN/results/metrics.csv",
+-      "sha256": "367737f20a1f2f4fd77c89e23fd4313e79e4beb61b1d49e3f89add54c9f5c8b1"
+-    },
+-    {
+-      "kind": "current_knn_alias",
+-      "path": "KNN/results/knn_model.joblib",
+-      "sha256": "b8dd774046b27fc87d75e8c22d5787b1eea51ee71e6cca403dc2655d54d3933b"
+-    },
+-    {
+-      "kind": "current_knn_alias",
+-      "path": "KNN/results/knn_config.json",
+-      "sha256": "3533cf96b8175c16e89d43db96e746a663855d1fca3cc831d7cbe21c0759cde9"
+-    },
+-    {
+-      "kind": "current_knn_alias",
+-      "path": "KNN/results/common_eval_ids.tsv",
+-      "sha256": "208a27c5160f454cfc355fe210b5680359829f5cddc7623e2666632be12ad809"
+-    },
+-    {
+-      "kind": "current_knn_alias",
+-      "path": "KNN/results/coverage_summary.csv",
+-      "sha256": "9e1a60e9bd4928ecf69385fd4c04589954eabf32bbeb493d27a1fea49268efd3"
+-    },
+-    {
+-      "kind": "current_kmer_alias",
+-      "path": "Ridge/results/predictions_ridge.csv",
+-      "sha256": "11ff56bc53dff64c48de59cf81810ceffa0211bc53756c36f7a7c5154540609c"
+-    },
+-    {
+-      "kind": "current_kmer_alias",
+-      "path": "Ridge/results/ridge_metrics.csv",
+-      "sha256": "f656ef67720bd53109a2caef0d2f64f1bbaa034babe4702e08832d3a591da7bd"
+-    },
+-    {
+-      "kind": "current_kmer_alias",
+-      "path": "Ridge/results/ridge_model.joblib",
+-      "sha256": "57f1a4fbd9f6b221b072b1ccab8a685c4715602827e21089eb3549fa3eb9a998"
+-    },
+-    {
+-      "kind": "current_kmer_alias",
+-      "path": "Ridge/results/ridge_config.json",
+-      "sha256": "e51e4023ab5b72e17adfe0076ed235341c3fa3fbaf59bfa148ad3a61db621198"
+-    },
+-    {
+-      "kind": "current_kmer_alias",
+-      "path": "Ridge/results/predictions_svr.csv",
+-      "sha256": "d8caccf434915bedda00476e33ecd1df8e367036b335dc316c27a35553ec546d"
+-    },
+-    {
+-      "kind": "current_kmer_alias",
+-      "path": "Ridge/results/svr_metrics.csv",
+-      "sha256": "a1f00f6bcf9ef7a82b1eecb6a7a797256e75051de1c0d9c14a4ead82f053674a"
+-    },
+-    {
+-      "kind": "current_kmer_alias",
+-      "path": "Ridge/results/svr_model.joblib",
+-      "sha256": "d5e564e7a9ced24741f3510c0c2573022ac2844521d4927e9cbe70a94ab5baa1"
+-    },
+-    {
+-      "kind": "current_kmer_alias",
+-      "path": "Ridge/results/svr_config.json",
+-      "sha256": "9384b2aeaba143c103d6be26c6243ac96f3655426f6f5c141500d4b31d411463"
+-    },
+-    {
+-      "kind": "current_kmer_alias",
+-      "path": "Ridge/results/coverage_summary.csv",
+-      "sha256": "78f28d3cc95be71a2d10261f8c274e1c0c602c0b8ca5dd1f396e1aaf8f47b10d"
+-    },
+-    {
+-      "kind": "current_kmer_alias",
+-      "path": "Ridge/results/common_eval_ids.tsv",
+-      "sha256": "9a491a9ae6c1dc7cbb08e0e27ba960c308e42c0a7ee7a39e67f8a1dfa48c9e47"
+-    }
+-  ],
+-  "analysis": [
+-    {
+-      "kind": "analysis_eda",
+-      "path": "runs/eda_m2_integrated_20261002_v2/run_manifest.json",
+-      "sha256": "e1abd9ae6317aef4c28612a1f624c60a04d69f61d876a7e69f9bdae87bc5fe1f"
+-    },
+-    {
+-      "kind": "analysis_errors",
+-      "path": "runs/error_m3_five_methods_20261003_v2/run_manifest.json",
+-      "sha256": "9ab745c4f10cf134ede9cad0fc231b8ea5a6ad5c74f10dab74599fd55427ea08"
+-    }
+-  ]
+-}
++{
++  "schema_version": "2.0.0",
++  "published_at": "2026-10-03T21:51:05.406391+08:00",
++  "comparison_run_id": "comparison_val_five_methods_20261003_v2",
++  "evidence_level": "preliminary",
++  "test_metrics_enabled": false,
++  "data": {
++    "kind": "dataset",
++    "path": "data/01_Ecoli_strength/data_v1.tsv",
++    "sha256": "0599c5b29198c78c481d035bf32596a53411310f401463a62e160bfdbe93ca7e"
++  },
++  "splits": {
++    "kind": "splits",
++    "path": "data/01_Ecoli_strength/split_manifest.tsv",
++    "sha256": "5d162f64e68a305749033e5f9e7f4d5bdfeb6b28af757883446f75682f9fd9b0"
++  },
++  "label_transform": {
++    "kind": "label_transform",
++    "path": "data/01_Ecoli_strength/label_transform.json",
++    "sha256": "1784286ed1f086c1f0d26e4b44f9cd170adc9d47a091c2cdf1f3635861b97557"
++  },
++  "transform_id": "log10mm_59711a1c2217859e",
++  "predictions": [
++    {
++      "method_name": "knn_physchem_full",
++      "run_id": "knn_physchem_integrated_20261002_v2",
++      "n_requested": 1783,
++      "n_success": 1783,
++      "original": {
++        "kind": "predictions",
++        "path": "runs/knn_physchem_integrated_20261002_v2/predictions_knn_val.csv",
++        "sha256": "885d22fbd464f83f35df2c80886bd9b801e3feffdda2a9548314c1b9769d9b99"
++      },
++      "current": {
++        "kind": "predictions",
++        "path": "results/predictions/knn_physchem_full_val.csv",
++        "sha256": "885d22fbd464f83f35df2c80886bd9b801e3feffdda2a9548314c1b9769d9b99"
++      }
++    },
++    {
++      "method_name": "thermo_regseq2",
++      "run_id": "thermo_regseq2_integrated_20261002_v2",
++      "n_requested": 1783,
++      "n_success": 1782,
++      "original": {
++        "kind": "predictions",
++        "path": "runs/thermo_regseq2_integrated_20261002_v2/predictions/thermo_val_calibrated.csv",
++        "sha256": "9539011545d787a6832cd6d7ec830f4f1cbe0d8efaeeaef8691feb336b9f6e1f"
++      },
++      "current": {
++        "kind": "predictions",
++        "path": "results/predictions/thermo_regseq2_val.csv",
++        "sha256": "9539011545d787a6832cd6d7ec830f4f1cbe0d8efaeeaef8691feb336b9f6e1f"
++      }
++    },
++    {
++      "method_name": "cnn_1d",
++      "run_id": "cnn_ecoli50_integrated_20261002_v2",
++      "n_requested": 1783,
++      "n_success": 1783,
++      "original": {
++        "kind": "predictions",
++        "path": "CNN/runs/cnn_ecoli50_integrated_20261002_v2/validation/predictions_cnn.csv",
++        "sha256": "04755f52dff6f781c62931af7493c653f0cb1a801c345998c22320feb60ccbfd"
++      },
++      "current": {
++        "kind": "predictions",
++        "path": "results/predictions/cnn_1d_val.csv",
++        "sha256": "04755f52dff6f781c62931af7493c653f0cb1a801c345998c22320feb60ccbfd"
++      }
++    },
++    {
++      "method_name": "kmer3_ridge",
++      "run_id": "ridge_kmer_integrated_20261003_v1",
++      "n_requested": 1783,
++      "n_success": 1783,
++      "original": {
++        "kind": "predictions",
++        "path": "runs/ridge_kmer_integrated_20261003_v1/predictions_ridge_val.csv",
++        "sha256": "11ff56bc53dff64c48de59cf81810ceffa0211bc53756c36f7a7c5154540609c"
++      },
++      "current": {
++        "kind": "predictions",
++        "path": "results/predictions/kmer3_ridge_val.csv",
++        "sha256": "11ff56bc53dff64c48de59cf81810ceffa0211bc53756c36f7a7c5154540609c"
++      }
++    },
++    {
++      "method_name": "kmer3_svr",
++      "run_id": "svr_kmer_integrated_20261003_v1",
++      "n_requested": 1783,
++      "n_success": 1783,
++      "original": {
++        "kind": "predictions",
++        "path": "runs/svr_kmer_integrated_20261003_v1/predictions_svr_val.csv",
++        "sha256": "d8caccf434915bedda00476e33ecd1df8e367036b335dc316c27a35553ec546d"
++      },
++      "current": {
++        "kind": "predictions",
++        "path": "results/predictions/kmer3_svr_val.csv",
++        "sha256": "d8caccf434915bedda00476e33ecd1df8e367036b335dc316c27a35553ec546d"
++      }
++    }
++  ],
++  "comparison_manifest": {
++    "kind": "run_manifest",
++    "path": "runs/comparison_val_five_methods_20261003_v2/run_manifest.json",
++    "sha256": "a240bfe454baa89143de89426a744ef4cff59566e4163d52e44e91706d3ad660"
++  },
++  "artifacts": [
++    {
++      "kind": "current_result",
++      "path": "results/metrics.csv",
++      "sha256": "a79ef5bc9082c7f6a7519fe9977204ea28ceb530e60f88668cd1f968e614c74e"
++    },
++    {
++      "kind": "current_result",
++      "path": "results/coverage_summary.csv",
++      "sha256": "df637629d6c06725dd7c1d596acefdfd0d99476c98de4ca66528b63aa1952c31"
++    },
++    {
++      "kind": "current_result",
++      "path": "results/common_eval_ids.tsv",
++      "sha256": "df203b98dd937e165804d6f0dbda43ec9d41f20864327dfec43e9892b4a03c4f"
++    },
++    {
++      "kind": "current_result",
++      "path": "results/performance_summary.csv",
++      "sha256": "d1af45a269b8ccc598f5e80b06e8933b43f20cf4295af47d0341f7ad7c462261"
++    },
++    {
++      "kind": "current_result",
++      "path": "results/metrics_unique_context.csv",
++      "sha256": "3acab4d262a2dce7ad392b1cbc15a298e0e1423451f7d89a10724bbb8493f7f3"
++    },
++    {
++      "kind": "current_result",
++      "path": "results/unique_context_eval_ids.tsv",
++      "sha256": "fe73b1f88337cc41aaccb641c487e34e0750c7bf18129c5b9a980f97ab98189c"
++    }
++  ],
++  "validation": {
++    "kind": "validation",
++    "path": "runs/comparison_val_five_methods_20261003_v2/integration_validation.json",
++    "sha256": "b6f67a24bb00ec3391991d359317671ab40e051fcf1ccc4c7fbc8a853e4a022d"
++  },
++  "legacy_entrypoints": [
++    {
++      "kind": "current_knn_alias",
++      "path": "KNN/results/predictions_knn.csv",
++      "sha256": "885d22fbd464f83f35df2c80886bd9b801e3feffdda2a9548314c1b9769d9b99"
++    },
++    {
++      "kind": "current_knn_alias",
++      "path": "KNN/results/metrics.csv",
++      "sha256": "367737f20a1f2f4fd77c89e23fd4313e79e4beb61b1d49e3f89add54c9f5c8b1"
++    },
++    {
++      "kind": "current_knn_alias",
++      "path": "KNN/results/knn_model.joblib",
++      "sha256": "b8dd774046b27fc87d75e8c22d5787b1eea51ee71e6cca403dc2655d54d3933b"
++    },
++    {
++      "kind": "current_knn_alias",
++      "path": "KNN/results/knn_config.json",
++      "sha256": "3533cf96b8175c16e89d43db96e746a663855d1fca3cc831d7cbe21c0759cde9"
++    },
++    {
++      "kind": "current_knn_alias",
++      "path": "KNN/results/common_eval_ids.tsv",
++      "sha256": "208a27c5160f454cfc355fe210b5680359829f5cddc7623e2666632be12ad809"
++    },
++    {
++      "kind": "current_knn_alias",
++      "path": "KNN/results/coverage_summary.csv",
++      "sha256": "9e1a60e9bd4928ecf69385fd4c04589954eabf32bbeb493d27a1fea49268efd3"
++    },
++    {
++      "kind": "current_kmer_alias",
++      "path": "Ridge/results/predictions_ridge.csv",
++      "sha256": "11ff56bc53dff64c48de59cf81810ceffa0211bc53756c36f7a7c5154540609c"
++    },
++    {
++      "kind": "current_kmer_alias",
++      "path": "Ridge/results/ridge_metrics.csv",
++      "sha256": "f656ef67720bd53109a2caef0d2f64f1bbaa034babe4702e08832d3a591da7bd"
++    },
++    {
++      "kind": "current_kmer_alias",
++      "path": "Ridge/results/ridge_model.joblib",
++      "sha256": "57f1a4fbd9f6b221b072b1ccab8a685c4715602827e21089eb3549fa3eb9a998"
++    },
++    {
++      "kind": "current_kmer_alias",
++      "path": "Ridge/results/ridge_config.json",
++      "sha256": "e51e4023ab5b72e17adfe0076ed235341c3fa3fbaf59bfa148ad3a61db621198"
++    },
++    {
++      "kind": "current_kmer_alias",
++      "path": "Ridge/results/predictions_svr.csv",
++      "sha256": "d8caccf434915bedda00476e33ecd1df8e367036b335dc316c27a35553ec546d"
++    },
++    {
++      "kind": "current_kmer_alias",
++      "path": "Ridge/results/svr_metrics.csv",
++      "sha256": "a1f00f6bcf9ef7a82b1eecb6a7a797256e75051de1c0d9c14a4ead82f053674a"
++    },
++    {
++      "kind": "current_kmer_alias",
++      "path": "Ridge/results/svr_model.joblib",
++      "sha256": "d5e564e7a9ced24741f3510c0c2573022ac2844521d4927e9cbe70a94ab5baa1"
++    },
++    {
++      "kind": "current_kmer_alias",
++      "path": "Ridge/results/svr_config.json",
++      "sha256": "9384b2aeaba143c103d6be26c6243ac96f3655426f6f5c141500d4b31d411463"
++    },
++    {
++      "kind": "current_kmer_alias",
++      "path": "Ridge/results/coverage_summary.csv",
++      "sha256": "78f28d3cc95be71a2d10261f8c274e1c0c602c0b8ca5dd1f396e1aaf8f47b10d"
++    },
++    {
++      "kind": "current_kmer_alias",
++      "path": "Ridge/results/common_eval_ids.tsv",
++      "sha256": "9a491a9ae6c1dc7cbb08e0e27ba960c308e42c0a7ee7a39e67f8a1dfa48c9e47"
++    }
++  ],
++  "analysis": [
++    {
++      "kind": "analysis_eda",
++      "path": "runs/eda_m2_integrated_20261002_v2/run_manifest.json",
++      "sha256": "e1abd9ae6317aef4c28612a1f624c60a04d69f61d876a7e69f9bdae87bc5fe1f"
++    },
++    {
++      "kind": "analysis_errors",
++      "path": "runs/error_m3_five_methods_20261003_v2/run_manifest.json",
++      "sha256": "9ab745c4f10cf134ede9cad0fc231b8ea5a6ad5c74f10dab74599fd55427ea08"
++    },
++    {
++      "kind": "analysis_regions",
++      "path": "analysis_m2m3/reports/region_analysis_20261005_v2/run_manifest.json",
++      "sha256": "bcd2d7a3455a055b19981c6d1dd6748f32cc285969e980d0efb0b6b4d7531ed4"
++    }
++  ]
++}
+diff --git a/tests/test_integration.py b/tests/test_integration.py
+index a4f98a7..77b91e4 100644
+--- a/tests/test_integration.py
++++ b/tests/test_integration.py
+@@ -1,6 +1,6 @@
+ from __future__ import annotations
+ import unittest
+-from pr02.thermo import select_state, fit_calibration, apply_calibration
++from pr02.thermo import select_state, fit_calibration, apply_calibration, check_execution_policy
+ from pr02.metrics import metric_rows
+ 
+ 
+@@ -10,6 +10,26 @@ def state(tss,energy):
+ 
+ 
+ class IntegrationTests(unittest.TestCase):
++    def test_thermo_declared_policy_must_match_actual_executor(self):
++        from pr02.common import v
++        row=dict(sample_id='s',input_status='ready',tss_mode='scan',orientation_policy='both_strands')
++        check_execution_policy([row])
++        for change in [dict(tss_mode='fixed_tss'),dict(orientation_policy='as_provided')]:
++            with self.subTest(change=change), self.assertRaises(v.ContractError):
++                check_execution_policy([dict(row,**change)])
++        check_execution_policy([dict(row,input_status='blocked',orientation_policy='as_provided')])
++
++    def test_prediction_source_must_match_configured_cnn_run(self):
++        from pr02.common import ROOT,read_json,v
++        from pr02.verify import check_prediction_sources
++        cfg=read_json(ROOT/'project_config.json')
++        paths=[ROOT/p for p in cfg['validation_predictions']]
++        frames=[v.load_table('predictions',p) for p in paths]
++        check_prediction_sources(cfg,paths,frames)
++        cfg['cnn_config']='CNN/configs/cnn_run_config.yaml' if 'optimized' in cfg['cnn_config'] else 'CNN/configs/cnn_optimized_round1.yaml'
++        with self.assertRaisesRegex(v.ContractError,'Prediction source'):
++            check_prediction_sources(cfg,paths,frames)
++
+     def test_same_coordinate_retains_forward_candidate(self):
+         out = dict(Forward_Predictions_per_TSS={70:state(70,-4)},Reverse_Predictions_per_TSS={70:state(80,-1)})
+         strand,tss,selected,boxes,count = select_state(out,150)
+diff --git a/tests/test_kmer_integration.py b/tests/test_kmer_integration.py
+index e2fc05c..65cc6bc 100644
+--- a/tests/test_kmer_integration.py
++++ b/tests/test_kmer_integration.py
+@@ -12,6 +12,23 @@ from pr02.kmer import count_matrix, checked_feature, selected_candidates
+ 
+ 
+ class KmerIntegrationTests(unittest.TestCase):
++    def test_rebuilt_feature_bundle_passes_the_shared_index_contract(self):
++        from pr02.common import ROOT
++        from pr02.kmer import build_features
++        with tempfile.TemporaryDirectory(dir=ROOT/'work') as directory:
++            output=Path(directory)/'features'
++            build_features(output)
++            rows=v.load_table('feature_index',output/'feature_index.tsv')
++            self.assertEqual(len(rows),11884)
++            meta=json.loads((output/'feature_manifest.json').read_text(encoding='utf-8'))
++            self.assertTrue({'feature_index','physchem_features','vocabulary'}<={a['kind'] for a in meta['artifacts']})
++            # Corrupt the identity while leaving the row mapping unchanged.
++            p=output/'feature_index.tsv'
++            p.write_text(p.read_text(encoding='utf-8').replace('ecoli50_strength_v1','wrong_version'),encoding='utf-8')
++            from pr02.kmer import validate_features
++            with self.assertRaisesRegex(v.ContractError,'数据身份'):
++                validate_features(output)
++
+     def test_new_method_changes_comparison_identity_even_when_ids_match(self):
+         from pr02.comparison import comparison_id
+         row=dict(dataset_id='d',data_version='v',split_id='s',method_name='m1',run_id='r1')
+diff --git a/thermo/build_thermo_inputs.py b/thermo/build_thermo_inputs.py
+index 69981f3..f51033e 100644
+--- a/thermo/build_thermo_inputs.py
++++ b/thermo/build_thermo_inputs.py
+@@ -15,8 +15,8 @@ regseq2 的工具输入表（契约表 calculator_inputs，schema 2.0.0）。
+ 
+ 输出
+ ----
+-thermo/input/calculator_inputs.tsv
+-thermo/input/thermo_input_summary.json
++thermo/input/calculator_inputs_both_strands_v2.tsv
++thermo/input/thermo_input_summary_v2.json
+ 
+ 用法
+ ----
+@@ -31,12 +31,12 @@ HERE = os.path.dirname(os.path.abspath(__file__))
+ REPO = os.path.dirname(HERE)
+ DATA_V1 = os.path.join(REPO, "data", "01_Ecoli_strength", "data_v1.tsv")
+ CONTEXT_MAP = os.path.join(HERE, "input", "context_map.tsv")
+-OUT_TSV = os.path.join(HERE, "input", "calculator_inputs.tsv")
+-OUT_JSON = os.path.join(HERE, "input", "thermo_input_summary.json")
++OUT_TSV = os.path.join(HERE, "input", "calculator_inputs_both_strands_v2.tsv")
++OUT_JSON = os.path.join(HERE, "input", "thermo_input_summary_v2.json")
+ 
+ DATASET_ID = "course_ecoli50_strength"
+ SCHEMA_VERSION = "2.0.0"
+-INPUT_VERSION = "thermo_input_v1"
++INPUT_VERSION = "thermo_input_both_strands_v2"
+ CONTEXT_FLANK = 50
+ CACHE_DIR = os.path.join(HERE, ".cache")
+ 
+@@ -80,6 +80,8 @@ def circular_slice(genome, start, end):
+ 
+ 
+ def main():
++    if os.path.exists(OUT_TSV) or os.path.exists(OUT_JSON):
++        raise ValueError("Output already exists; preserve frozen inputs and choose new output paths")
+     hdr1, data = read_tsv(DATA_V1)
+     _, cmap = read_tsv(CONTEXT_MAP)
+     cmap_by_id = {r["sample_id"]: r for r in cmap}
+@@ -99,7 +101,7 @@ def main():
+                 "sequence_length": L, "input_origin": "original50",
+                 "source_sequence_start_0index": 0, "context_source_ref": "",
+                 "tss_mode": "scan", "tss_position_1index": "",
+-                "tss_evidence_ref": "", "orientation_policy": "as_provided",
++                "tss_evidence_ref": "", "orientation_policy": "both_strands",
+                 "feasibility_ref": "thermo/thermo_applicability.md",
+                 "input_status": "blocked",
+                 "error_reason": "no_exact_match_in_reference_genome_50bp_too_short_for_scan",
+@@ -125,7 +127,7 @@ def main():
+             "source_sequence_start_0index": CONTEXT_FLANK,
+             "context_source_ref": ref, "tss_mode": "scan",
+             "tss_position_1index": "", "tss_evidence_ref": "",
+-            "orientation_policy": "as_provided",
++            "orientation_policy": "both_strands",
+             "feasibility_ref": "thermo/thermo_applicability.md",
+             "input_status": "ready", "error_reason": "",
+             "input_version": INPUT_VERSION, "schema_version": SCHEMA_VERSION,

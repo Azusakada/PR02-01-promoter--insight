@@ -1,0 +1,82 @@
+{
+  "groups": {
+    "all": {
+      "n": 11884,
+      "median_strength": 137.085,
+      "mean_gc": 0.4430747223157186
+    },
+    "position_consistent": {
+      "n": 614,
+      "median_strength": 678.105,
+      "mean_gc": 0.40289902280130285
+    },
+    "remaining": {
+      "n": 11270,
+      "median_strength": 130.03,
+      "mean_gc": 0.44526353149955633
+    }
+  },
+  "matched_vs_remaining": {
+    "target_log10": {
+      "ks_distance": 0.4103639133036021
+    },
+    "gc": {
+      "ks_distance": 0.23405137157539696
+    }
+  },
+  "regions": {
+    "minus10": {
+      "n": 577,
+      "consensus": "TATAAT",
+      "region_at_fraction": 0.7149046793760832,
+      "whole_sequence_at_fraction": 0.5958058925476604,
+      "exact_consensus_n": 4,
+      "relationships": {
+        "region_gc": {
+          "spearman": -0.06341528522020888,
+          "bootstrap95": [
+            -0.14564701419255158,
+            0.021030891167986426
+          ]
+        },
+        "consensus_matches": {
+          "spearman": 0.05270069456063315,
+          "bootstrap95": [
+            -0.025015982395151827,
+            0.13319701914116772
+          ]
+        }
+      }
+    },
+    "minus35": {
+      "n": 573,
+      "consensus": "TTGACA",
+      "region_at_fraction": 0.5843513670738802,
+      "whole_sequence_at_fraction": 0.5963001745200698,
+      "exact_consensus_n": 5,
+      "relationships": {
+        "region_gc": {
+          "spearman": 0.054564041205408906,
+          "bootstrap95": [
+            -0.02519574130568784,
+            0.13523334633084
+          ]
+        },
+        "consensus_matches": {
+          "spearman": -0.013433667674391548,
+          "bootstrap95": [
+            -0.09573253731844802,
+            0.07315416273363855
+          ]
+        }
+      }
+    }
+  },
+  "bootstrap_seed": 20261005,
+  "bootstrap_resamples": 4000,
+  "bootstrap_unit": "paired sample rows; no sequence-cluster correction",
+  "spacer_length": {
+    "bp": 17,
+    "basis": "fixed layout assumption, not an observed distribution"
+  }
+}

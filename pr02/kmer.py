@@ -64,8 +64,10 @@ def validate_features(directory=FEATURES):
         v.require((directory/f'kmer{k}_vocabulary.txt').read_text(encoding='utf-8').splitlines()==[''.join(p) for p in itertools.product('ACGT',repeat=k)],'Vocabulary text mismatch')
         result.append(dict(k=k,n_samples=len(ids),n_features=x.shape[1],all_counts_independently_recomputed=True))
     v.require((directory/'sample_ids.txt').read_text(encoding='utf-8').splitlines()==[s['sample_id'] for s in samples], 'Feature ID text mismatch')
-    index = read_table(directory/'feature_index.tsv',delimiter='\t')
-    v.require([r['sample_id'] for r in index]==[s['sample_id'] for s in samples] and [int(r['row_index']) for r in index]==list(range(len(samples))), 'Feature index mismatch')
+    index = v.load_table('feature_index',directory/'feature_index.tsv')
+    v.bundle_check(DATA,SPLITS,feature_index=directory/'feature_index.tsv')
+    v.require(all(r['feature_version']=='kmer_count_acgt_lex_v1' for r in index),'Feature index encoding version mismatch')
+    v.require([r['sample_id'] for r in index]==[s['sample_id'] for s in samples] and [r['row_index'] for r in index]==list(range(len(samples))), 'Feature index mismatch')
     phys = read_table(directory/'physchem8.tsv',delimiter='\t')
     v.require([r['sample_id'] for r in phys]==[s['sample_id'] for s in samples], 'Physchem feature IDs/order mismatch')
     from .knn import feature_map, FEATURES as PHYS_COLUMNS
@@ -95,11 +97,21 @@ def build_features(output):
         np.savez_compressed(output/f'kmer{k}.npz',X=count_matrix([s['sequence'] for s in samples],k),sample_ids=ids,vocabulary=vocabulary,k=np.asarray([k]))
         (output/f'kmer{k}_vocabulary.txt').write_text(''.join(s+'\n' for s in vocabulary),encoding='utf-8',newline='\n')
         entries.append(artifact('kmer_features',output/f'kmer{k}.npz'))
-    write_table(output/'feature_index.tsv',[dict(sample_id=s,row_index=i) for i,s in enumerate(ids)],delimiter='\t')
+    write_table(output/'feature_index.tsv',[dict(dataset_id=s['dataset_id'],row_index=i,
+                sample_id=s['sample_id'],feature_version='kmer_count_acgt_lex_v1',
+                schema_version=s['schema_version'],data_version=s['data_version'])
+                for i,s in enumerate(samples)],delimiter='\t')
     from .knn import feature_map, FEATURES as PHYS_COLUMNS
     mapped=feature_map(samples)
     write_table(output/'physchem8.tsv',[dict(sample_id=s['sample_id'],**dict(zip(PHYS_COLUMNS,mapped[s['sample_id']]))) for s in samples],delimiter='\t')
-    write_json(output/'feature_manifest.json',dict(data=artifact('dataset',DATA),splits=artifact('splits',SPLITS),n_samples=len(samples),feature_version='kmer_count_acgt_lex_v1',artifacts=entries))
+    entries.extend(artifact(kind,output/name) for kind,name in [
+        ('feature_index','feature_index.tsv'),('sample_ids','sample_ids.npy'),
+        ('sample_ids_text','sample_ids.txt'),('physchem_features','physchem8.tsv')])
+    entries.extend(artifact('vocabulary',output/f'kmer{k}_vocabulary.txt') for k in [3,4,5])
+    write_json(output/'feature_manifest.json',dict(schema_version='2.0.0',
+               dataset_id=samples[0]['dataset_id'],data_version=samples[0]['data_version'],
+               data=artifact('dataset',DATA),splits=artifact('splits',SPLITS),n_samples=len(samples),
+               feature_version='kmer_count_acgt_lex_v1',artifacts=entries))
     return validate_features(output)
 
 

@@ -1,6 +1,6 @@
 from __future__ import annotations
 import unittest
-from pr02.thermo import select_state, fit_calibration, apply_calibration
+from pr02.thermo import select_state, fit_calibration, apply_calibration, check_execution_policy
 from pr02.metrics import metric_rows
 
 
@@ -10,6 +10,26 @@ def state(tss,energy):
 
 
 class IntegrationTests(unittest.TestCase):
+    def test_thermo_declared_policy_must_match_actual_executor(self):
+        from pr02.common import v
+        row=dict(sample_id='s',input_status='ready',tss_mode='scan',orientation_policy='both_strands')
+        check_execution_policy([row])
+        for change in [dict(tss_mode='fixed_tss'),dict(orientation_policy='as_provided')]:
+            with self.subTest(change=change), self.assertRaises(v.ContractError):
+                check_execution_policy([dict(row,**change)])
+        check_execution_policy([dict(row,input_status='blocked',orientation_policy='as_provided')])
+
+    def test_prediction_source_must_match_configured_cnn_run(self):
+        from pr02.common import ROOT,read_json,v
+        from pr02.verify import check_prediction_sources
+        cfg=read_json(ROOT/'project_config.json')
+        paths=[ROOT/p for p in cfg['validation_predictions']]
+        frames=[v.load_table('predictions',p) for p in paths]
+        check_prediction_sources(cfg,paths,frames)
+        cfg['cnn_config']='CNN/configs/cnn_run_config.yaml' if 'optimized' in cfg['cnn_config'] else 'CNN/configs/cnn_optimized_round1.yaml'
+        with self.assertRaisesRegex(v.ContractError,'Prediction source'):
+            check_prediction_sources(cfg,paths,frames)
+
     def test_same_coordinate_retains_forward_candidate(self):
         out = dict(Forward_Predictions_per_TSS={70:state(70,-4)},Reverse_Predictions_per_TSS={70:state(80,-1)})
         strand,tss,selected,boxes,count = select_state(out,150)

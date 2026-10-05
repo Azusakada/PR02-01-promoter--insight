@@ -2,6 +2,8 @@
 from __future__ import annotations
 import hashlib
 import math
+import json
+import subprocess
 import sys
 import joblib
 import numpy as np
@@ -12,14 +14,55 @@ from .common import ROOT, DATA, SPLITS, TRANSFORM, load_bundle, read_json, read_
 from .evaluate import align_predictions
 
 
+def check_prediction_sources(cfg, paths, frames):
+    """Reject a valid CSV that belongs to another run or CNN plan."""
+    import yaml
+    cnn = yaml.safe_load(resolve(cfg['cnn_config']).read_text(encoding='utf-8-sig'))
+    expected = {
+        'knn_physchem_full': (cfg['runs']['knn'], ROOT/'runs'/cfg['runs']['knn']/'predictions_knn_val.csv'),
+        'thermo_regseq2': (cfg['runs']['thermo'], ROOT/'runs'/cfg['runs']['thermo']/'predictions/thermo_val_calibrated.csv'),
+        'cnn_1d': (cnn['run_id'], resolve(cnn['output_dir'])/'validation/predictions_cnn.csv'),
+    }
+    for kind in ['ridge','svr']:
+        if kind in cfg['runs']:
+            directory=ROOT/'runs'/cfg['runs'][kind]
+            manifest=read_json(directory/'model_manifest.json')
+            expected[manifest['method_name']]=(cfg['runs'][kind],directory/f'predictions_{kind}_val.csv')
+    v.require(len(paths)==len(expected),'Prediction plan must include exactly the configured methods')
+    for path,rows in zip(paths,frames):
+        method=rows[0]['method_name']
+        v.require(method in expected,'Unconfigured prediction method: '+method)
+        run_id,source=expected[method]
+        v.require(path.resolve()==source.resolve() and rows[0]['run_id']==run_id,
+                  'Prediction source does not match configured run: '+method)
+    cnn_meta=read_json(resolve(cnn['output_dir'])/'model_manifest.json')
+    v.require(cnn_meta['model_id']==cnn['run_id'] and cnn_meta['model_config']==cnn['model']
+              and cnn_meta['seed']==cnn['training']['seed'],'CNN configuration does not match saved model')
+    return cnn
+
+
+def check_analysis(directory):
+    """Use the standalone numeric verifier without changing published artifacts."""
+    completed=subprocess.run([sys.executable,str(ROOT/'analysis_m2m3/verify_run.py'),str(directory)],
+                             cwd=ROOT,check=True,capture_output=True,text=True,encoding='utf-8')
+    return json.loads(completed.stdout)
+
+
 def verify(cfg):
     samples,groups,transform = load_bundle()
     paths = [resolve(p) for p in cfg['validation_predictions']]
     frames,common,_ = align_predictions(paths)
+    check_prediction_sources(cfg,paths,frames)
     result = dict(status='passed',samples=len(samples),split_counts={s:len(rs) for s,rs in groups.items()},
                   transform_id=transform['transform_id'],common_val_count=len(common),test_evaluated=False,checks=[])
     def record(name,detail=True): result['checks'].append(dict(name=name,status='passed',detail=detail))
     record('dataset_splits_shared_transform')
+    from .data import verify_sources
+    record('original_course_arrays_and_cleaned_records',verify_sources())
+    record('configured_prediction_sources_and_cnn_model')
+    from .thermo import INPUTS,check_execution_policy
+    record('thermo_input_bundle',v.bundle_check(DATA,SPLITS,calculator_inputs=INPUTS))
+    check_execution_policy(v.load_table('calculator_inputs',INPUTS))
     knn_dir = ROOT/'runs'/cfg['runs']['knn']
     thermo_dir = ROOT/'runs'/cfg['runs']['thermo']
     comparison_dir = ROOT/'runs'/cfg['runs']['comparison']
@@ -40,6 +83,9 @@ def verify(cfg):
     calibration = read_json(thermo_dir/'thermo_calibration.json')
     v.require(np.allclose([a,b],[calibration['coef_a'],calibration['intercept_b']],rtol=1e-10,atol=1e-10),'Calibration not reproduced')
     v.require(calibration['n_fit']==len(tr) and {r['sample_id'] for r in tr}<={s['sample_id'] for s in groups['train']},'Calibration fit IDs wrong')
+    fit_hash=hashlib.sha256(''.join(s+'\n' for s in sorted(r['sample_id'] for r in tr)).encode()).hexdigest()
+    v.require(calibration['train_ids_sha256']==fit_hash and calibration['fit_subset']=='train',
+              'Calibration training identity mismatch')
     for sub in ['train','val','test']:
         raw = v.load_table('predictions',thermo_dir/f'predictions/thermo_{sub}_raw.csv')
         cal = v.load_table('predictions',thermo_dir/f'predictions/thermo_{sub}_calibrated.csv')
@@ -78,6 +124,11 @@ def verify(cfg):
     from pr02_cnn.predict import load_model
     from pr02_cnn.data import one_hot
     model,meta = load_model(ModelArtifact(cnn_dir/'best_checkpoint.pt',cnn_dir/'model_manifest.json',cnn_dir/'cnn_run_config.yaml'),'cpu')
+    v.require(meta['samples_sha256']==v.sha256(DATA) and meta['splits_sha256']==v.sha256(SPLITS)
+              and meta['transform']==transform,'CNN model is bound to different frozen inputs')
+    for sub in ['train','val']:
+        ids=sorted(s['sample_id'] for s in groups[sub])
+        v.require(meta[sub]['ids']==ids and meta[sub]['n_samples']==len(ids), 'CNN fit/selection IDs mismatch')
     model.eval()
     torch.set_num_threads(4)
     x = torch.stack([one_hot(s['sequence']) for s in groups['val']])
@@ -103,6 +154,9 @@ def verify(cfg):
     for name,path in cfg.get('analysis_runs',{}).items():
         directory=resolve(path)
         detail=v.run_check(directory/'run_manifest.json',ROOT)
+        analysis_meta=read_json(directory/'run_manifest.json')
+        v.require(all(analysis_meta[key]==transform[key] for key in ['dataset_id','data_version','split_id']),
+                  'Analysis uses another data version or split: '+name)
         figures=read_json(directory/'figure_manifest.json')
         v.require(all(f['visual_check_status']=='pass' for f in figures),'Analysis figures need manual review before publication: '+str(directory))
         if name=='errors':
@@ -114,13 +168,22 @@ def verify(cfg):
             metric_ids={m['comparison_set_id'] for m in metric_table}
             v.require(any(r['comparison_set_id'] in metric_ids for r in error_ids),'Error analysis comparison identity mismatch')
         record('analysis_artifacts_and_visual_review:'+name,detail)
+        record('analysis_numeric_verification:'+name,check_analysis(directory))
     current_index = ROOT/'results/current.json'
     if current_index.exists():
         registry = read_json(current_index)
+        if registry['comparison_run_id']==cfg['runs']['comparison']:
+            v.require({entry['original']['path'] for entry in registry['predictions']}==set(cfg['validation_predictions']),
+                      'Current registry and project prediction paths disagree')
+            v.require({entry['path'] for entry in registry.get('analysis',[])}==
+                      {resolve(path).relative_to(ROOT).as_posix()+'/run_manifest.json'
+                       for path in cfg.get('analysis_runs',{}).values()},
+                      'Current registry and project analysis paths disagree')
         entries = [registry[key] for key in ['data','splits','label_transform','comparison_manifest','validation']]
         entries.extend(registry['artifacts'])
         entries.extend(registry.get('legacy_entrypoints',[]))
         entries.extend(registry.get('analysis',[]))
+        entries.extend(registry.get('data_sources',[]))
         for pred in registry['predictions']:
             entries.extend([pred['original'],pred['current']])
             v.require(resolve(pred['original']['path']).read_bytes()==resolve(pred['current']['path']).read_bytes(),'Current prediction alias differs from immutable run')

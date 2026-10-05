@@ -63,5 +63,9 @@ def publish(cfg):
                     validation=artifact('validation',comparison/'integration_validation.json'),
                     legacy_entrypoints=legacy)
     registry['analysis']=[artifact('analysis_'+name,resolve(path)/'run_manifest.json') for name,path in cfg.get('analysis_runs',{}).items()]
+    from .data import PROFILE,RAW
+    profile=read_json(PROFILE)
+    registry['data_sources']=[artifact('data_profile',PROFILE)]+[
+        artifact('raw_'+key,RAW/profile['raw_files'][key]['filename']) for key in ['sequence','strength']]
     write_json(current/'current.json',registry)
     return registry
