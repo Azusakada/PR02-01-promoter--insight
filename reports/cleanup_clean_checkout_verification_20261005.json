@@ -1,0 +1,24 @@
+{
+  "status": "passed",
+  "commit": "55a1cace6daaf0c9bb5e9697929ffb50d4947819",
+  "checks": [
+    {
+      "name": "clean_root_tests",
+      "exit_code": 0,
+      "log": "reports/test_logs/cleanup_clean_root_tests.log",
+      "n_tests": 19
+    },
+    {
+      "name": "clean_project_verify",
+      "exit_code": 0,
+      "log": "reports/test_logs/cleanup_clean_project_verify.log"
+    }
+  ],
+  "work_directory_absent_initially": true,
+  "existing_dependencies_reused": true,
+  "all_registered_artifact_hashes_checked": true,
+  "published_evidence_unchanged": true,
+  "current_cnn_reload_byte_equal": true,
+  "checkout": "D:\\CodexAnalysis\\PR02-01\\20261005-cleanup\\clean_checkout",
+  "reload_log": "reports/test_logs/cleanup_clean_cnn_reload.log"
+}

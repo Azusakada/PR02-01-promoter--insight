@@ -29,7 +29,7 @@ CNN/KNN/Ridge/SVR 基于原 50 bp，热力学使用补取的 150 bp，信息范�
 - 新增图表注册和过期预测检查；已发布验证报告保持只读，防止跨环境诊断数值变化破坏索引哈希。
 - 五方法图改为多行布局，62 项误差指标复算并实际检查 3 张图。已有非空输出拒绝覆盖。
 
-此前 main 集成验收为 90 项；本轮新增检查与修复见 reports/REPOSITORY_AUDIT_20261005.md。数据、模型、校准、统一指标与图表验收见 reports/integration_validation.json。reports/clean_checkout_verification.json 为此前 main 的证据，本轮独立交付快照验收另行记录。
+此前 main 集成验收为 90 项；本轮新增检查与修复见 reports/REPOSITORY_AUDIT_20261005.md。数据、模型、校准、统一指标与图表验收见 reports/integration_validation.json。reports/clean_checkout_verification.json 为此前 main 的证据；本轮清理后的独立 Git 检出、模型重载与 main 发布见 [清理验收记录](repository_cleanup_validation_20261005.json)。
 
 ## 成员职责
 

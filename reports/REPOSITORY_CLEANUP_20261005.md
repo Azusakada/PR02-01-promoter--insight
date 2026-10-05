@@ -59,3 +59,7 @@ git archive --format=zip --output D:/PR02-old-comparison.zip 895bac210cc65165727
 发布包含此前已授权的 CNN 优化、区域分析与仓库接口修复，以及本次清理。验收完成后同步 csy/main；当前模型与预测的冻结文件保持原字节。
 
 本轮 108 项测试/检查通过，根全项目 verify 通过，冻结配置、当前索引和既有验收文件字节保持一致。清理另外发现两个测试依赖预先存在的 work 目录，已修正为自动创建；独立检出会再次验证这一点。
+
+独立 Git 检出验证源提交 `55a1cace6daaf0c9bb5e9697929ffb50d4947819`：初始无 work 目录，19 项根测试与全项目 verify 均通过；按当前 README 重新导出输入并加载 CNN，1,783 条预测 CSV 与交付文件逐字节一致，冻结证据保持原字节。见 [独立检出验收](cleanup_clean_checkout_verification_20261005.json)。
+
+源提交已经实际推送，并从远端读回确认 main/csy 均为上述提交；随后仅补充本验收文档和日志。具体提交关系可由 Git 历史核对。

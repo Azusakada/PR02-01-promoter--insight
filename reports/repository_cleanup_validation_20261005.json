@@ -35,7 +35,7 @@
   "current_comparison": "comparison_val_five_methods_20261005_v3",
   "current_predictions_unchanged": true,
   "validation_status": "passed",
-  "remote_push_status": "pending",
+  "remote_push_status": "verified",
   "archive_policy": "reversible move outside repository; tracked versions also recoverable from Git history",
   "total_tests": 108,
   "tests": [
@@ -129,5 +129,15 @@
     "project_config.json": "381e0b49fee7fda7c3cb2adef2af53d02f37509802a89a4f1699525fd3f8bd69",
     "reports/integration_validation.json": "663af8e1ee39a92c40242e34d422ea5c1a6f6f8450479855b04fdeef329195de",
     "runs/comparison_val_five_methods_20261005_v3/integration_validation.json": "663af8e1ee39a92c40242e34d422ea5c1a6f6f8450479855b04fdeef329195de"
-  }
+  },
+  "published_source_commit": "55a1cace6daaf0c9bb5e9697929ffb50d4947819",
+  "verified_source_remote_refs": {
+    "refs/heads/csy": "55a1cace6daaf0c9bb5e9697929ffb50d4947819",
+    "refs/heads/main": "55a1cace6daaf0c9bb5e9697929ffb50d4947819"
+  },
+  "remote_verified_at": "2026-10-05T15:25:54.616180+08:00",
+  "clean_checkout_verification": "reports/cleanup_clean_checkout_verification_20261005.json",
+  "independent_checkout_passed": true,
+  "current_cnn_reload_byte_equal": true,
+  "publication_note": "The tested source commit was verified on both remote branches; a following documentation-only commit records this evidence."
 }
