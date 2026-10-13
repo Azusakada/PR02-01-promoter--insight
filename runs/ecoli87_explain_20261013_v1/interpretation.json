@@ -1,0 +1,11 @@
+{
+  "n_samples": 64,
+  "subset": "val",
+  "selection": "seeded uniform random, independent of labels and prediction errors",
+  "baseline": "uniform A/C/G/T probability 0.25 per position",
+  "attribution_scale": "log10 strength",
+  "ig_integration_steps": 64,
+  "max_ig_completeness_error_log10": 0.002994752721861005,
+  "box_coordinates": "canonical assumptions or model inferred; TSS alone experimentally verified",
+  "limitations": "Attribution reflects this fitted model. Correlated sequence context and validation reuse limit biological conclusions."
+}

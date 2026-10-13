@@ -1,0 +1,17 @@
+{
+  "source_repository": "https://github.com/HaochenW/Deep_promoter",
+  "source_commit": "c0e16c8218a983fbb07bf46d59c44109d4371b0e",
+  "reference_url": "https://www.ebi.ac.uk/ena/browser/api/fasta/U00096.2",
+  "tss_paper": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4288677/",
+  "tss_table_url": "https://www.ebi.ac.uk/biostudies/files/S-EPMC4288677/JB.02096-14_zjb999093409sd1.xlsx",
+  "sha256": {
+    "data/01_Ecoli_strength/split_manifest.tsv": "5d162f64e68a305749033e5f9e7f4d5bdfeb6b28af757883446f75682f9fd9b0",
+    "data/03_Ecoli_strength87/raw/U00096.2.fasta.gz": "529e71b77e505f658ba5097cb3812a8e2bc02a06a94aa5339f28b7899741f1ca",
+    "data/03_Ecoli_strength87/raw/excluded_ambiguous.jsonl.gz": "03ec158ea2ead15b1bc947b7f14edea26cda356fb3d8224c3c580440dd88b57e",
+    "data/03_Ecoli_strength87/raw/thomason_dataset1.xlsx": "1401e1b612a39bff7b9c70ac5929f62e6680110c7a1e792484a288e2544aecca",
+    "data/03_Ecoli_strength87/raw/verified_context.jsonl.gz": "2245c885b6148b7d3a4c056832f6d2a551eefbad575b5deaf5cc1e0745968990",
+    "data/04_Bsub_strength61/raw/promoter_strength.csv": "9a5186be4b36f0b098bcdd908bc122ba8f4c263a969dcaa3523bf89ae914fdef",
+    "data/raw_ecoli50/gene_expression.npy": "a1426fa5e5806fceff2c041218b781b6dc1f0cc84b39cf4ef626d02965fd9ce5",
+    "data/raw_ecoli50/promoter.npy": "e71911452431acb620478f0de5ae896481be5618e7a7f9712125cd98cb8e37ab"
+  }
+}

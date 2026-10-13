@@ -1,0 +1,30 @@
+{
+  "schema_version": "2.0.0",
+  "dataset_id": "course_ecoli50_strength",
+  "data_version": "ecoli50_strength_v1",
+  "split_id": "ecoli50_random_20260928_v1",
+  "samples": "data/01_Ecoli_strength/data_v1.tsv",
+  "splits": "data/01_Ecoli_strength/split_manifest.tsv",
+  "label_transform": "data/01_Ecoli_strength/label_transform.json",
+  "cnn_config": "CNN/configs/cnn_optimized_round1.yaml",
+  "runs": {
+    "knn": "knn_physchem_integrated_20261002_v2",
+    "thermo": "thermo_regseq2_integrated_20261002_v2",
+    "comparison": "comparison_val_five_methods_20261005_v3",
+    "ridge": "ridge_kmer_integrated_20261003_v1",
+    "svr": "svr_kmer_integrated_20261003_v1"
+  },
+  "validation_predictions": [
+    "runs/knn_physchem_integrated_20261002_v2/predictions_knn_val.csv",
+    "runs/thermo_regseq2_integrated_20261002_v2/predictions/thermo_val_calibrated.csv",
+    "CNN/runs/cnn_optimization_20261004_round1/cnn_optimization_20261004_round1_avg5_medium_s20260928/validation/predictions_cnn.csv",
+    "runs/ridge_kmer_integrated_20261003_v1/predictions_ridge_val.csv",
+    "runs/svr_kmer_integrated_20261003_v1/predictions_svr_val.csv"
+  ],
+  "test_metrics_enabled": false,
+  "analysis_runs": {
+    "eda": "runs/eda_m2_integrated_20261002_v2",
+    "errors": "runs/error_m3_five_methods_20261005_v3",
+    "regions": "analysis_m2m3/reports/region_analysis_20261005_v2"
+  }
+}

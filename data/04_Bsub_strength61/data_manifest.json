@@ -1,0 +1,11 @@
+{
+  "dataset_id": "teacher_bsub61_strength",
+  "n_records": 591,
+  "n_unique_sequences": 580,
+  "source_sha256": "9a5186be4b36f0b098bcdd908bc122ba8f4c263a969dcaa3523bf89ae914fdef",
+  "sequence_length": 61,
+  "units": "unknown",
+  "tss": "unknown",
+  "conditions": "unknown",
+  "duplicate_policy": "retain measurements; split by exact sequence group"
+}

@@ -26,7 +26,7 @@ KNN = ROOT/'KNN/results/predictions_knn_ecoli_full_val.csv'
 class AnalysisTests(unittest.TestCase):
     def test_normalized_cnn_prediction_must_use_shared_transform(self):
         from pr02.common import read_json
-        cfg=read_json(ROOT/'project_config.json')
+        cfg=read_json(ROOT/'configs/project_ecoli50_legacy.json')
         path=next(ROOT/p for p in cfg['validation_predictions'] if '/validation/predictions_cnn.csv' in p)
         pred=pd.read_csv(path)
         pred.loc[0,'predicted_value_normalized']+=0.1

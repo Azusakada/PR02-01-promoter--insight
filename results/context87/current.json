@@ -1,0 +1,21 @@
+{
+  "schema_version": "3.0.0",
+  "dataset_id": "course_ecoli87_strength",
+  "data_version": "ecoli87_tss_verified_v1",
+  "split_id": "ecoli87_inherited_20260928_v1",
+  "runs": {
+    "knn": "ecoli87_knn_20261013_v1",
+    "ridge": "ecoli87_ridge_20261013_v1",
+    "svr": "ecoli87_svr_20261013_v1",
+    "cnn": "ecoli87_cnn_20261013_v1",
+    "thermo": "ecoli87_thermo_20261013_v1",
+    "comparison": "ecoli87_comparison_20261013_v1",
+    "analysis": "ecoli87_analysis_20261013_v1",
+    "explain": "ecoli87_explain_20261013_v1",
+    "mutate": "ecoli87_mutate_20261013_v1",
+    "ablate": "ecoli87_ablate_20261013_v1",
+    "transfer": "bsub61_transfer_20261013_v1"
+  },
+  "metrics": "results/context87/metrics.csv",
+  "test_evaluated": false
+}

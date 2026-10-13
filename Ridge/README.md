@@ -1,3 +1,5 @@
+> 默认 87 bp 工作流使用根目录 `python -m pr02`，详见 [当前说明](../README.md)。本文件以下记录历史 50 bp 交付。
+
 # k-mer Ridge 与 SVR
 
 李玘航的主线已接入全组默认配置。固定输入为公共 50 bp E. coli 主表、8,318/1,783/1,783 的 train/val/test split 和 train-only transform。Ridge 内部拟合 log10 strength。

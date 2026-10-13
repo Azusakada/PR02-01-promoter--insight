@@ -1,3 +1,5 @@
+> 本文是 2026-10-05 的历史状态。当前 87 bp 迁移、实验结果和后续事项见 [ECOLI87_MIGRATION.md](ECOLI87_MIGRATION.md)。
+
 # PR02 01 五人项目当前交付
 
 更新日期 2026-10-05。仓库 D:\PR02-01-promoter--insight。默认配置 project_config.json，发布入口 main，成员开发分支保留。本次整合在 csy 开发，统一交付入口为 main；清理和发布验收见 REPOSITORY_CLEANUP_20261005.md。

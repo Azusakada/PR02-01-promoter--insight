@@ -1,0 +1,15 @@
+{
+  "sequence_length": 87,
+  "shared_context": true,
+  "n_common_val": 1768,
+  "test_evaluated": false,
+  "methods": [
+    "knn",
+    "ridge",
+    "svr",
+    "cnn",
+    "thermo"
+  ],
+  "comparison_scale": "original course strength labels in log10 space",
+  "context_leakage_note": "Inherited random split; nearby genomic contexts may overlap. Historical test is not a fresh blind benchmark."
+}

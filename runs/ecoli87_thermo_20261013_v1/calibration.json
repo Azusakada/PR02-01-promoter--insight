@@ -1,0 +1,7 @@
+{
+  "coef_a": 0.25369910598396817,
+  "intercept_b": 1.500133221882054,
+  "fit_subset": "train",
+  "train_ids_sha256": "7e7174fdfe17462802e13434e4ab3683110af2b13b5444f2caff04d847917971",
+  "n_fit": 8267
+}

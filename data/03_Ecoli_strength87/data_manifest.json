@@ -1,0 +1,23 @@
+{
+  "dataset_id": "course_ecoli87_strength",
+  "data_version": "ecoli87_tss_verified_v1",
+  "split_id": "ecoli87_inherited_20260928_v1",
+  "n_input": 11884,
+  "n_retained": 11809,
+  "n_excluded_ambiguous": 75,
+  "sequence_length": 87,
+  "tss_index_0based": 67,
+  "original_50bp_slice": [
+    17,
+    67
+  ],
+  "split_policy": "inherit original sample assignment; no redraw",
+  "counts": {
+    "val": 1768,
+    "train": 8267,
+    "test": 1774
+  },
+  "source_manifest_sha256": "c2836780b0dcac99084fc8824d980b0c3fc17cb2a34609ee3beb783f65f40867",
+  "annotation_policy": "TSS independently verified; boxes remain model inferred or canonical assumptions",
+  "label_policy": "unchanged original labels; log10 minmax fitted on retained training rows only"
+}

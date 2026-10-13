@@ -1,0 +1,12 @@
+{
+  "dataset_id": "course_ecoli87_strength",
+  "data_version": "ecoli87_tss_verified_v1",
+  "split_id": "ecoli87_inherited_20260928_v1",
+  "kind": "log10_minmax",
+  "fit_subset": "train",
+  "clip": false,
+  "train_ids_sha256": "7e7174fdfe17462802e13434e4ab3683110af2b13b5444f2caff04d847917971",
+  "n_fit": 8267,
+  "min_log10": 0.9380190974762103,
+  "max_log10": 5.914235601697235
+}

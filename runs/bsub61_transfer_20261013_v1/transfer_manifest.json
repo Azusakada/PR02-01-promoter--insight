@@ -1,0 +1,21 @@
+{
+  "source_species": "E. coli",
+  "source_length": 87,
+  "target_species": "B. subtilis",
+  "target_length": 61,
+  "target_source_sha256": "9a5186be4b36f0b098bcdd908bc122ba8f4c263a969dcaa3523bf89ae914fdef",
+  "target_samples_sha256": "c951466e12740f1d32ade1c6aabddf40e8903d09038b942f7b308626b902d23c",
+  "target_counts": {
+    "train": 354,
+    "val": 119,
+    "test": 118
+  },
+  "target_units": "unknown",
+  "target_tss": "unknown",
+  "split_policy": "exact sequence groups disjoint across train/val/test; repeated labels retained",
+  "primary_zero_shot_metric": "Spearman; raw regression scale is not comparable across unknown assays",
+  "length_policy": "kmer frequencies normalized by window count; CNN adaptive pooling with unchanged weights",
+  "few_shot_policy": "nested seeded target training groups; alpha selected on target validation; frozen source CNN feature extractor",
+  "target_test_protocol": "predeclared conditions; target test used only for final comparison, never fitting or selecting",
+  "limitations": "Unknown target assay, units and orientation; direct CNN transfer is exploratory, no target thermodynamic claims"
+}

@@ -1,0 +1,7 @@
+{
+  "mask": "uniform base probability 0.25",
+  "retrained": true,
+  "seed": 20260928,
+  "selection": "early stopping on validation MSE; inherited same train/val assignment",
+  "limitations": "Single-seed exploratory controls; canonical boxes are assumed windows. Test remains unused."
+}

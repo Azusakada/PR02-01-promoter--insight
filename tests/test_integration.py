@@ -22,7 +22,8 @@ class IntegrationTests(unittest.TestCase):
     def test_prediction_source_must_match_configured_cnn_run(self):
         from pr02.common import ROOT,read_json,v
         from pr02.verify import check_prediction_sources
-        cfg=read_json(ROOT/'project_config.json')
+        # The frozen 50 bp executor is an explicit historical configuration.
+        cfg=read_json(ROOT/'configs/project_ecoli50_legacy.json')
         paths=[ROOT/p for p in cfg['validation_predictions']]
         frames=[v.load_table('predictions',p) for p in paths]
         check_prediction_sources(cfg,paths,frames)

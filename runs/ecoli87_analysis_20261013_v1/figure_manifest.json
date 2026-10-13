@@ -1,0 +1,35 @@
+{
+  "figures": [
+    {
+      "figure": "figures/label_distribution.png",
+      "sha256": "d2997ae0ad0307f229164ca1628a88c3197b3a052ae884e01e56c322e84b5d06",
+      "source_table": "label_distribution.csv",
+      "visual_review": "reviewed"
+    },
+    {
+      "figure": "figures/base_frequency.png",
+      "sha256": "3057ab4d55ad76ea3af9ef1a0951907a3f4cef4556a1f5002d6fcdcf3b8378ad",
+      "source_table": "base_frequency.csv",
+      "visual_review": "reviewed"
+    },
+    {
+      "figure": "figures/model_comparison.png",
+      "sha256": "b82971ac8bd79c0a0a353ea7ad829fb93b56b97e67ec0ba5fa1cb55141706ed8",
+      "source_table": "validation_metrics.csv",
+      "visual_review": "reviewed"
+    },
+    {
+      "figure": "figures/validation_scatter.png",
+      "sha256": "2e09ba176bebe37fd2b267c2d3b596d272abdcfcc371c7abd9a21cf2770109a4",
+      "source_table": "validation_residuals.csv",
+      "visual_review": "reviewed"
+    },
+    {
+      "figure": "figures/canonical_regions.png",
+      "sha256": "3815b4553a386fdcd32ed65484b8bd8b184fe3473c2f77b54699d75817b806a4",
+      "source_table": "canonical_region_summary.csv",
+      "visual_review": "reviewed"
+    }
+  ],
+  "annotation_policy": "Verified TSS; model inferred boxes; separately labeled canonical windows"
+}

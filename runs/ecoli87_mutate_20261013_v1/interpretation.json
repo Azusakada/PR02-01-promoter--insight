@@ -1,0 +1,7 @@
+{
+  "k": 5,
+  "repeats": 10,
+  "random_positions": "exclude High and Low sets; same mutation count and alternative-base sampling",
+  "attribution": "absolute integrated gradients",
+  "evidence": "model predictions only; no measured mutant strength or causal validation"
+}

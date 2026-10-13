@@ -1,0 +1,7 @@
+region,start_0based,end_0based_exclusive,n,mean_gc,spearman_gc_vs_log10,annotation_status
+UP,7,31,11809,0.47613402207355965,-0.15085826829765556,canonical_window_assumption
+-35,32,38,11809,0.4648714257487227,-0.0855291412821085,canonical_window_assumption
+spacer,38,55,11809,0.47969893351531484,-0.10432189251680335,canonical_window_assumption
+-10,55,61,11809,0.23397408756033533,-0.011117593421015422,canonical_window_assumption
+discriminator,61,67,11809,0.44896547830750555,-0.03371873004998297,canonical_window_assumption
+ITR,67,87,11809,0.48642984164620207,-0.1663917952859459,canonical_window_assumption

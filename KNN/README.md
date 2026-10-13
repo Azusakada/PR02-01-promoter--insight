@@ -1,3 +1,5 @@
+> 默认 87 bp 工作流使用根目录 `python -m pr02`，详见 [当前说明](../README.md)。本文件以下记录历史 50 bp 交付。
+
 # E. coli KNN 基线
 
 当前集成版本使用原验证集搜索选出的 k=1501，StandardScaler 和 KNN 都只拟合 train。

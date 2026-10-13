@@ -8,8 +8,9 @@ class PromoterCNN(nn.Module):
     """A small position-sensitive CNN; two same-length stride-1 convolutions."""
     def __init__(self, cfg):
         super().__init__()
-        if cfg["sequence_length"] != 50 or cfg["channels"] != list("ACGT"):
-            raise ValueError("CNN仅接受(N,4,50)，通道ACGT")
+        self.sequence_length = cfg["sequence_length"]
+        if type(self.sequence_length) is not int or self.sequence_length < 1 or cfg["channels"] != list("ACGT"):
+            raise ValueError("CNN需要正整数序列长度，通道ACGT")
         widths, kernels = cfg["conv_channels"], cfg["kernel_sizes"]
         if len(widths) != 2 or len(kernels) != 2 or any(k % 2 != 1 or k < 1 for k in kernels):
             raise ValueError("需要两个正奇数卷积核")
@@ -18,12 +19,12 @@ class PromoterCNN(nn.Module):
         if not 0 <= cfg["dropout"] < 1:
             raise ValueError("dropout范围为[0,1)")
         pooling = cfg.get("pooling", "flatten")
-        pooled_length = cfg.get("pooled_length", 50)
-        if type(pooled_length) is not int or not 1 <= pooled_length <= 50:
-            raise ValueError("pooled_length必须是1到50的整数")
+        pooled_length = cfg.get("pooled_length", self.sequence_length)
+        if type(pooled_length) is not int or not 1 <= pooled_length <= self.sequence_length:
+            raise ValueError("pooled_length必须在1到序列长度之间")
         if pooling == "flatten":
-            if pooled_length != 50:
-                raise ValueError("flatten必须保留全部50个位置")
+            if pooled_length != self.sequence_length:
+                raise ValueError("flatten必须保留全部序列位置")
             self.pool = nn.Identity()
         elif pooling == "adaptive_avg":
             self.pool = nn.AdaptiveAvgPool1d(pooled_length)
@@ -41,14 +42,14 @@ class PromoterCNN(nn.Module):
         )
 
     def forward(self, x):
-        if x.ndim != 3 or x.shape[1:] != (4, 50):
-            raise ValueError(f"输入shape错误: {tuple(x.shape)}，要求(N,4,50)")
+        if x.ndim != 3 or x.shape[1:] != (4, self.sequence_length):
+            raise ValueError(f"输入shape错误: {tuple(x.shape)}，要求(N,4,{self.sequence_length})")
         # No sigmoid: validation/test targets may lie outside the train range.
         return self.regressor(self.pool(self.features(x))).squeeze(-1)
 
 
 class Log10Predictor(nn.Module):
-    """Differentiable wrapper for later M4 attribution on the input's 50 positions."""
+    """Differentiable wrapper for attribution in the declared sequence coordinates."""
     def __init__(self, model: PromoterCNN, transform: dict):
         super().__init__()
         self.model = model
