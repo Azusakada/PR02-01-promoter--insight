@@ -242,6 +242,10 @@ def numeric_tables(cfg):
                 frequencies.extend(dict(annotation_status=policy, region=region, motif_position_1based=i+1, base=b,
                                         fraction=part.sequence.str[i].eq(b).mean(), n=len(part)) for b in 'ACGT')
     tables.update(region_summary=pd.DataFrame(region_summary), region_base_frequency=pd.DataFrame(frequencies))
+    motif_rows = tables['region_features'][tables['region_features'].region.isin(CONSENSUS)]
+    tables['region_similarity_groups'] = motif_rows.groupby(
+        ['annotation_status', 'region', 'consensus_match_fraction'], as_index=False
+    ).agg(n=('sample_id', 'size'), median_log10=('target_log10', 'median'))
     tables['inferred_spacing'] = pd.DataFrame([dict(sample_id=sid, spacer_length=len(s['spacer']),
                                                   discriminator_length=len(s['disc']), annotation_status='model_inferred') for sid, s in sorted(states.items())])
     error, bounds, common = error_tables(data, frames)
@@ -315,7 +319,7 @@ def make_figures(output, tables, parameters):
     save('02_split_distribution', fig, '继承划分的强度分布', ['samples'], 'train/val/test', 'log10', n, '仅描述标签分布；未计算 test 模型成绩')
     fig, axes = plt.subplots(1, 2, figsize=(13, 4.8))
     image = axes[0].hexbin(samples.gc_fraction, samples.target_log10, gridsize=40, bins='log', mincnt=1, cmap='Blues')
-    fig.colorbar(image, ax=axes[0], label='log10 计数'); axes[0].set(xlabel='整体 GC 比例', ylabel='log10 强度')
+    fig.colorbar(image, ax=axes[0], label='六边形样本数（对数色阶）'); axes[0].set(xlabel='整体 GC 比例', ylabel='log10 强度')
     corr = tables['feature_correlations'].query('subset == "all"').set_index('feature').reindex(PHYS_NAMES)
     axes[1].barh(['GC比例', 'AT比例', 'GC偏斜', 'AT偏斜', 'Tm近似', '二核苷酸持久性', '二核苷酸堆积', '碱基熵'], corr.spearman, color=COLORS[1])
     axes[1].axvline(0, color='gray', lw=.7); axes[1].set(xlabel='与 log10 强度的 Spearman')
@@ -334,13 +338,16 @@ def make_figures(output, tables, parameters):
             part = frequencies[(frequencies.region == region) & (frequencies.annotation_status == policy)]
             at = part[part.base.isin(['A', 'T'])].groupby('motif_position_1based').fraction.sum()
             axes[0, col].plot(at.index, at, 'o-', label=['固定窗口假设', '工具推定'][i], color=COLORS[i])
-            traits = tables['region_features']
-            part = traits[(traits.region == region) & (traits.annotation_status == policy)]
-            binned = part.groupby('consensus_match_fraction').target_log10.agg(['median', 'count'])
-            axes[1, col].plot(binned.index, binned['median'], 'o-', label=['固定窗口假设', '工具推定'][i], color=COLORS[i])
+            traits = tables['region_similarity_groups']
+            binned = traits[(traits.region == region) & (traits.annotation_status == policy)].sort_values('consensus_match_fraction')
+            axes[1, col].plot(binned.consensus_match_fraction, binned.median_log10, 'o-', label=['固定窗口假设', '工具推定'][i], color=COLORS[i])
+            last = binned.iloc[-1]
+            axes[1, col].annotate(f'n={int(last.n)}', (last.consensus_match_fraction, last.median_log10),
+                                  xytext=(-8, 7 if i == 1 else -14), textcoords='offset points',
+                                  ha='right', fontsize=8, color=COLORS[i])
         axes[0, col].set(title=f'{region} 六碱基窗口', xlabel='窗口内位置', ylabel='A/T 频率', ylim=(0, 1)); axes[0, col].legend()
         axes[1, col].set(xlabel=f'与 {CONSENSUS[region]} 的相同字母比例', ylabel='组内 log10 强度中位数'); axes[1, col].legend()
-    save('05_region_relationships', fig, '区域特征分析：固定窗口与工具推定分别统计', ['region_base_frequency', 'region_features', 'region_summary'], 'all', 'sequence/log10', n, '相似度是固定字母匹配评分；相关性与分组不证明机制', 'canonical_window_assumption/model_inferred')
+    save('05_region_relationships', fig, '区域特征分析：固定窗口与工具推定分别统计', ['region_base_frequency', 'region_features', 'region_summary', 'region_similarity_groups'], 'all', 'sequence/log10', n, '高共识组可能很小，标注末组n；各组n见源表；不证明机制', 'canonical_window_assumption/model_inferred')
     common_metrics = tables['metrics'].query('evaluation_subset == "common" and target_scale == "log10"')
     fig, axes = plt.subplots(1, 3, figsize=(12, 4.6))
     for ax, metric, title in zip(axes, ['r2', 'mae', 'spearman'], ['R2（log10）', 'MAE（log10）', 'Spearman']):
@@ -368,7 +375,9 @@ def make_figures(output, tables, parameters):
         for i, method in enumerate(METHODS):
             g = groups[groups.method.eq(method)].set_index('strength_group').reindex(GROUPS)
             ax.bar(x+(i-2)*.15, g[column], width=.14, label=LABELS[method], color=COLORS[i])
-        ax.set_xticks(x, ['低强度', '中强度', '高强度']); ax.set(title=title, ylabel='log10'); ax.axhline(0, color='gray', lw=.7)
+        counts = groups[groups.method.eq(METHODS[0])].set_index('strength_group').reindex(GROUPS).n
+        ax.set_xticks(x, [f'{label}\nn={count}' for label, count in zip(['低强度', '中强度', '高强度'], counts)])
+        ax.set(title=title, ylabel='log10'); ax.axhline(0, color='gray', lw=.7)
     axes[1].legend(fontsize=9)
     save('09_strength_group_errors', fig, '训练集阈值固定的低中高强度误差', ['group_errors', 'prediction_errors'], 'val_common', 'log10', common_n, '阈值仅取train三分位点；不能按预测值重新分组')
     delta = tables['model_disagreements']; matrix = np.zeros((5, 5))
@@ -378,7 +387,7 @@ def make_figures(output, tables, parameters):
     ax.set_xticks(range(5), [LABELS[m] for m in METHODS]); ax.set_yticks(range(5), [LABELS[m] for m in METHODS])
     for i in range(5):
         for j in range(5):
-            ax.text(j, i, f'{matrix[i,j]:.3f}', ha='center', va='center')
+            ax.text(j, i, f'{matrix[i,j]:.3f}', ha='center', va='center', color='white' if matrix[i,j] > matrix.max()*.5 else 'black')
     fig.colorbar(image, ax=ax, label='平均绝对预测差（log10）')
     save('10_model_disagreement', fig, '五方法预测分歧', ['model_disagreements', 'evaluation_ids'], 'val_common', 'log10', common_n, '模型分歧不等同于模型误差；最大分歧案例另存表')
     return figures, font
@@ -424,7 +433,7 @@ TSS索引为67，对应生物坐标+1；相对坐标为−67…−1、+1…+20�
 区域统计源表包含每条序列、窗口、坐标、GC、共识评分、均值和Spearman。盒区推定参与了热力学模型，因此其特征与热力学预测的关系不能作为独立验证。固定/推定两种范围的观察分别解释，不沿用旧81bp小子集结论。
 
 {regional}
-每行n={len(samples):,}。模型推定 spacer 长度的实际样本计数为 {spacing}；这些长度来自工具选择，不能称为实验测得的间隔。
+每行n={len(samples):,}。各共识匹配分组的n和中位数在region_similarity_groups.csv；高共识组可能很小，不将曲线末端当作稳定趋势。模型推定 spacer 长度的实际样本计数为 {spacing}；这些长度来自工具选择，不能称为实验测得的间隔。
 
 ## M3：分组误差与案例
 
@@ -620,6 +629,7 @@ def verify_published(cfg, visual=False):
     index = read_json(INDEX)
     # New experimental configs may use the same data, but different frozen models.
     directory = repo_path(index['run_path']); meta = read_json(directory/'run_manifest.json')
+    require(index['run_id'] == directory.name and sha(directory/'run_manifest.json') == index['run_manifest_sha256'], 'Supplementary analysis index changed')
     if meta['config'] != cfg:
         return None
     require(all(index[k] == cfg[k] for k in ['dataset_id', 'data_version', 'split_id'])
