@@ -1,0 +1,53 @@
+test_all_twelve_tables (__main__.ContractTests.test_all_twelve_tables) ... ok
+test_clipped_targets_rejected (__main__.ContractTests.test_clipped_targets_rejected) ... ok
+test_complete_bundle (__main__.ContractTests.test_complete_bundle) ... ok
+test_context_requires_source (__main__.ContractTests.test_context_requires_source) ... ok
+test_design_overlap (__main__.ContractTests.test_design_overlap) ... ok
+test_direction_without_annotation (__main__.ContractTests.test_direction_without_annotation) ... ok
+test_duplicate_sequence (__main__.ContractTests.test_duplicate_sequence) ... ok
+test_duplicate_source_row (__main__.ContractTests.test_duplicate_source_row) ... ok
+test_external_annotation_requires_source (__main__.ContractTests.test_external_annotation_requires_source) ... ok
+test_failed_prediction_zero (__main__.ContractTests.test_failed_prediction_zero) ... ok
+test_fixed_tss_121_rejected (__main__.ContractTests.test_fixed_tss_121_rejected) ... ok
+test_foreign_fit_ids_rejected (__main__.ContractTests.test_foreign_fit_ids_rejected) ... ok
+test_full_data_scaler_rejected (__main__.ContractTests.test_full_data_scaler_rejected) ... ok
+test_group_overlap (__main__.ContractTests.test_group_overlap) ... ok
+test_group_strategy_missing_ids (__main__.ContractTests.test_group_strategy_missing_ids) ... ok
+test_group_valid (__main__.ContractTests.test_group_valid) ... ok
+test_ig_missing_position (__main__.ContractTests.test_ig_missing_position) ... ok
+test_ig_old_coordinate (__main__.ContractTests.test_ig_old_coordinate) ... ok
+test_ig_wrong_base_cross_check (__main__.ContractTests.test_ig_wrong_base_cross_check) ... ok
+test_ig_wrong_rank (__main__.ContractTests.test_ig_wrong_rank) ... ok
+test_k_bounds_table (__main__.ContractTests.test_k_bounds_table) ... ok
+test_multibase_mutation (__main__.ContractTests.test_multibase_mutation) ... ok
+test_mutant_no_truth (__main__.ContractTests.test_mutant_no_truth) ... ok
+test_nan_label (__main__.ContractTests.test_nan_label) ... ok
+test_negative_r2_legal (__main__.ContractTests.test_negative_r2_legal) ... ok
+test_new_k10_ok (__main__.ContractTests.test_new_k10_ok) ... ok
+test_nonpositive_label (__main__.ContractTests.test_nonpositive_label) ... ok
+test_old150_sequence_rejected (__main__.ContractTests.test_old150_sequence_rejected) ... ok
+test_old_background_strategy (__main__.ContractTests.test_old_background_strategy) ... ok
+test_old_k20_k29_fail (__main__.ContractTests.test_old_k20_k29_fail) ... ok
+test_old_schema_rejected (__main__.ContractTests.test_old_schema_rejected) ... ok
+test_prediction_requires_transform (__main__.ContractTests.test_prediction_requires_transform) ... ok
+test_prediction_wrong_inverse (__main__.ContractTests.test_prediction_wrong_inverse) ... ok
+test_qc_mismatch (__main__.ContractTests.test_qc_mismatch) ... ok
+test_repeated_labels_not_duplicates (__main__.ContractTests.test_repeated_labels_not_duplicates) ... ok
+test_run_hash_mismatch (__main__.ContractTests.test_run_hash_mismatch) ... ok
+test_run_path_escape (__main__.ContractTests.test_run_path_escape) ... ok
+test_scale_roundtrip (__main__.ContractTests.test_scale_roundtrip) ... ok
+test_split_coverage (__main__.ContractTests.test_split_coverage) ... ok
+test_synthetic_run_manifest (__main__.ContractTests.test_synthetic_run_manifest) ... ok
+test_test_fit_forbidden (__main__.ContractTests.test_test_fit_forbidden) ... ok
+test_tool_r2_rejected (__main__.ContractTests.test_tool_r2_rejected) ... ok
+test_train_only_scale (__main__.ContractTests.test_train_only_scale) ... ok
+test_transform_write_no_overwrite (__main__.ContractTests.test_transform_write_no_overwrite) ... ok
+test_true_label_misalignment (__main__.ContractTests.test_true_label_misalignment) ... ok
+test_unknown_annotation_not_absent (__main__.ContractTests.test_unknown_annotation_not_absent) ... ok
+test_unknown_with_fabricated_bounds (__main__.ContractTests.test_unknown_with_fabricated_bounds) ... ok
+test_wrong_log (__main__.ContractTests.test_wrong_log) ... ok
+
+----------------------------------------------------------------------
+Ran 48 tests in 0.160s
+
+OK

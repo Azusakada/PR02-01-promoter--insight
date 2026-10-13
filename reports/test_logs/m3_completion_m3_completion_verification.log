@@ -1,0 +1,17 @@
+{
+  "status": "passed",
+  "run_id": "ecoli87_m3_completion_20261013_v1",
+  "tables_recomputed": 12,
+  "figures_checked": 5,
+  "independent_checks": {
+    "model_diagnostics": 12,
+    "group_memberships": 10035,
+    "spacing_summaries": 12,
+    "region_contrasts": 44,
+    "base_frequency_distributions": 144
+  },
+  "n_train": 8267,
+  "n_val": 1768,
+  "test_evaluated": false,
+  "visual_review_required": false
+}

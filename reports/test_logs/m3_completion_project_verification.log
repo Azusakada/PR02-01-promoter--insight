@@ -1,0 +1,45 @@
+{
+  "status": "passed",
+  "dataset": {
+    "status": "passed",
+    "n_retained": 11809,
+    "n_excluded": 75,
+    "reference": "U00096.2",
+    "original_labels_unchanged": true,
+    "original_split_inherited": true,
+    "original_tss_table_checked": true,
+    "counts": {
+      "val": 1768,
+      "train": 8267,
+      "test": 1774
+    },
+    "transform_train_only": true
+  },
+  "checks": [
+    "knn_artifacts",
+    "ridge_artifacts",
+    "svr_artifacts",
+    "cnn_artifacts",
+    "thermo_artifacts",
+    "comparison_artifacts",
+    "analysis_artifacts",
+    "knn_independent_prediction_and_metrics",
+    "ridge_independent_prediction_and_metrics",
+    "svr_independent_prediction_and_metrics",
+    "cnn_independent_prediction_and_metrics",
+    "thermo_independent_prediction_and_metrics",
+    "explain_research_integrity",
+    "mutate_research_integrity",
+    "ablate_research_integrity",
+    "transfer_research_integrity",
+    "m2m3_supplementary_analysis_recomputed",
+    "m3_completion_analysis_recomputed"
+  ],
+  "common_validation_count": 1768,
+  "test_evaluated": false,
+  "visual_review_required": true
+}
+/Users/kami/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/openpyxl/worksheet/_reader.py:329: UserWarning: Unknown extension is not supported and will be removed
+  warn(msg)
+/Users/kami/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/openpyxl/worksheet/_reader.py:329: UserWarning: Unknown extension is not supported and will be removed
+  warn(msg)

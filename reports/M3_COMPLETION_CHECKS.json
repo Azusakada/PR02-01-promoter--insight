@@ -1,0 +1,196 @@
+{
+  "created_at": "2026-10-13T11:00:39.249892+00:00",
+  "code_commit": "67acbefa69786b62c6b57627e795687d9809910b",
+  "runner_sha256": "e19cc1a73bfff8ee5c9101dce16c081ddfb67f6d9749d42e5135639b0b75eebf",
+  "checks": [
+    {
+      "name": "root_tests",
+      "command": [
+        "/Users/kami/Documents/Codex/2026-10-12/81bp-e-coli-https-github-com/work/pr02_venv/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-v"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "passed": true,
+      "elapsed_seconds": 7.341,
+      "log": "test_logs/m3_completion_root_tests.log",
+      "log_sha256": "349885f1d2d9e85da933230765bca4e0f7315eaba13036bc9bde9aa025a8b382",
+      "tests_run": 49
+    },
+    {
+      "name": "cnn_tests",
+      "command": [
+        "/Users/kami/Documents/Codex/2026-10-12/81bp-e-coli-https-github-com/work/pr02_venv/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "CNN/tests",
+        "-v"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "passed": true,
+      "elapsed_seconds": 2.005,
+      "log": "test_logs/m3_completion_cnn_tests.log",
+      "log_sha256": "9c71bbedec2b8f54c70a89092835b77aa348708f36d32c1bdd2427d5534491e6",
+      "tests_run": 17
+    },
+    {
+      "name": "legacy_analysis_tests",
+      "command": [
+        "/Users/kami/Documents/Codex/2026-10-12/81bp-e-coli-https-github-com/work/pr02_venv/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "analysis_m2m3/tests",
+        "-v"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "passed": true,
+      "elapsed_seconds": 2.593,
+      "log": "test_logs/m3_completion_legacy_analysis_tests.log",
+      "log_sha256": "ca7fe650118c7a86478a01678abbf0902ad577dddeabc0d7e5cb8386a66602f4",
+      "tests_run": 20
+    },
+    {
+      "name": "contracts_tests",
+      "command": [
+        "/Users/kami/Documents/Codex/2026-10-12/81bp-e-coli-https-github-com/work/pr02_venv/bin/python",
+        "contracts/scripts/test_contracts.py"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "passed": true,
+      "elapsed_seconds": 0.19,
+      "log": "test_logs/m3_completion_contracts_tests.log",
+      "log_sha256": "809fea7cc28ed045d157f9f13c2a90e9e7decdfa6215aab989b38b42f9522f0b",
+      "tests_run": 48
+    },
+    {
+      "name": "ridge_kmer_checks",
+      "command": [
+        "/Users/kami/Documents/Codex/2026-10-12/81bp-e-coli-https-github-com/work/pr02_venv/bin/python",
+        "Ridge/src/test_kmer.py"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "passed": true,
+      "elapsed_seconds": 0.161,
+      "log": "test_logs/m3_completion_ridge_kmer_checks.log",
+      "log_sha256": "811c24a5bba7df4f5e4afaa2304b4519abb1ed52cd0c13e7373349c51c32908a",
+      "checks_run": 4
+    },
+    {
+      "name": "supplementary_verification",
+      "command": [
+        "/Users/kami/Documents/Codex/2026-10-12/81bp-e-coli-https-github-com/work/pr02_venv/bin/python",
+        "-m",
+        "pr02",
+        "verify-m2m3",
+        "--output",
+        "runs/ecoli87_m2m3_20261013_v1"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "passed": true,
+      "elapsed_seconds": 10.15,
+      "log": "test_logs/m3_completion_supplementary_verification.log",
+      "log_sha256": "b74e88268b77eb83ec7a3f59475959eaa8dc3e70a90e36894f045202c3dec762"
+    },
+    {
+      "name": "m3_completion_verification",
+      "command": [
+        "/Users/kami/Documents/Codex/2026-10-12/81bp-e-coli-https-github-com/work/pr02_venv/bin/python",
+        "-m",
+        "pr02",
+        "verify-m3-completion",
+        "--output",
+        "runs/ecoli87_m3_completion_20261013_v1"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "passed": true,
+      "elapsed_seconds": 1.92,
+      "log": "test_logs/m3_completion_m3_completion_verification.log",
+      "log_sha256": "0f5ba1974f9778cea8a50d34a2293b7f151aa431e02ba787f143abd6b0f2355b"
+    },
+    {
+      "name": "project_verification",
+      "command": [
+        "/Users/kami/Documents/Codex/2026-10-12/81bp-e-coli-https-github-com/work/pr02_venv/bin/python",
+        "-c",
+        "import json; from pr02.context87.data import ROOT,read_json; from pr02.context87.audit import verify; print(json.dumps(verify(read_json(ROOT/\"project_config.json\"),visual=True),indent=2))"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "passed": true,
+      "elapsed_seconds": 16.141,
+      "log": "test_logs/m3_completion_project_verification.log",
+      "log_sha256": "0000a59b57ece5b1ef031a741a47bb4059be8830fc6f3721c8a3b0fbf5814544"
+    },
+    {
+      "name": "overwrite_guard",
+      "command": [
+        "/Users/kami/Documents/Codex/2026-10-12/81bp-e-coli-https-github-com/work/pr02_venv/bin/python",
+        "-m",
+        "pr02",
+        "analyze-m2m3",
+        "--output",
+        "runs/ecoli87_m2m3_20261013_v1"
+      ],
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "passed": true,
+      "elapsed_seconds": 5.571,
+      "log": "test_logs/m3_completion_overwrite_guard.log",
+      "log_sha256": "45c623f51ca6c79315f9ba4a14d20b951c30fb79cb5f7231505800c8caaee59c"
+    },
+    {
+      "name": "m3_completion_overwrite_guard",
+      "command": [
+        "/Users/kami/Documents/Codex/2026-10-12/81bp-e-coli-https-github-com/work/pr02_venv/bin/python",
+        "-m",
+        "pr02",
+        "complete-m3",
+        "--output",
+        "runs/ecoli87_m3_completion_20261013_v1"
+      ],
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "passed": true,
+      "elapsed_seconds": 0.863,
+      "log": "test_logs/m3_completion_m3_completion_overwrite_guard.log",
+      "log_sha256": "60a7f74c4f8b32a212e0b8e2fcb149e2d5229058e100d6e6ab6a475dc0c6591f"
+    },
+    {
+      "name": "whitespace_check",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "passed": true,
+      "elapsed_seconds": 0.013,
+      "log": "test_logs/m3_completion_whitespace_check.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "frozen_artifact_integrity",
+      "passed": true,
+      "files_checked": 362
+    }
+  ],
+  "status": "passed",
+  "log_paths_relative_to": "reports",
+  "source_check_output": "work/m3_completion_release_checks"
+}

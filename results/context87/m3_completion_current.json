@@ -1,0 +1,26 @@
+{
+  "schema_version": "3.0.0",
+  "dataset_id": "course_ecoli87_strength",
+  "data_version": "ecoli87_tss_verified_v1",
+  "split_id": "ecoli87_inherited_20260928_v1",
+  "run_id": "ecoli87_m3_completion_20261013_v1",
+  "run_path": "runs/ecoli87_m3_completion_20261013_v1",
+  "run_manifest_sha256": "a5bc0ec79813cc25a9067e629fc92d9a541681e558fbca8fba338a8c4b171fbe",
+  "verification": {
+    "status": "passed",
+    "run_id": "ecoli87_m3_completion_20261013_v1",
+    "tables_recomputed": 12,
+    "figures_checked": 5,
+    "independent_checks": {
+      "model_diagnostics": 12,
+      "group_memberships": 10035,
+      "spacing_summaries": 12,
+      "region_contrasts": 44,
+      "base_frequency_distributions": 144
+    },
+    "n_train": 8267,
+    "n_val": 1768,
+    "test_evaluated": false,
+    "visual_review_required": true
+  }
+}

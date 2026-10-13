@@ -2,6 +2,10 @@
 
 基于 main 606fdca 的已发布 87 bp 数据和五模型结果。当前 M3 的完整入口由 [已有 M2/M3 分析](../runs/ecoli87_m2m3_20261013_v1/analysis_report.md) 与 [本次补齐分析](../runs/ecoli87_m3_completion_20261013_v1/analysis_report.md) 组成。本次没有重训、替换标签、修改划分或新增 M4；汇报材料按用户要求排除。
 
+## 本次验收结果
+
+134项测试（根49、CNN17、历史分析20、契约48）及4项k-mer检查全部通过；新增12项测试覆盖训练专用阈值/均值、样本身份、失败预测、空间隔组、强弱差值方向等。原分析18表与本次12表复算通过；本次5张PNG逐张视觉检查，最终版本与已看图版本逐字节相同。全仓重载五模型及完整验证通过；核验期间362份data/runs/results文件字节未改变。
+
 ## 补齐内容
 
 1. spacer 的长度—强度关系：train/val 分别报告 n、中位数、Q25/Q75、低/高组占比和 Spearman。保留15–20bp的全部候选长度；未出现的长度为 n=0、统计未定义。
@@ -30,7 +34,7 @@ python -m pr02 publish-m3-completion --output runs/ecoli87_m3_completion_REPRODU
 
 本地索引为 results/context87/m3_completion_current.json；发布后 `python -m pr02 verify` 同时复算本次补齐和原 M2/M3 分析。`verify-m3-completion` 为只读，不产生训练或修改产物。
 
-释放前完整验证：
+提交前完整验证：
 
 ```bash
 python scripts/verify_m2m3_release.py --output work/m3_completion_release_checks \

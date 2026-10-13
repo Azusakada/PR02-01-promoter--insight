@@ -1,0 +1,275 @@
+{
+  "schema_version": "3.0.0",
+  "task_id": "pr02-ecoli87-m3-completion",
+  "run_id": "ecoli87_m3_completion_20261013_v1",
+  "dataset_id": "course_ecoli87_strength",
+  "data_version": "ecoli87_tss_verified_v1",
+  "split_id": "ecoli87_inherited_20260928_v1",
+  "created_at": "2026-10-13T10:58:29.965201+00:00",
+  "command": [
+    "/Users/kami/Documents/Codex/2026-10-12/81bp-e-coli-https-github-com/work/pr02_venv/bin/python",
+    "/Users/kami/Documents/Codex/2026-10-12/81bp-e-coli-https-github-com/outputs/PR02-01-promoter-insight-87bp/pr02/__main__.py",
+    "complete-m3",
+    "--output",
+    "runs/ecoli87_m3_completion_20261013_v1"
+  ],
+  "code_commit": "67acbefa69786b62c6b57627e795687d9809910b",
+  "code_hashes": {
+    "pr02/context87/__init__.py": "272f5409fa5de81eef7167b7eea7f334908a6e5edac37f71fb61f7177da76829",
+    "pr02/context87/analysis.py": "8eb1fb9695621c3ccfdb20da690fb8f47d0e45af35181bb8292aace9a8f0aa67",
+    "pr02/context87/audit.py": "867a7dbdee20f0b6b17410df5ca42df4538d7ee0cb9f1ee8ac43760444c2485c",
+    "pr02/context87/cli.py": "4add506855d097a0bdef5758f4e0e0ee6a762dabe54f24f6f025ecd787af7dc6",
+    "pr02/context87/data.py": "774de55b79dadb89731416c8542d48152e4e4a57ccb940240ec667afba446d7f",
+    "pr02/context87/experiment.py": "ce43d0cf3844365c79f4d3321eaf3acb7509b49f152fc16b179385165473a782",
+    "pr02/context87/features.py": "a18337d49554b76cd61591f1c77960b34efde0a953179c56343bf18fe5f82ee6",
+    "pr02/context87/m2m3.py": "6f6e20ac80e2f6be5d7a11fa097607acf0d7b10afa74c8c452815306d6b9f0e0",
+    "pr02/context87/m3_completion.py": "adf14b50644c6405f04e1b3fc0f7965c39c77f8f737526583379a34c0f7c4966",
+    "pr02/context87/research.py": "13a848d10d80817eb051611a8db64e3f7970f1fa381ac985c138b055f3f44be1",
+    "pr02/__main__.py": "c1fe5ad620214353bca329590e699a6300a09f50de337aa98b5d9f5be5efc83d",
+    "CNN/pr02_cnn/model.py": "1aa98b73f220c0e8cd8fdc2cef83caa41a9a17317aec9d5b4dcca1513926af4d",
+    "thermo/tools/regseq2/promoter_calculator.py": "c6afeb4dc1a651319933fc90bf0728a2b288b052b30bc0f2af461fe96ecc7f9f",
+    "thermo/tools/regseq2/free_energy_coeffs.npy": "fddf16b38bf29799481e8a45890b669111e16cf2e3448e99d1934d19a8f0b8e9",
+    "thermo/tools/regseq2/model_intercept.npy": "f7c66a8d838da71a6b2ab17936cd6ff2564e446af8c0676fba95de2116e99a7b"
+  },
+  "input_hashes": {
+    "data/03_Ecoli_strength87/samples.tsv": "a039b99467494c0e2bd76b654239005ff7076f6cc917809206f5d85b096eba32",
+    "data/03_Ecoli_strength87/split_manifest.tsv": "8ba07dce6dca9a33f0937561b8ddd5565e5fdf727411f83725f604785bfcf1cb",
+    "data/03_Ecoli_strength87/label_transform.json": "941706ea727addc436f92c8ffaa928ddf41460bd99f41c03e1f533ae90a24bcd",
+    "runs/ecoli87_knn_20261013_v1/predictions_val.csv": "7627eb0455492e29d44df8bc83b07974e9ca8adb800e44a229a3abc36c1c9d9d",
+    "runs/ecoli87_ridge_20261013_v1/predictions_val.csv": "343a322a8f2ef020c3c02211fd91a48ea54ee827554337dba2ea1ae72e009713",
+    "runs/ecoli87_svr_20261013_v1/predictions_val.csv": "27410c6ea2319fe99393b34f18d931468245bddf559622b578e0848f1b74d857",
+    "runs/ecoli87_cnn_20261013_v1/predictions_val.csv": "debe06d92bddb5a451f971400fa8e86e7209aef601068ff75160d476099d62d9",
+    "runs/ecoli87_thermo_20261013_v1/predictions_val.csv": "4ce7c9e98e0970391b703430208b5fe1a1fcf3c037f18f6c0ffc75ecfaae4fec",
+    "runs/ecoli87_thermo_20261013_v1/states.jsonl": "d57cdb7812027966c2d99b97cd01bc0c320428145c3f2f82daabcf5041a995eb",
+    "data/03_Ecoli_strength87/source_manifest.json": "c2836780b0dcac99084fc8824d980b0c3fc17cb2a34609ee3beb783f65f40867",
+    "data/03_Ecoli_strength87/data_manifest.json": "cde9630019a45306a426ef91883cfd0dbda627d04ec6984ed11d5c6df35300ea",
+    "runs/ecoli87_knn_20261013_v1/predictions_train.csv": "05fb7428dcd129cf86640b6faefa13b5c73a1f58dcdffdf22ff863797d64f5f9",
+    "runs/ecoli87_knn_20261013_v1/run_manifest.json": "0f66fd8db1c903ef5a169add89d3444fbb763ba78c6b219e695236299cf1b70b",
+    "runs/ecoli87_ridge_20261013_v1/predictions_train.csv": "ea78e12914bc5b65250eb6d244a1e73bcf268e59b00a87f14b0b4e21fca9b315",
+    "runs/ecoli87_ridge_20261013_v1/run_manifest.json": "40409ccdea016e8f90425b382fbf003a857834882a6280169df40e58f41dc99c",
+    "runs/ecoli87_svr_20261013_v1/predictions_train.csv": "1cfd9d821d6e9fdc5e31fce410fbc19fa0db82d75aa07c66e5bf49a798b6a013",
+    "runs/ecoli87_svr_20261013_v1/run_manifest.json": "83344b307eef7c86333da28f682c8dd007b7e4e77168116c19346fafa53104c3",
+    "runs/ecoli87_cnn_20261013_v1/predictions_train.csv": "7e0d980208c5ec743dfa1b5ec583b81e02b7baa46b67c3b75a75f29b94be81af",
+    "runs/ecoli87_cnn_20261013_v1/run_manifest.json": "1cfa8bd9a0ee815fba709ec818b227e59bc1c92dc3306c1e31c2775ade6e97b0",
+    "runs/ecoli87_thermo_20261013_v1/predictions_train.csv": "a8f30daf4af465852dcf1840f30341c5362dcade2be9749a2aa1a37604107e83",
+    "runs/ecoli87_thermo_20261013_v1/run_manifest.json": "0e118cd7ceaaa0634e210e1d1da9d68b83e2a0f524086ca5d75216f8d39bc134",
+    "runs/ecoli87_cnn_20261013_v1/training_history.csv": "d84cc51c0771d2416495cb3f111c517cab40337e0695ac4414a306106d8598cd"
+  },
+  "config": {
+    "schema_version": "3.0.0",
+    "dataset_id": "course_ecoli87_strength",
+    "data_version": "ecoli87_tss_verified_v1",
+    "split_id": "ecoli87_inherited_20260928_v1",
+    "samples": "data/03_Ecoli_strength87/samples.tsv",
+    "splits": "data/03_Ecoli_strength87/split_manifest.tsv",
+    "label_transform": "data/03_Ecoli_strength87/label_transform.json",
+    "expected_samples": 11809,
+    "sequence_length": 87,
+    "tss_index_0based": 67,
+    "seed": 20260928,
+    "num_threads": 4,
+    "test_metrics_enabled": false,
+    "runs": {
+      "knn": "ecoli87_knn_20261013_v1",
+      "ridge": "ecoli87_ridge_20261013_v1",
+      "svr": "ecoli87_svr_20261013_v1",
+      "cnn": "ecoli87_cnn_20261013_v1",
+      "thermo": "ecoli87_thermo_20261013_v1",
+      "comparison": "ecoli87_comparison_20261013_v1",
+      "analysis": "ecoli87_analysis_20261013_v1",
+      "explain": "ecoli87_explain_20261013_v1",
+      "mutate": "ecoli87_mutate_20261013_v1",
+      "ablate": "ecoli87_ablate_20261013_v1",
+      "transfer": "bsub61_transfer_20261013_v1"
+    },
+    "search": {
+      "knn": [
+        {
+          "k": 21
+        },
+        {
+          "k": 101
+        },
+        {
+          "k": 501
+        },
+        {
+          "k": 1501
+        }
+      ],
+      "ridge": [
+        {
+          "k": 3,
+          "alpha": 10
+        },
+        {
+          "k": 3,
+          "alpha": 100
+        },
+        {
+          "k": 4,
+          "alpha": 10
+        },
+        {
+          "k": 4,
+          "alpha": 100
+        },
+        {
+          "k": 5,
+          "alpha": 10
+        },
+        {
+          "k": 5,
+          "alpha": 100
+        }
+      ],
+      "svr": [
+        {
+          "k": 3,
+          "C": 0.1
+        },
+        {
+          "k": 3,
+          "C": 1
+        },
+        {
+          "k": 4,
+          "C": 0.1
+        },
+        {
+          "k": 4,
+          "C": 1
+        },
+        {
+          "k": 5,
+          "C": 0.1
+        },
+        {
+          "k": 5,
+          "C": 1
+        }
+      ]
+    },
+    "cnn": {
+      "model": {
+        "sequence_length": 87,
+        "channels": [
+          "A",
+          "C",
+          "G",
+          "T"
+        ],
+        "conv_channels": [
+          32,
+          64
+        ],
+        "kernel_sizes": [
+          7,
+          5
+        ],
+        "hidden_dim": 32,
+        "dropout": 0.3,
+        "pooling": "adaptive_avg",
+        "pooled_length": 5
+      },
+      "training": {
+        "batch_size": 128,
+        "max_epochs": 100,
+        "patience": 15,
+        "min_delta": 1e-05,
+        "learning_rate": 0.001,
+        "weight_decay": 0.001
+      }
+    },
+    "research": {
+      "explain_samples": 64,
+      "integrated_gradients_steps": 64,
+      "mutations_per_group": 5,
+      "mutation_random_repeats": 10
+    },
+    "transfer": {
+      "samples": "data/04_Bsub_strength61/samples.tsv",
+      "sequence_length": 61,
+      "test_fraction": 0.2,
+      "val_fraction": 0.2,
+      "few_shot_groups": [
+        20,
+        50,
+        100
+      ],
+      "primary_zero_shot_metric": "Spearman",
+      "label_units": "unknown"
+    }
+  },
+  "fit_subsets": [],
+  "selection_subsets": [],
+  "evaluation_subsets": [
+    "train",
+    "val"
+  ],
+  "test_metrics_enabled": false,
+  "parameters": {
+    "thresholds_log10": [
+      1.9392695863387313,
+      2.3832586817081753
+    ],
+    "threshold_fit_subset": "train",
+    "baseline_fit_subset": "train",
+    "baseline_constant_log10": 2.281702155100456,
+    "subsets": [
+      "train",
+      "val"
+    ],
+    "n_train": 8267,
+    "n_val": 1768,
+    "best_cnn_epoch": 17,
+    "cnn_epochs": 32,
+    "sparse_group_flag": "n < 30 (descriptive warning only)",
+    "test_evaluated": false
+  },
+  "evidence_level": "preliminary",
+  "font": {
+    "family": "Heiti SC",
+    "font_file_name": "STHeiti Medium.ttc",
+    "sha256": "f8fa4a63e2cf500e98e64d4c73260daaba049306cf85dec9e3729bc285b7d645"
+  },
+  "environment": {
+    "python": "3.12.14",
+    "platform": "macOS-15.5-arm64-arm-64bit",
+    "packages": {
+      "numpy": "2.5.3",
+      "pandas": "3.0.6",
+      "scipy": "1.18.1",
+      "scikit-learn": "1.9.1",
+      "matplotlib": "3.11.2"
+    }
+  },
+  "dirty_worktree": false,
+  "artifacts": {
+    "analysis_report.md": "97e8e80c8c2ddb46ff60dcfe0d3113fcdfcc3c3443dd5d5fc15f8f8e2a920cd2",
+    "figure_manifest.json": "89d53219d9ee6d5136ef3f3523cb88f96bca0b3a4ff28a9cf9d359b144da3bba",
+    "figures/01_spacing_strength.png": "5e78b5bd0f7dc601cf4e816186bc3a854136f18a2222e0e5db938ff523775749",
+    "figures/01_spacing_strength.svg": "7b849da7d190f496c5220e854e2b845c66eb3ac150406b45536987dd938703d8",
+    "figures/02_strength_group_regions.png": "44a759b4c50925ee0de97ef7849260390f583df6588dbc9403d0f95c8c2e9505",
+    "figures/02_strength_group_regions.svg": "f58199f02b30a068dc7f9d1af9378d795e10caa182de2655d40ce8438d80972e",
+    "figures/03_box_base_differences.png": "40f6a73e07c1e212a3dc820dc496697787c8081f94e3f3148ecdefecad41d7fd",
+    "figures/03_box_base_differences.svg": "4ad680d91d95019aab022470dc591dd06ecad1962b611b22a3e8d45ff7beb3d5",
+    "figures/04_model_diagnostics.png": "6822b1bafba1b70c6a47a31465d3161c760439f7c52e564db1970d157ebc3311",
+    "figures/04_model_diagnostics.svg": "4ff0495c400fa7b55f5049b3ebe585f82f17d53d6ccb277fb714074e8ee0668d",
+    "figures/05_cnn_learning_curve.png": "1c788865946331841acd31aacf0225307a700a8a9854efd6819e23cd4b9690a4",
+    "figures/05_cnn_learning_curve.svg": "8debc1a7caee9e7a70f14dff4378810d1e9ecba303d0aae1688cbca9c689cecd",
+    "parameters.json": "7f9e44b3e0a6bbdc3a37e343544a597f38a523591631ca8bc45291c175db0132",
+    "source_tables/cnn_learning_curve.csv": "243b71f5c15ea30ff9818584cea21bd789fc55ebc5a71c892ac25dfd40fac02a",
+    "source_tables/evaluation_ids.csv": "36ad52d2485aa40b8cae6d6fbc071a89bb6f8f3d3020328069934a8585714357",
+    "source_tables/group_membership.csv": "4f3c23d18c9a5530611a2c037abafdb3f5879f3ce76de0fe6c6524da37af3ee0",
+    "source_tables/mean_baseline_predictions.csv": "0db5b8efe333b3096555cfae5ae1836d5dbe5d80207f6b7daf0eab7f5b70ce32",
+    "source_tables/model_diagnostics.csv": "8e286ab1f920255327ae9966fa3121cbb02df29b48bbcee280c51716b182b401",
+    "source_tables/region_group_base_frequency.csv": "bf70d5297eea6eb69166636ddee7696f86b46bbeefbe47fbc31facfa2d186ad5",
+    "source_tables/region_group_contrasts.csv": "0e3ce4906a465f50badc403c32a135647e709081727221846656ded4341543b3",
+    "source_tables/region_group_summary.csv": "e6507cd673f12d1832c1e46a5b464782c26f2210dc02086d31d76672260df1fe",
+    "source_tables/spacing_correlations.csv": "7118260a7117fd2e5faf98a5dae1fa5e4def75608e56fc274e0e907ec5e3d545",
+    "source_tables/spacing_samples.csv": "600a2e359c730292f5f52073cb4cea50d6fd5a9a44b77f2b02f93cbf6bc8743f",
+    "source_tables/spacing_summary.csv": "f942de49a36863a684f98131cf1f708eae8b3bee99ed5ac246d51880e3a5c91c",
+    "source_tables/train_validation_gaps.csv": "add241ec0f051623ba082a5a409166b1bdf3e219f6214339b2f7d928f4da1aa3"
+  }
+}

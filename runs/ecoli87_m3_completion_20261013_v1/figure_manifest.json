@@ -1,0 +1,196 @@
+{
+  "figures": [
+    {
+      "figure_id": "01_spacing_strength",
+      "title": "spacer 长度与强度：分别检查训练集和验证集",
+      "subset": "train/val",
+      "annotation_status": "model_inferred",
+      "visual_review": "reviewed",
+      "caption": "箱线为中位数、四分位数及 1.5 IQR 须；隐藏离群点但统计保留全部样本。\n长度由热力学择优推定；n<30 的组仅作描述；不能解释为独立 spacer 效应。",
+      "images": [
+        {
+          "path": "figures/01_spacing_strength.png",
+          "sha256": "5e78b5bd0f7dc601cf4e816186bc3a854136f18a2222e0e5db938ff523775749"
+        },
+        {
+          "path": "figures/01_spacing_strength.svg",
+          "sha256": "7b849da7d190f496c5220e854e2b845c66eb3ac150406b45536987dd938703d8"
+        }
+      ],
+      "source_tables": [
+        {
+          "path": "source_tables/spacing_samples.csv",
+          "sha256": "600a2e359c730292f5f52073cb4cea50d6fd5a9a44b77f2b02f93cbf6bc8743f"
+        },
+        {
+          "path": "source_tables/spacing_summary.csv",
+          "sha256": "f942de49a36863a684f98131cf1f708eae8b3bee99ed5ac246d51880e3a5c91c"
+        },
+        {
+          "path": "source_tables/spacing_correlations.csv",
+          "sha256": "7118260a7117fd2e5faf98a5dae1fa5e4def75608e56fc274e0e907ec5e3d545"
+        }
+      ],
+      "run_id": "ecoli87_m3_completion_20261013_v1",
+      "data_version": "ecoli87_tss_verified_v1",
+      "split_id": "ecoli87_inherited_20260928_v1",
+      "visual_check": {
+        "checked_at": "2026-10-13T10:59:41.529020+00:00",
+        "method": "Codex visual inspection of PNG: glyphs, clipping, labels, units, denominators and captions"
+      }
+    },
+    {
+      "figure_id": "02_strength_group_regions",
+      "title": "强弱组的区域对照：UP、−35、spacer、−10",
+      "subset": "val",
+      "annotation_status": "canonical_window_assumption/model_inferred",
+      "visual_review": "reviewed",
+      "caption": "验证集 n=1,768；只显示低/高组；阈值取训练集三分位点，中组也保存在源表。\n同时保留固定与推定窗口，差异仅为描述性关系。",
+      "images": [
+        {
+          "path": "figures/02_strength_group_regions.png",
+          "sha256": "44a759b4c50925ee0de97ef7849260390f583df6588dbc9403d0f95c8c2e9505"
+        },
+        {
+          "path": "figures/02_strength_group_regions.svg",
+          "sha256": "f58199f02b30a068dc7f9d1af9378d795e10caa182de2655d40ce8438d80972e"
+        }
+      ],
+      "source_tables": [
+        {
+          "path": "source_tables/region_group_summary.csv",
+          "sha256": "e6507cd673f12d1832c1e46a5b464782c26f2210dc02086d31d76672260df1fe"
+        },
+        {
+          "path": "source_tables/region_group_contrasts.csv",
+          "sha256": "0e3ce4906a465f50badc403c32a135647e709081727221846656ded4341543b3"
+        },
+        {
+          "path": "source_tables/group_membership.csv",
+          "sha256": "4f3c23d18c9a5530611a2c037abafdb3f5879f3ce76de0fe6c6524da37af3ee0"
+        }
+      ],
+      "run_id": "ecoli87_m3_completion_20261013_v1",
+      "data_version": "ecoli87_tss_verified_v1",
+      "split_id": "ecoli87_inherited_20260928_v1",
+      "visual_check": {
+        "checked_at": "2026-10-13T10:59:41.529029+00:00",
+        "method": "Codex visual inspection of PNG: glyphs, clipping, labels, units, denominators and captions"
+      }
+    },
+    {
+      "figure_id": "03_box_base_differences",
+      "title": "−35 / −10 强弱组碱基频率差异",
+      "subset": "val",
+      "annotation_status": "canonical_window_assumption/model_inferred",
+      "visual_review": "reviewed",
+      "caption": "低组 n=582，高组 n=616；所有图统一色阶。\n共识均分为相同碱基数/6，不是结合能；盒区不是逐条实验注释。",
+      "images": [
+        {
+          "path": "figures/03_box_base_differences.png",
+          "sha256": "40f6a73e07c1e212a3dc820dc496697787c8081f94e3f3148ecdefecad41d7fd"
+        },
+        {
+          "path": "figures/03_box_base_differences.svg",
+          "sha256": "4ad680d91d95019aab022470dc591dd06ecad1962b611b22a3e8d45ff7beb3d5"
+        }
+      ],
+      "source_tables": [
+        {
+          "path": "source_tables/region_group_base_frequency.csv",
+          "sha256": "bf70d5297eea6eb69166636ddee7696f86b46bbeefbe47fbc31facfa2d186ad5"
+        },
+        {
+          "path": "source_tables/region_group_contrasts.csv",
+          "sha256": "0e3ce4906a465f50badc403c32a135647e709081727221846656ded4341543b3"
+        },
+        {
+          "path": "source_tables/group_membership.csv",
+          "sha256": "4f3c23d18c9a5530611a2c037abafdb3f5879f3ce76de0fe6c6524da37af3ee0"
+        }
+      ],
+      "run_id": "ecoli87_m3_completion_20261013_v1",
+      "data_version": "ecoli87_tss_verified_v1",
+      "split_id": "ecoli87_inherited_20260928_v1",
+      "visual_check": {
+        "checked_at": "2026-10-13T10:59:41.529030+00:00",
+        "method": "Codex visual inspection of PNG: glyphs, clipping, labels, units, denominators and captions"
+      }
+    },
+    {
+      "figure_id": "04_model_diagnostics",
+      "title": "五模型与训练均值基线：验证成绩和预测范围",
+      "subset": "val",
+      "annotation_status": "not_applicable",
+      "visual_review": "reviewed",
+      "caption": "共同验证集 n=1,768；常数仅由训练标签的 log10 均值确定。\n常数预测的 Spearman 未定义；范围收缩是观察结果，不等于已经证明数据噪声上限。",
+      "images": [
+        {
+          "path": "figures/04_model_diagnostics.png",
+          "sha256": "6822b1bafba1b70c6a47a31465d3161c760439f7c52e564db1970d157ebc3311"
+        },
+        {
+          "path": "figures/04_model_diagnostics.svg",
+          "sha256": "4ff0495c400fa7b55f5049b3ebe585f82f17d53d6ccb277fb714074e8ee0668d"
+        }
+      ],
+      "source_tables": [
+        {
+          "path": "source_tables/model_diagnostics.csv",
+          "sha256": "8e286ab1f920255327ae9966fa3121cbb02df29b48bbcee280c51716b182b401"
+        },
+        {
+          "path": "source_tables/mean_baseline_predictions.csv",
+          "sha256": "0db5b8efe333b3096555cfae5ae1836d5dbe5d80207f6b7daf0eab7f5b70ce32"
+        },
+        {
+          "path": "source_tables/evaluation_ids.csv",
+          "sha256": "36ad52d2485aa40b8cae6d6fbc071a89bb6f8f3d3020328069934a8585714357"
+        }
+      ],
+      "run_id": "ecoli87_m3_completion_20261013_v1",
+      "data_version": "ecoli87_tss_verified_v1",
+      "split_id": "ecoli87_inherited_20260928_v1",
+      "visual_check": {
+        "checked_at": "2026-10-13T10:59:41.529031+00:00",
+        "method": "Codex visual inspection of PNG: glyphs, clipping, labels, units, denominators and captions"
+      }
+    },
+    {
+      "figure_id": "05_cnn_learning_curve",
+      "title": "CNN 学习曲线：验证最优之后的训练变化",
+      "subset": "train/val",
+      "annotation_status": "not_applicable",
+      "visual_review": "reviewed",
+      "caption": "训练 n=8,267，验证 n=1,768；恢复已有日志尺度，没有新增训练。\n训练曲线含 dropout，不能直接当作选定 checkpoint 在 eval 模式下的训练集成绩。",
+      "images": [
+        {
+          "path": "figures/05_cnn_learning_curve.png",
+          "sha256": "1c788865946331841acd31aacf0225307a700a8a9854efd6819e23cd4b9690a4"
+        },
+        {
+          "path": "figures/05_cnn_learning_curve.svg",
+          "sha256": "8debc1a7caee9e7a70f14dff4378810d1e9ecba303d0aae1688cbca9c689cecd"
+        }
+      ],
+      "source_tables": [
+        {
+          "path": "source_tables/cnn_learning_curve.csv",
+          "sha256": "243b71f5c15ea30ff9818584cea21bd789fc55ebc5a71c892ac25dfd40fac02a"
+        }
+      ],
+      "run_id": "ecoli87_m3_completion_20261013_v1",
+      "data_version": "ecoli87_tss_verified_v1",
+      "split_id": "ecoli87_inherited_20260928_v1",
+      "visual_check": {
+        "checked_at": "2026-10-13T10:59:41.529032+00:00",
+        "method": "Codex visual inspection of PNG: glyphs, clipping, labels, units, denominators and captions"
+      }
+    }
+  ],
+  "font": {
+    "family": "Heiti SC",
+    "font_file_name": "STHeiti Medium.ttc",
+    "sha256": "f8fa4a63e2cf500e98e64d4c73260daaba049306cf85dec9e3729bc285b7d645"
+  }
+}

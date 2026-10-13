@@ -1,0 +1,19 @@
+{
+  "thresholds_log10": [
+    1.9392695863387313,
+    2.3832586817081753
+  ],
+  "threshold_fit_subset": "train",
+  "baseline_fit_subset": "train",
+  "baseline_constant_log10": 2.281702155100456,
+  "subsets": [
+    "train",
+    "val"
+  ],
+  "n_train": 8267,
+  "n_val": 1768,
+  "best_cnn_epoch": 17,
+  "cnn_epochs": 32,
+  "sparse_group_flag": "n < 30 (descriptive warning only)",
+  "test_evaluated": false
+}
