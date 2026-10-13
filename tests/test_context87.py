@@ -2,16 +2,22 @@ import copy
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 import numpy as np
 
 from pr02.context87.data import ROOT, build, coordinate, load, read_json, read_table, transformed
 from pr02.context87.features import encode, kmers, thermal_states
-from pr02.context87.experiment import cnn_class, load_cnn
+from pr02.context87.experiment import cnn_class, load_cnn, git_revision
 from pr02.context87.research import integrated_gradients, target_splits
 
 
 class Context87Tests(unittest.TestCase):
+    def test_zip_checkout_does_not_require_git_metadata(self):
+        import subprocess
+        with patch('pr02.context87.experiment.subprocess.run',side_effect=subprocess.CalledProcessError(128,['git'])):
+            self.assertIsNone(git_revision())
+
     def test_recovered_labels_split_and_coordinates(self):
         rows,t=load(); old={r['sample_id']:r for r in read_table(ROOT/'data/01_Ecoli_strength/data_v1.tsv')}
         parent={r['sample_id']:r['split'] for r in read_table(ROOT/'data/01_Ecoli_strength/split_manifest.tsv')}

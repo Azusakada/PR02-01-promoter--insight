@@ -73,7 +73,7 @@
 
 ## 验收与使用
 
-- 27 项根目录测试（其中 8 项新增）、17 项 CNN、48 项共享接口、20 项历史分析测试通过；另 4 项 Ridge k-mer 检查通过。
+- 28 项根目录测试（其中 9 项新增）、17 项 CNN、48 项共享接口、20 项历史分析测试通过；另 4 项 Ridge k-mer 检查通过。
 - rebuild-data 对 samples、split、label_transform、data_manifest 四份文件逐字节复现通过。
 - verify 重载五个模型、复算共同验证指标、训练 scaler 与热力学校准，检查归因坐标、突变位置及预测、目标域分组与 few-shot 拟合 ID，全部通过。
 - 每个运行固定输入、产物和代码摘要；运行期间用于其他方法的旧源码版本保存在 reports/source_snapshots/，由 SHA256 校验。

@@ -11,6 +11,7 @@
 ## 安装与运行
 
 建议 Python 3.12。依赖固定在 requirements.txt。
+ZIP 解压后的目录也可直接使用；没有 Git 元数据时，运行记录仍保存代码文件 SHA256，code_commit 记为空。
 
 ```bash
 python -m venv .venv

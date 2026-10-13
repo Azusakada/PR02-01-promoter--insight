@@ -62,6 +62,15 @@ def code_hashes():
     return {p.relative_to(ROOT).as_posix():sha(p) for p in files}
 
 
+def git_revision():
+    """ZIP checkouts have no Git metadata; executable hashes still identify their code."""
+    try:
+        return subprocess.run(['git','rev-parse','HEAD'],cwd=ROOT,check=True,
+                              capture_output=True,text=True).stdout.strip()
+    except (OSError,subprocess.CalledProcessError):
+        return None
+
+
 def manifest(cfg,kind,directory,details):
     rows,_=load(cfg)
     artifacts={p.relative_to(directory).as_posix():sha(p) for p in sorted(directory.rglob('*'))
@@ -70,7 +79,7 @@ def manifest(cfg,kind,directory,details):
                dataset_id=cfg['dataset_id'],data_version=cfg['data_version'],split_id=cfg['split_id'],
                sequence_length=cfg['sequence_length'],tss_index_0based=cfg['tss_index_0based'],
                input_hashes=input_hashes(cfg),code_hashes=code_hashes(),config=cfg,
-               code_commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
+               code_commit=git_revision(),
                environment={p:importlib.metadata.version(p) for p in ['numpy','scipy','scikit-learn','torch','pandas']},
                train_ids_sha256=digest_ids(r['sample_id'] for r in rows if r['split']=='train'),
                validation_ids_sha256=digest_ids(r['sample_id'] for r in rows if r['split']=='val'),
