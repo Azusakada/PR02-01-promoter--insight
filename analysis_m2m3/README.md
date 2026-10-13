@@ -1,4 +1,4 @@
-> 默认 87 bp 工作流使用根目录 `python -m pr02`，详见 [当前说明](../README.md)。本文件以下记录历史 50 bp 交付。
+> 默认87bp工作流使用根目录 `python -m pr02`。新版胡昊铭M2/M3交付见 [交接说明](../reports/ECOLI87_M2M3_HANDOFF.md) 和 [分析报告](../runs/ecoli87_m2m3_20261013_v1/analysis_report.md)。本文件以下记录历史50/81bp交付，其样本数、注释方法和成绩不适用于当前87bp数据。
 
 # M2 数据探索与 M3 分析交接
 

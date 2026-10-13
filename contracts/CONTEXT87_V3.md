@@ -37,6 +37,17 @@ predicted_value、true_value_log10、predicted_value_log10、prediction_status�
 每个运行有不可覆盖的目录、run_manifest.json、配置快照、输入/代码/产物 SHA256。
 verify 重载模型并复算验证预测、公共指标、训练 scaler 与热力学校准，检查计算突变和跨物种分组。
 
+## M2/M3补充分析接口
+
+`analyze-m2m3 --output runs/<新run_id>` 只读取正式87bp数据、transform、五模型val预测及固定TSS工具状态，不训练/校准/选择模型。
+`verify-m2m3 --output ...` 是只读核验，复算全部源表，并用独立标量公式核验指标、分组、区域与案例。
+输出采用v3样本身份与坐标规则；请求逐行保留ok/failed与原因，raw/log10指标分列。低中高阈值仅取train三分位数。
+区域表 `annotation_status` 分别为 `canonical_window_assumption` / `model_inferred`，不把盒区升级为实验注释。
+补充运行有独立manifest、图像/源表hash、命令、环境、代码版本和只读配置副本；同名非空目录拒绝覆盖。
+实际查看全部PNG后使用 `acknowledge-m2m3 --reviewed <全部十个figure_id>` 登记；`publish-m2m3` 才更新
+`results/context87/m2m3_current.json`。原project_config和模型运行绑定不变，全项目verify检查适用于当前配置的补充索引。
+历史v2校验器不接收这些87bp表；旧运行保持原件。此扩展增加分析产物，不改变既有v3模型或预测字段语义。
+
 ## 枯草杆菌目标域
 
 591 条教师 CSV 记录、580 个唯一序列，61 bp；重复测量保留，不平均标签。

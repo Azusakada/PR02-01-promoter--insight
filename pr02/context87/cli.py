@@ -19,6 +19,11 @@ def main(argv=None):
     cmd=sub.add_parser('run-all'); cmd.add_argument('--research',action='store_true',help='Also run attribution, mutations, retrained ablations and cross-species transfer')
     cmd=sub.add_parser('rebuild-data'); cmd.add_argument('--output',type=Path,required=True)
     cmd=sub.add_parser('new-run'); cmd.add_argument('--tag',required=True)
+    for command in ['analyze-m2m3', 'verify-m2m3', 'acknowledge-m2m3', 'publish-m2m3']:
+        cmd=sub.add_parser(command)
+        cmd.add_argument('--output',type=Path,default=Path('runs/ecoli87_m2m3_20261013_v1'))
+        if command=='acknowledge-m2m3':
+            cmd.add_argument('--reviewed',nargs='+',required=True,help='All ten figure IDs actually inspected by the operator')
     args=parser.parse_args(argv); cfg=read_json(args.config)
     try:
         load(cfg)
@@ -40,6 +45,12 @@ def main(argv=None):
         elif args.command=='analyze':
             from .analysis import analyze
             analyze(cfg)
+        elif args.command in ('analyze-m2m3','verify-m2m3','acknowledge-m2m3','publish-m2m3'):
+            from . import m2m3
+            if args.command=='analyze-m2m3': print(m2m3.analyze(cfg,args.output))
+            elif args.command=='verify-m2m3': print(json.dumps(m2m3.verify(cfg,args.output),ensure_ascii=False,indent=2))
+            elif args.command=='acknowledge-m2m3': m2m3.acknowledge(cfg,args.output,args.reviewed)
+            else: print(m2m3.publish(cfg,args.output))
         elif args.command=='acknowledge-figures':
             from .analysis import acknowledge
             acknowledge(cfg)

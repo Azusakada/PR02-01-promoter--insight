@@ -108,6 +108,10 @@ def verify(cfg,visual=False):
             proof_target=read_json(directory/'transfer_manifest.json')
             require(sha(TARGET/'samples.tsv')==proof_target['target_samples_sha256'],'Transfer target identity mismatch')
         results.append(kind+'_research_integrity')
+    from .m2m3 import verify_published
+    supplement=verify_published(cfg,visual=visual)
+    if supplement is not None:
+        results.append('m2m3_supplementary_analysis_recomputed')
     return dict(status='passed',dataset=proof,checks=results,common_validation_count=len(val_ids),test_evaluated=False,visual_review_required=visual)
 
 

@@ -8,6 +8,10 @@
 当前配置是 [project_config.json](project_config.json)，当前结果在 `results/context87/`，
 数据契约见 [CONTEXT87_V3.md](contracts/CONTEXT87_V3.md)，迁移记录见 [报告](reports/ECOLI87_MIGRATION.md)。
 
+胡昊铭的新版 M2/M3 补充分析见 [交接与复现说明](reports/ECOLI87_M2M3_HANDOFF.md)：
+10张中文图、三种尺度的EDA、固定/推定区域分析、五方法分组误差和80条规则化案例记录。
+分析报告入口为 [新版报告](runs/ecoli87_m2m3_20261013_v1/analysis_report.md)，不沿用历史50/81bp结论。
+
 ## 安装与运行
 
 建议 Python 3.12。依赖固定在 requirements.txt。
