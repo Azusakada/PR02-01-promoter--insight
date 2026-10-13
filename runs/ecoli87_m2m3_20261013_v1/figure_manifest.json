@@ -1,0 +1,388 @@
+{
+  "figures": [
+    {
+      "figure_id": "01_strength_distribution",
+      "title": "强度分布：原始值右尾较长",
+      "subset": "all",
+      "scale": "raw/log10/normalized",
+      "n_samples": 11809,
+      "annotation_status": "not_applicable",
+      "caption": "仅训练集拟合归一化，不裁剪范围",
+      "visual_review": "reviewed",
+      "images": [
+        {
+          "path": "figures/01_strength_distribution.png",
+          "sha256": "bc1a04955065b8efcf73bdb44347741a943040bde7592cde3ecf8c71e88ed132"
+        },
+        {
+          "path": "figures/01_strength_distribution.svg",
+          "sha256": "50fa2b2a024110acf27beaf6db14dce3c861935b562afb2cf170efb66238ffa9"
+        }
+      ],
+      "source_tables": [
+        {
+          "path": "source_tables/samples.csv",
+          "sha256": "044b2536dd0b000eadb995201daf22c2b4402f9ef8389d37a36d44ee8e7de01a"
+        },
+        {
+          "path": "source_tables/distributions.csv",
+          "sha256": "38e7d5059e4a08c8ece4931a3bf54c9ca004259f2b2c574118ef1202691be6ae"
+        }
+      ],
+      "run_id": "ecoli87_m2m3_20261013_v1",
+      "dataset_id": "course_ecoli87_strength",
+      "data_version": "ecoli87_tss_verified_v1",
+      "split_id": "ecoli87_inherited_20260928_v1",
+      "visual_check": {
+        "checked_at": "2026-10-13T08:49:12.042266+00:00",
+        "method": "Codex visual inspection of rendered PNG: Chinese glyphs, clipping, labels, scale, n and caption"
+      }
+    },
+    {
+      "figure_id": "02_split_distribution",
+      "title": "继承划分的强度分布",
+      "subset": "train/val/test",
+      "scale": "log10",
+      "n_samples": 11809,
+      "annotation_status": "not_applicable",
+      "caption": "仅描述标签分布；未计算 test 模型成绩",
+      "visual_review": "reviewed",
+      "images": [
+        {
+          "path": "figures/02_split_distribution.png",
+          "sha256": "1257bad4fc8e4a530e18732f19c56abba7aab76ea13f15ad28ef3a27cccd81a7"
+        },
+        {
+          "path": "figures/02_split_distribution.svg",
+          "sha256": "16d388a173647faf8b6bb3c3da5fb9ecfc2ebfa2878f836fbf96ef0c9456f913"
+        }
+      ],
+      "source_tables": [
+        {
+          "path": "source_tables/samples.csv",
+          "sha256": "044b2536dd0b000eadb995201daf22c2b4402f9ef8389d37a36d44ee8e7de01a"
+        }
+      ],
+      "run_id": "ecoli87_m2m3_20261013_v1",
+      "dataset_id": "course_ecoli87_strength",
+      "data_version": "ecoli87_tss_verified_v1",
+      "split_id": "ecoli87_inherited_20260928_v1",
+      "visual_check": {
+        "checked_at": "2026-10-13T08:49:12.042276+00:00",
+        "method": "Codex visual inspection of rendered PNG: Chinese glyphs, clipping, labels, scale, n and caption"
+      }
+    },
+    {
+      "figure_id": "03_feature_relationships",
+      "title": "整体序列特征与强度的描述性关系",
+      "subset": "all",
+      "scale": "log10",
+      "n_samples": 11809,
+      "annotation_status": "not_applicable",
+      "caption": "序列派生特征，GC与AT等存在冗余；不是因果证据",
+      "visual_review": "reviewed",
+      "images": [
+        {
+          "path": "figures/03_feature_relationships.png",
+          "sha256": "b0ee9362e2f6c4e36cb266f897ba3af2c48b1a87054d0880151d456e06a8e77c"
+        },
+        {
+          "path": "figures/03_feature_relationships.svg",
+          "sha256": "a02c9166402443d0c9438c10a88760e5db1edd28611bbbe4389c4179b7dfd441"
+        }
+      ],
+      "source_tables": [
+        {
+          "path": "source_tables/samples.csv",
+          "sha256": "044b2536dd0b000eadb995201daf22c2b4402f9ef8389d37a36d44ee8e7de01a"
+        },
+        {
+          "path": "source_tables/feature_correlations.csv",
+          "sha256": "8c7979270fee5d6384c56604c7bcf247ce3cc3a596fc0978c9fbd392353b25b8"
+        }
+      ],
+      "run_id": "ecoli87_m2m3_20261013_v1",
+      "dataset_id": "course_ecoli87_strength",
+      "data_version": "ecoli87_tss_verified_v1",
+      "split_id": "ecoli87_inherited_20260928_v1",
+      "visual_check": {
+        "checked_at": "2026-10-13T08:49:12.042278+00:00",
+        "method": "Codex visual inspection of rendered PNG: Chinese glyphs, clipping, labels, scale, n and caption"
+      }
+    },
+    {
+      "figure_id": "04_tss_base_frequency",
+      "title": "经核验 TSS 周围的碱基频率",
+      "subset": "all",
+      "scale": "sequence",
+      "n_samples": 11809,
+      "annotation_status": "experimental_tss_verified",
+      "caption": "TSS对应+1；盒区没有逐条实验注释",
+      "visual_review": "reviewed",
+      "images": [
+        {
+          "path": "figures/04_tss_base_frequency.png",
+          "sha256": "867e97270cebf4aedf4550ec6a7b09e5d4d06d687c6f6923c9b8bfb9b4955ab4"
+        },
+        {
+          "path": "figures/04_tss_base_frequency.svg",
+          "sha256": "e6bd65d6fcd8b43bab3571a960d1f91fafbcc41bc4aae1c3ff81ae3ac21a49fc"
+        }
+      ],
+      "source_tables": [
+        {
+          "path": "source_tables/base_frequency.csv",
+          "sha256": "7e5ccfa22c4b71aa805e6523e4015663441a3d8be0273f969d6b523bf827090e"
+        }
+      ],
+      "run_id": "ecoli87_m2m3_20261013_v1",
+      "dataset_id": "course_ecoli87_strength",
+      "data_version": "ecoli87_tss_verified_v1",
+      "split_id": "ecoli87_inherited_20260928_v1",
+      "visual_check": {
+        "checked_at": "2026-10-13T08:49:12.042279+00:00",
+        "method": "Codex visual inspection of rendered PNG: Chinese glyphs, clipping, labels, scale, n and caption"
+      }
+    },
+    {
+      "figure_id": "05_region_relationships",
+      "title": "区域特征分析：固定窗口与工具推定分别统计",
+      "subset": "all",
+      "scale": "sequence/log10",
+      "n_samples": 11809,
+      "annotation_status": "canonical_window_assumption/model_inferred",
+      "caption": "高共识组可能很小，标注末组n；各组n见源表；不证明机制",
+      "visual_review": "reviewed",
+      "images": [
+        {
+          "path": "figures/05_region_relationships.png",
+          "sha256": "54353943aa6cc09b5fc6ba0110051a61bb40d1dd8dbc33e9c9b17b0926e20e47"
+        },
+        {
+          "path": "figures/05_region_relationships.svg",
+          "sha256": "d30fd919dc72e85fa4ae8a25ef599f63c5d1b1f10735e77b1ff689cf2e180601"
+        }
+      ],
+      "source_tables": [
+        {
+          "path": "source_tables/region_base_frequency.csv",
+          "sha256": "1a878c9b1ff1779c94164b6d6026018a6c06130d4bd97c579025fbd7880e95eb"
+        },
+        {
+          "path": "source_tables/region_features.csv",
+          "sha256": "b1709d8a2202d703200041a446d63b3f4c733866d610801b35881813f4115af3"
+        },
+        {
+          "path": "source_tables/region_summary.csv",
+          "sha256": "ca42c784e245d25bfb32d5105aeaf578966c93ae54b3ccadb0033f046d62e99d"
+        },
+        {
+          "path": "source_tables/region_similarity_groups.csv",
+          "sha256": "b1c41d55e97785718065ea27e86d1740f034cf083764cc6f3946576587ced3c0"
+        }
+      ],
+      "run_id": "ecoli87_m2m3_20261013_v1",
+      "dataset_id": "course_ecoli87_strength",
+      "data_version": "ecoli87_tss_verified_v1",
+      "split_id": "ecoli87_inherited_20260928_v1",
+      "visual_check": {
+        "checked_at": "2026-10-13T08:49:12.042279+00:00",
+        "method": "Codex visual inspection of rendered PNG: Chinese glyphs, clipping, labels, scale, n and caption"
+      }
+    },
+    {
+      "figure_id": "06_model_comparison",
+      "title": "五方法共同验证集成绩",
+      "subset": "val_common",
+      "scale": "log10",
+      "n_samples": 1768,
+      "annotation_status": "not_applicable",
+      "caption": "五方法输入均为87bp；不据单次验证值宣称显著优越",
+      "visual_review": "reviewed",
+      "images": [
+        {
+          "path": "figures/06_model_comparison.png",
+          "sha256": "7ab8783d2cb55cba64117a357ebf1f6a286573188e1a441e8f0272fc372ad530"
+        },
+        {
+          "path": "figures/06_model_comparison.svg",
+          "sha256": "2efb45bdf93f54401f20706944202374eb8072434f77923ec3c10afa41d1014b"
+        }
+      ],
+      "source_tables": [
+        {
+          "path": "source_tables/metrics.csv",
+          "sha256": "4a91cd8b490746ca354cbab90bbdabe490b024c47ca67e178e382cde8297323f"
+        },
+        {
+          "path": "source_tables/coverage.csv",
+          "sha256": "8c52d42dffa37c2703a7dd8c4dc767876323a190a90d4b1b5e4c99c4a65c7244"
+        },
+        {
+          "path": "source_tables/evaluation_ids.csv",
+          "sha256": "d7bb41f943a2be3db63b86319473de40b09bb34b22032f44a6eef6c669983fc3"
+        }
+      ],
+      "run_id": "ecoli87_m2m3_20261013_v1",
+      "dataset_id": "course_ecoli87_strength",
+      "data_version": "ecoli87_tss_verified_v1",
+      "split_id": "ecoli87_inherited_20260928_v1",
+      "visual_check": {
+        "checked_at": "2026-10-13T08:49:12.042280+00:00",
+        "method": "Codex visual inspection of rendered PNG: Chinese glyphs, clipping, labels, scale, n and caption"
+      }
+    },
+    {
+      "figure_id": "07_scatter",
+      "title": "五方法预测与观测",
+      "subset": "val_common",
+      "scale": "log10",
+      "n_samples": 1768,
+      "annotation_status": "not_applicable",
+      "caption": "保留共同成功样本，不选择性删除大误差",
+      "visual_review": "reviewed",
+      "images": [
+        {
+          "path": "figures/07_scatter.png",
+          "sha256": "8ec84d8f729bef00012754205c39e28bdd90cd89aa051973f50915cbc57cf4e4"
+        },
+        {
+          "path": "figures/07_scatter.svg",
+          "sha256": "6e54a31c9b84e8b06ad1a0ec232298a03159bbd8640c79fe4a12432e020bd4e4"
+        }
+      ],
+      "source_tables": [
+        {
+          "path": "source_tables/prediction_errors.csv",
+          "sha256": "d3774f81f67bc59386fb2051ee319de85029cf811637625f462ee7bd8c50a680"
+        },
+        {
+          "path": "source_tables/evaluation_ids.csv",
+          "sha256": "d7bb41f943a2be3db63b86319473de40b09bb34b22032f44a6eef6c669983fc3"
+        }
+      ],
+      "run_id": "ecoli87_m2m3_20261013_v1",
+      "dataset_id": "course_ecoli87_strength",
+      "data_version": "ecoli87_tss_verified_v1",
+      "split_id": "ecoli87_inherited_20260928_v1",
+      "visual_check": {
+        "checked_at": "2026-10-13T08:49:12.042281+00:00",
+        "method": "Codex visual inspection of rendered PNG: Chinese glyphs, clipping, labels, scale, n and caption"
+      }
+    },
+    {
+      "figure_id": "08_residual",
+      "title": "五方法残差：正值高估，负值低估",
+      "subset": "val_common",
+      "scale": "log10",
+      "n_samples": 1768,
+      "annotation_status": "not_applicable",
+      "caption": "保留共同成功样本，不选择性删除大误差",
+      "visual_review": "reviewed",
+      "images": [
+        {
+          "path": "figures/08_residual.png",
+          "sha256": "b93d1c1f664d9cd14621c3b15f5f45eb08541784a74d19b22102f8d7395bb07b"
+        },
+        {
+          "path": "figures/08_residual.svg",
+          "sha256": "5947f4fb2ce03a2b89a48ee64ce2e3e1fb7ef6f8c4607b2956531da35bf17f88"
+        }
+      ],
+      "source_tables": [
+        {
+          "path": "source_tables/prediction_errors.csv",
+          "sha256": "d3774f81f67bc59386fb2051ee319de85029cf811637625f462ee7bd8c50a680"
+        },
+        {
+          "path": "source_tables/evaluation_ids.csv",
+          "sha256": "d7bb41f943a2be3db63b86319473de40b09bb34b22032f44a6eef6c669983fc3"
+        }
+      ],
+      "run_id": "ecoli87_m2m3_20261013_v1",
+      "dataset_id": "course_ecoli87_strength",
+      "data_version": "ecoli87_tss_verified_v1",
+      "split_id": "ecoli87_inherited_20260928_v1",
+      "visual_check": {
+        "checked_at": "2026-10-13T08:49:12.042282+00:00",
+        "method": "Codex visual inspection of rendered PNG: Chinese glyphs, clipping, labels, scale, n and caption"
+      }
+    },
+    {
+      "figure_id": "09_strength_group_errors",
+      "title": "训练集阈值固定的低中高强度误差",
+      "subset": "val_common",
+      "scale": "log10",
+      "n_samples": 1768,
+      "annotation_status": "not_applicable",
+      "caption": "阈值仅取train三分位点；不能按预测值重新分组",
+      "visual_review": "reviewed",
+      "images": [
+        {
+          "path": "figures/09_strength_group_errors.png",
+          "sha256": "8cfa5ed33e9b2aae2aee368d6a9217f285c4d0f7427dc047123c665d588bbcbc"
+        },
+        {
+          "path": "figures/09_strength_group_errors.svg",
+          "sha256": "d13d40a56020ee5921d0284f87fbf289c1a35423883d46088fa80c643f24d91a"
+        }
+      ],
+      "source_tables": [
+        {
+          "path": "source_tables/group_errors.csv",
+          "sha256": "b878af0130f220bc95ea837d7c482eee8755730d94fc1ffd12e84a0c13684197"
+        },
+        {
+          "path": "source_tables/prediction_errors.csv",
+          "sha256": "d3774f81f67bc59386fb2051ee319de85029cf811637625f462ee7bd8c50a680"
+        }
+      ],
+      "run_id": "ecoli87_m2m3_20261013_v1",
+      "dataset_id": "course_ecoli87_strength",
+      "data_version": "ecoli87_tss_verified_v1",
+      "split_id": "ecoli87_inherited_20260928_v1",
+      "visual_check": {
+        "checked_at": "2026-10-13T08:49:12.042282+00:00",
+        "method": "Codex visual inspection of rendered PNG: Chinese glyphs, clipping, labels, scale, n and caption"
+      }
+    },
+    {
+      "figure_id": "10_model_disagreement",
+      "title": "五方法预测分歧",
+      "subset": "val_common",
+      "scale": "log10",
+      "n_samples": 1768,
+      "annotation_status": "not_applicable",
+      "caption": "模型分歧不等同于模型误差；最大分歧案例另存表",
+      "visual_review": "reviewed",
+      "images": [
+        {
+          "path": "figures/10_model_disagreement.png",
+          "sha256": "dac96f7a40a401cdb7bf20444f0fab7247fc6874425fd95d8e9a15a7755c5918"
+        },
+        {
+          "path": "figures/10_model_disagreement.svg",
+          "sha256": "904373d0934a00fae47c9aee2a8170fc3b7da255d22757c6f075e8ae91be3b52"
+        }
+      ],
+      "source_tables": [
+        {
+          "path": "source_tables/model_disagreements.csv",
+          "sha256": "f91263f7150684656fc1dd8a45462b0c5324210b8b464a132383fc7ccbbda8e9"
+        },
+        {
+          "path": "source_tables/evaluation_ids.csv",
+          "sha256": "d7bb41f943a2be3db63b86319473de40b09bb34b22032f44a6eef6c669983fc3"
+        }
+      ],
+      "run_id": "ecoli87_m2m3_20261013_v1",
+      "dataset_id": "course_ecoli87_strength",
+      "data_version": "ecoli87_tss_verified_v1",
+      "split_id": "ecoli87_inherited_20260928_v1",
+      "visual_check": {
+        "checked_at": "2026-10-13T08:49:12.042283+00:00",
+        "method": "Codex visual inspection of rendered PNG: Chinese glyphs, clipping, labels, scale, n and caption"
+      }
+    }
+  ]
+}

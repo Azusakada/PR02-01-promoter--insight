@@ -1,0 +1,15 @@
+{
+  "status": "passed",
+  "n_retained": 11809,
+  "n_excluded": 75,
+  "reference": "U00096.2",
+  "original_labels_unchanged": true,
+  "original_split_inherited": true,
+  "original_tss_table_checked": true,
+  "counts": {
+    "val": 1768,
+    "train": 8267,
+    "test": 1774
+  },
+  "transform_train_only": true
+}

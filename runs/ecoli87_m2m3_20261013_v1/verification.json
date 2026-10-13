@@ -1,0 +1,19 @@
+{
+  "status": "passed",
+  "run_id": "ecoli87_m2m3_20261013_v1",
+  "tables_recomputed": 18,
+  "figures_checked": 10,
+  "independent_checks": {
+    "metrics": 80,
+    "groups": 30,
+    "region_rows": 141708,
+    "region_summaries": 16,
+    "case_selections": 80
+  },
+  "n_all": 11809,
+  "n_val": 1768,
+  "n_common": 1768,
+  "cases": 80,
+  "test_evaluated": false,
+  "visual_review_required": true
+}

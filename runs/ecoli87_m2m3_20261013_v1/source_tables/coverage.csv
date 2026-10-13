@@ -1,0 +1,6 @@
+method,n_requested,n_success,n_failed,n_common
+knn,1768,1768,0,1768
+ridge,1768,1768,0,1768
+svr,1768,1768,0,1768
+cnn,1768,1768,0,1768
+thermo,1768,1768,0,1768

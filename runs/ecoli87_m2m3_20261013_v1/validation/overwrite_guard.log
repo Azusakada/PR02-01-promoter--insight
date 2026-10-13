@@ -1,0 +1,3 @@
+/Users/huhaoming/Desktop/大二下/机器学习综合实践/PR02-01-promoter--insight/work/.venv-ecoli87/lib/python3.12/site-packages/openpyxl/worksheet/_reader.py:329: UserWarning: Unknown extension is not supported and will be removed
+  warn(msg)
+PR02 failed: Use a new run ID; existing output: /Users/huhaoming/Desktop/大二下/机器学习综合实践/PR02-01-promoter--insight/runs/ecoli87_m2m3_20261013_v1

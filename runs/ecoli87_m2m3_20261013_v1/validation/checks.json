@@ -1,0 +1,155 @@
+{
+  "created_at": "2026-10-13T08:48:12.056923+00:00",
+  "code_commit": "fc058cfb3f9ded6e59c6f00a0cd6d1c708368162",
+  "runner_sha256": "d421ff87ce075a646b6f1fc16112d72090c9966a4cda83e3996e9743298cac27",
+  "checks": [
+    {
+      "name": "root_tests",
+      "command": [
+        "/Users/huhaoming/Desktop/大二下/机器学习综合实践/PR02-01-promoter--insight/work/.venv-ecoli87/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-v"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "passed": true,
+      "elapsed_seconds": 7.923,
+      "log": "root_tests.log",
+      "log_sha256": "d062c4922b56884d475d30c3ef03de4a7439aa7de4fff32143e843b60c3352b3",
+      "tests_run": 37
+    },
+    {
+      "name": "cnn_tests",
+      "command": [
+        "/Users/huhaoming/Desktop/大二下/机器学习综合实践/PR02-01-promoter--insight/work/.venv-ecoli87/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "CNN/tests",
+        "-v"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "passed": true,
+      "elapsed_seconds": 3.653,
+      "log": "cnn_tests.log",
+      "log_sha256": "66b3a1bf8c0d368fdba03c63d0aa85e0da158fedf484b46ad4fa9f14fa5cbf21",
+      "tests_run": 17
+    },
+    {
+      "name": "legacy_analysis_tests",
+      "command": [
+        "/Users/huhaoming/Desktop/大二下/机器学习综合实践/PR02-01-promoter--insight/work/.venv-ecoli87/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "analysis_m2m3/tests",
+        "-v"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "passed": true,
+      "elapsed_seconds": 2.698,
+      "log": "legacy_analysis_tests.log",
+      "log_sha256": "4dd2e5dce24d435cba6719e2cfa80dec8403891e8ea1135e95d39a0e07e01669",
+      "tests_run": 20
+    },
+    {
+      "name": "contracts_tests",
+      "command": [
+        "/Users/huhaoming/Desktop/大二下/机器学习综合实践/PR02-01-promoter--insight/work/.venv-ecoli87/bin/python",
+        "contracts/scripts/test_contracts.py"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "passed": true,
+      "elapsed_seconds": 0.201,
+      "log": "contracts_tests.log",
+      "log_sha256": "66059f24edd4c5fa111c594ae3486d0db92e42af7724b7d99137592c3f396e86",
+      "tests_run": 48
+    },
+    {
+      "name": "ridge_kmer_checks",
+      "command": [
+        "/Users/huhaoming/Desktop/大二下/机器学习综合实践/PR02-01-promoter--insight/work/.venv-ecoli87/bin/python",
+        "Ridge/src/test_kmer.py"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "passed": true,
+      "elapsed_seconds": 0.176,
+      "log": "ridge_kmer_checks.log",
+      "log_sha256": "811c24a5bba7df4f5e4afaa2304b4519abb1ed52cd0c13e7373349c51c32908a",
+      "checks_run": 4
+    },
+    {
+      "name": "supplementary_verification",
+      "command": [
+        "/Users/huhaoming/Desktop/大二下/机器学习综合实践/PR02-01-promoter--insight/work/.venv-ecoli87/bin/python",
+        "-m",
+        "pr02",
+        "verify-m2m3",
+        "--output",
+        "runs/ecoli87_m2m3_20261013_v1"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "passed": true,
+      "elapsed_seconds": 10.888,
+      "log": "supplementary_verification.log",
+      "log_sha256": "36eddb6846405327bef7333c1b8ea383aff7acf2377f5576faaf70a406ffdef4"
+    },
+    {
+      "name": "project_verification",
+      "command": [
+        "/Users/huhaoming/Desktop/大二下/机器学习综合实践/PR02-01-promoter--insight/work/.venv-ecoli87/bin/python",
+        "-c",
+        "import json; from pr02.context87.data import ROOT,read_json; from pr02.context87.audit import verify; print(json.dumps(verify(read_json(ROOT/\"project_config.json\"),visual=True),indent=2))"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "passed": true,
+      "elapsed_seconds": 6.577,
+      "log": "project_verification.log",
+      "log_sha256": "ab01f01c6cec43999706bb08a3f973c26b594bf3016f9e8c6e3e0b9cdfa5210e"
+    },
+    {
+      "name": "overwrite_guard",
+      "command": [
+        "/Users/huhaoming/Desktop/大二下/机器学习综合实践/PR02-01-promoter--insight/work/.venv-ecoli87/bin/python",
+        "-m",
+        "pr02",
+        "analyze-m2m3",
+        "--output",
+        "runs/ecoli87_m2m3_20261013_v1"
+      ],
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "passed": true,
+      "elapsed_seconds": 5.545,
+      "log": "overwrite_guard.log",
+      "log_sha256": "511c88bd5d27ac345697b8ce9ba1469a183c89f6a57d8a3d087fe84b196eeb43"
+    },
+    {
+      "name": "whitespace_check",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "passed": true,
+      "elapsed_seconds": 0.012,
+      "log": "whitespace_check.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "status": "passed"
+}

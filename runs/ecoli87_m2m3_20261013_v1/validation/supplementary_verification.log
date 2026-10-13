@@ -1,0 +1,21 @@
+{
+  "status": "passed",
+  "run_id": "ecoli87_m2m3_20261013_v1",
+  "tables_recomputed": 18,
+  "figures_checked": 10,
+  "independent_checks": {
+    "metrics": 80,
+    "groups": 30,
+    "region_rows": 141708,
+    "region_summaries": 16,
+    "case_selections": 80
+  },
+  "n_all": 11809,
+  "n_val": 1768,
+  "n_common": 1768,
+  "cases": 80,
+  "test_evaluated": false,
+  "visual_review_required": false
+}
+/Users/huhaoming/Desktop/大二下/机器学习综合实践/PR02-01-promoter--insight/work/.venv-ecoli87/lib/python3.12/site-packages/openpyxl/worksheet/_reader.py:329: UserWarning: Unknown extension is not supported and will be removed
+  warn(msg)
