@@ -112,6 +112,9 @@ def verify(cfg,visual=False):
     supplement=verify_published(cfg,visual=visual)
     if supplement is not None:
         results.append('m2m3_supplementary_analysis_recomputed')
+    from .m3_completion import verify_published as verify_m3_published
+    if verify_m3_published(cfg,visual=visual) is not None:
+        results.append('m3_completion_analysis_recomputed')
     return dict(status='passed',dataset=proof,checks=results,common_validation_count=len(val_ids),test_evaluated=False,visual_review_required=visual)
 
 

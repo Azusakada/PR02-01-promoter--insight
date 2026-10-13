@@ -12,6 +12,11 @@
 10张中文图、三种尺度的EDA、固定/推定区域分析、五方法分组误差和80条规则化案例记录。
 分析报告入口为 [新版报告](runs/ecoli87_m2m3_20261013_v1/analysis_report.md)，不沿用历史50/81bp结论。
 
+M3 收尾见 [补齐分析与基线诊断](runs/ecoli87_m3_completion_20261013_v1/analysis_report.md)
+和 [验收说明](reports/M3_COMPLETION_20261013.md)：补齐 spacer 与强度关系、强弱组区域对照、
+训练均值基线、训练/验证差距和 CNN 学习曲线；新增5张图与12份源表，复用冻结模型。
+M3 分析交付与模型准确率分别解释；后续 M4 不在本次补齐范围。
+
 ## 安装与运行
 
 建议 Python 3.12。依赖固定在 requirements.txt。

@@ -24,6 +24,11 @@ def main(argv=None):
         cmd.add_argument('--output',type=Path,default=Path('runs/ecoli87_m2m3_20261013_v1'))
         if command=='acknowledge-m2m3':
             cmd.add_argument('--reviewed',nargs='+',required=True,help='All ten figure IDs actually inspected by the operator')
+    for command in ['complete-m3', 'verify-m3-completion', 'acknowledge-m3-completion', 'publish-m3-completion']:
+        cmd=sub.add_parser(command)
+        cmd.add_argument('--output',type=Path,default=Path('runs/ecoli87_m3_completion_20261013_v1'))
+        if command=='acknowledge-m3-completion':
+            cmd.add_argument('--reviewed',nargs='+',required=True,help='All five M3 completion figure IDs actually inspected')
     args=parser.parse_args(argv); cfg=read_json(args.config)
     try:
         load(cfg)
@@ -54,6 +59,12 @@ def main(argv=None):
         elif args.command=='acknowledge-figures':
             from .analysis import acknowledge
             acknowledge(cfg)
+        elif args.command in ('complete-m3','verify-m3-completion','acknowledge-m3-completion','publish-m3-completion'):
+            from . import m3_completion
+            if args.command=='complete-m3': print(m3_completion.analyze(cfg,args.output))
+            elif args.command=='verify-m3-completion': print(json.dumps(m3_completion.verify(cfg,args.output),ensure_ascii=False,indent=2))
+            elif args.command=='acknowledge-m3-completion': m3_completion.acknowledge(cfg,args.output,args.reviewed)
+            else: print(m3_completion.publish(cfg,args.output))
         elif args.command=='verify':
             from .audit import verify
             result=verify(cfg); write_json(ROOT/'results/context87/verification.json',result); print(json.dumps(result,indent=2))

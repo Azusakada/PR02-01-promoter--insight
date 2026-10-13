@@ -28,6 +28,8 @@
 
 ## 当前五方法结果
 
+2026-10-13 的 M3 收尾已补齐 spacer 与强度关系、强弱组区域比较、均值基线和训练/验证诊断，详见 [M3验收说明](M3_COMPLETION_20261013.md) 与 [补齐分析](../runs/ecoli87_m3_completion_20261013_v1/analysis_report.md)。复用下列冻结模型与预测；准确率未因补充分析而改变。M4 后续工作另行安排。
+
 仅为继承随机划分上的验证集初步结果；此次不评价 E. coli test。
 
 | 方法 | R²（log10） | MAE（log10） | RMSE（log10） | Spearman |

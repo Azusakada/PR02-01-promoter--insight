@@ -62,20 +62,21 @@ def strength_groups(values, bounds):
     return np.select([values <= bounds[0], values <= bounds[1]], ['low', 'mid'], default='high')
 
 
-def check_predictions(frame, data, cfg, method):
+def check_predictions(frame, data, cfg, method, subset='val'):
     """Join by ID, require a row for each request, and preserve failed rows."""
+    require(subset in ['train', 'val'], 'Only train/val predictions may be analyzed')
     needed = {'dataset_id', 'data_version', 'split_id', 'sample_id', 'method_name', 'run_id', 'subset',
               'true_value', 'true_value_log10', 'predicted_value', 'predicted_value_log10',
               'prediction_status', 'sequence_length', 'target_scale_model'}
     require(needed <= set(frame), f'{method}: missing columns {needed-set(frame)}')
     frame = frame.copy()
-    requested = set(data.loc[data['split'].eq('val'), 'sample_id'])
+    requested = set(data.loc[data['split'].eq(subset), 'sample_id'])
     require(frame.sample_id.notna().all() and frame.sample_id.is_unique, f'{method}: duplicate/missing ID')
-    require(set(frame.sample_id) == requested, f'{method}: validation request ID mismatch')
+    require(set(frame.sample_id) == requested, f'{method}: {subset} request ID mismatch')
     for key in ['dataset_id', 'data_version', 'split_id']:
         require(frame[key].eq(cfg[key]).all(), f'{method}: wrong {key}')
     require(frame.method_name.eq(method).all() and frame.run_id.eq(cfg['runs'][method]).all(), f'{method}: wrong model identity')
-    require(frame.subset.eq('val').all() and frame.target_scale_model.eq('log10').all(), f'{method}: wrong subset/scale')
+    require(frame.subset.eq(subset).all() and frame.target_scale_model.eq('log10').all(), f'{method}: wrong subset/scale')
     require(pd.to_numeric(frame.sequence_length).eq(87).all(), f'{method}: wrong sequence length')
     for key in ['true_value', 'true_value_log10', 'predicted_value', 'predicted_value_log10']:
         frame[key] = pd.to_numeric(frame[key], errors='raise')
