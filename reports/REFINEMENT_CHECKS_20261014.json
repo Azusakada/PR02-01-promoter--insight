@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "run_id": "runs/m4_refinement_20261014_v2",
+  "unit_tests": 149,
+  "checks_path": "runs/m4_refinement_20261014_v2/checks/quality_checks.json",
+  "checks_sha256": "188703ff4a0450e90f6d1bb0abdc22e446f13dcbd0ac2287cb0d7bec3c255a54",
+  "verification_path": "runs/m4_refinement_20261014_v2/verification.json",
+  "verification_sha256": "d9b8b2e13716b0fc2dfdaa2d217e8b38670e6fc5a0132acfe54f544ee5824e5c",
+  "ppt_rebuilt": false,
+  "word_rebuilt": false
+}

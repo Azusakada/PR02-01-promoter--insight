@@ -51,7 +51,7 @@ def encode_sequences(sequences, model_dir, device='cpu', batch_size=32):
 
 def run(cfg, protocol, model_dir=None, device='cpu'):
     directory = run_root(protocol)/'dna_features'
-    if completed(directory): return directory
+    if completed(directory, cfg, protocol): return directory
     directory.mkdir(parents=True, exist_ok=True)
     if model_dir is None:
         from huggingface_hub import snapshot_download

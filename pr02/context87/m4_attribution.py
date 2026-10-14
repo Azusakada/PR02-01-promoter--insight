@@ -7,7 +7,7 @@ from .data import ROOT, coordinate, digest_ids, load, read_json, read_table, wri
 from .experiment import cnn_predict
 from .features import encode, kmers
 from .m4_cnn import load_model
-from .m4_data_eval import REGIONS, SEEDS, bundle, completed, finish, run_root
+from .m4_data_eval import REGIONS, seeds, bundle, completed, finish, run_root
 from .research import integrated_gradients, ranks
 
 
@@ -33,7 +33,7 @@ def run(cfg, protocol):
     import torch
     torch.set_num_threads(2)
     root = run_root(protocol); directory = root/'attribution'
-    if completed(directory): return directory
+    if completed(directory, cfg, protocol): return directory
     directory.mkdir(parents=True, exist_ok=True)
     rows, _ = load(cfg); master = {r['sample_id']: r for r in rows}
     selected = read_json(root/'cnn/selected_model.json')
@@ -68,16 +68,16 @@ def run(cfg, protocol):
     write_table(directory/'substitution_expectation.csv', expectations)
     write_table(directory/'ig_completeness.csv', [dict(sample_id=r['sample_id'], error_log10=float(e)) for r, e in zip(val_rows, errors)])
     write_json(directory/'interpretation.json', dict(
-        source_model=selected['representative_run'], explained_model='pure CNN log10 predictor', n_val=64,
+        source_model=selected['representative_run'], explained_model='pure CNN log10 predictor', n_val=len(val_rows),
         ig_baseline='A/C/G/T=0.25 at every position', ig_steps=protocol['ig_steps'], integration='trapezoid',
         max_absolute_completeness_error_log10=float(np.abs(errors).max()), mean_absolute_completeness_error_log10=float(np.abs(errors).mean()),
         ism_definition='mean absolute log10 output change across the three alternative nucleotides',
         expectation='wild type first derivative alt-channel minus reference-channel; no mutant output used',
         legacy_saliency='legacy research.py saliency is gradient times input difference, not plain absolute gradient'))
     train_rows = [master[r['sample_id']] for r in read_table(root/'protocol/attribution_train_ids.tsv')]
-    for seed in SEEDS:
+    for seed in seeds(protocol):
         guided = root/f'guided_s{seed}'
-        if completed(guided): continue
+        if completed(guided, cfg, protocol): continue
         guided.mkdir(parents=True, exist_ok=True)
         model = log_model(ROOT/selected['runs'][str(seed)])
         train_attr, train_errors = integrated_gradients(model, encode([r['sequence'] for r in train_rows], 87), protocol['ig_steps'])
@@ -85,15 +85,15 @@ def run(cfg, protocol):
         chosen = ranking[:2]
         write_json(guided/'feature_recipe.json', dict(selected_regions=chosen, candidate_regions=list(REGIONS),
             region_mean_absolute={name: float(np.abs(train_attr[:, slice(*REGIONS[name])]).mean()) for name in REGIONS},
-            fit_subset='train', n_selection=256, selection_ids_sha256=digest_ids(r['sample_id'] for r in train_rows),
+            fit_subset='train', n_selection=len(train_rows), selection_ids_sha256=digest_ids(r['sample_id'] for r in train_rows),
             ranking='mean absolute IG per base; ties UP,-35,spacer,-10', seed=seed,
             source_cnn_run=selected['runs'][str(seed)], windows=REGIONS))
         np.savez_compressed(guided/'training_ig.npz', scores=train_attr, sample_ids=np.array([r['sample_id'] for r in train_rows]), completeness_errors=train_errors)
         features, names = guided_features([r['sequence'] for r in rows], chosen)
         bundle(guided, features, rows, 'training_ig_guided_region_kmer', cfg,
-               dict(selected_regions=chosen, feature_names=names, selection_subset='train', n_selection=256, seed=seed))
+               dict(selected_regions=chosen, feature_names=names, selection_subset='train', n_selection=len(train_rows), seed=seed))
         finish(guided, cfg, dict(selected_regions=chosen), [guided/'feature_recipe.json'])
-    finish(directory, cfg, dict(n_val=64, methods=['IG', 'ISM'], source_model=selected['representative_run']),
+    finish(directory, cfg, dict(n_val=len(val_rows), methods=['IG', 'ISM'], source_model=selected['representative_run']),
            [source/'model.pt', root/'protocol/attribution_val_ids.tsv'])
     return directory
 

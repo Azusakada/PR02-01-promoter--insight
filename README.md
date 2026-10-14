@@ -8,7 +8,33 @@
 当前配置是 [project_config.json](project_config.json)，当前结果在 `results/context87/`，
 数据契约见 [CONTEXT87_V3.md](contracts/CONTEXT87_V3.md)，迁移记录见 [报告](reports/ECOLI87_MIGRATION.md)。
 
-## M4与M5最终交付（2026年10月14日）
+## 当前完善版本（2026年10月14日）
+
+当前实验修订采用 [m4_refinement_v2.json](configs/m4_refinement_v2.json)，
+规则见 [M4_REFINEMENT_V2.md](contracts/M4_REFINEMENT_V2.md)。
+修订包含扩展正则化、重新训练的基因组分组验证、三个CNN种子的解释稳定性和五次跨物种训练抽样。
+最新结论以 [完善核验报告](runs/m4_refinement_20261014_v2/reports/REFINEMENT_REVIEW.md)
+及 `results/context87/refinement_current.json` 为准。
+项目判断与结论解释见 [本轮完善结果](reports/PROJECT_REFINEMENT_20261014.md)。
+
+**最终项目内容尚待确认，PPT、Word和旧版正式报告保留历史版本，暂不重新制作。**
+旧报告中的参数范围和结论不能直接当作本次修订结论。
+
+```bash
+python -m pr02 m4-refine --stage verify
+```
+
+完整重跑先复制修订协议并修改 `output` 为新的 `runs/` 子目录；保留 `baseline` 指向原封存运行。
+常规修订复用已交付的冻结DNA表征，不需要重新下载编码器：
+
+```bash
+python -m pr02 m4-refine --protocol configs/你的新修订协议.json --stage all
+```
+
+完成后实际查看图，再按接口文档登记检查和发布结果索引。新报告写入自己的run目录，
+不会自动重建PPT。断点续跑会检查完整配置、协议、上游和源码；变化时须使用新目录。
+
+## 历史M4/M5 v1交付（2026年10月14日）
 
 正式实验位于 `runs/m4_complete_20261014_v1/`，协议为
 [m4_protocol_v1.json](configs/m4_protocol_v1.json)，接口见
@@ -56,7 +82,7 @@ Word构建入口为 `scripts/build_m5_docx.py`（另需python-docx）；PPT构�
 M3 收尾见 [补齐分析与基线诊断](runs/ecoli87_m3_completion_20261013_v1/analysis_report.md)
 和 [验收说明](reports/M3_COMPLETION_20261013.md)：补齐 spacer 与强度关系、强弱组区域对照、
 训练均值基线、训练/验证差距和 CNN 学习曲线；新增5张图与12份源表，复用冻结模型。
-M3 分析交付与模型准确率分别解释；后续 M4 不在本次补齐范围。
+M3 分析交付与模型准确率分别解释；M4及本次修订另有独立运行记录。
 
 ## 安装与运行
 
@@ -112,7 +138,7 @@ CNN 显式使用 61 bp 自适应池化实例及冻结源权重。few-shot 对照
 
 归因、突变和消融属于计算实验；突变预测不是湿实验测量。此次 E. coli test 保持不评价。
 沿用的是历史随机划分，邻近参考上下文可能重叠，且旧项目曾报告 test 指标，不能称为全新盲测。
-M4已补齐三种子与冻结DNA语言模型；严格基因组分组验证和与PR01-02外部结果比较仍属后续研究。
+M4已补齐三种子与冻结DNA语言模型；当前修订另含基因组分组验证，与PR01-02外部结果比较仍属后续研究。
 
 ## 复核
 

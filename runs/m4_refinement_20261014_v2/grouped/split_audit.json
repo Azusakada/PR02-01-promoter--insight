@@ -1,0 +1,27 @@
+{
+  "counts": {
+    "train": 5985,
+    "dev": 2003,
+    "evaluation": 1998
+  },
+  "exclusions": {
+    "excluded_historical_test": 1774,
+    "excluded_block_boundary": 49
+  },
+  "block_bp": 20000,
+  "split_seed": 20261014,
+  "cross_subset_window_overlaps": {
+    "train_vs_dev": 0,
+    "train_vs_evaluation": 0,
+    "dev_vs_evaluation": 0
+  },
+  "reverse_complement_duplicates_cross_subsets": false,
+  "label_transform": {
+    "min_log10": 0.9380190974762103,
+    "max_log10": 5.914235601697235,
+    "fit_subset": "grouped_train",
+    "formula": "(log10_strength-min)/(max-min)"
+  },
+  "selection": "fit on train, select alpha and CNN stopping epoch on dev; evaluation labels excluded from these decisions",
+  "scope": "One spatially separated partition of original train+val. Historical source test excluded. Internal robustness control, not a new external blind dataset."
+}

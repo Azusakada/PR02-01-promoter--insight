@@ -1,0 +1,20 @@
+{
+  "status": "passed",
+  "run_id": "runs/m4_refinement_20261014_v2",
+  "checks": [
+    "original_sealed_outputs_reports_and_ppt_preserved",
+    "artifact_upstream_config_protocol_and_executed_source_checksums",
+    "all_11_refined_heads_reloaded_scalers_and_validation_scores_checked",
+    "zero_genomic_overlap_and_all_grouped_models_refit_reloaded_with_training_only_preprocessing",
+    "three_seed_IG_completeness_and_regional_aggregates_checked",
+    "all_32_target_conditions_reloaded_and_nested_training_group_draws_verified",
+    "source_linked_figures_and_visual_review"
+  ],
+  "source_test_evaluated": false,
+  "ppt_updated": false,
+  "n_refined_heads": 11,
+  "n_target_conditions": 32,
+  "n_grouped_evaluation": 1998,
+  "n_attribution_parents": 64,
+  "visual_review_required": true
+}

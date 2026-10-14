@@ -1,0 +1,75 @@
+{
+  "figures": [
+    {
+      "figure_id": "01_regularization_comparison",
+      "png": "01_regularization_comparison.png",
+      "svg": "01_regularization_comparison.svg",
+      "caption": "只扩大Ridge正则化范围；融合显示三个匹配种子的均值与样本标准差。验证集参与选参，数值不代表独立泛化。",
+      "sha256": "853ab2b47fa5eca82a5c4cea9d668dac4a73487d9431ad34f2da5487d2d45bac",
+      "source_tables": {
+        "runs/m4_refinement_20261014_v2/regularization/summary.csv": "516e6a685bdd6a50d4b585ed629af51ed3fd01f9850379ae669c17f1e4127914",
+        "runs/m4_refinement_20261014_v2/regularization/matched_comparison.csv": "fad62366663123121018e4eee99a3c071e76cc7ef7c4c9d330158b91ae3efe31"
+      },
+      "visual_review": "reviewed"
+    },
+    {
+      "figure_id": "02_regularization_search",
+      "png": "02_regularization_search.png",
+      "svg": "02_regularization_search.svg",
+      "caption": "完整保留预定七档alpha的误差曲线，不只展示获胜参数。",
+      "sha256": "24305470f1407dc0cdcbecc6d53cfcf711840246ae4b337d8a8cd96c08353ee4",
+      "source_tables": {
+        "runs/m4_refinement_20261014_v2/regularization/search.csv": "6b176f9b2d18afc66b7ff63e6bb6ceaae761751648417a57d5df850d496f4a13"
+      },
+      "visual_review": "reviewed"
+    },
+    {
+      "figure_id": "03_grouped_validation",
+      "png": "03_grouped_validation.png",
+      "svg": "03_grouped_validation.svg",
+      "caption": "20kb区域分组，跨集合87bp窗口重叠为零；重新训练CNN、回归头、热力学校准和训练归因配方。超参数及早停只看dev。误差线为训练种子标准差。",
+      "sha256": "90661a0137a5bd21a30679ed1078bb4dd0871938be812d7986b757ab73a99b77",
+      "source_tables": {
+        "runs/m4_refinement_20261014_v2/grouped/summary.csv": "ca4516201bda936dbe3a71e1d58e8bddd27dc7bd5f638c6124ef4c2934966ada",
+        "runs/m4_refinement_20261014_v2/grouped/split_audit.json": "760c348135fa6707614ae7713dc73f97f0892fe02a785f5fe3f1ce51a2d20d72"
+      },
+      "visual_review": "reviewed"
+    },
+    {
+      "figure_id": "04_grouped_learning_curves",
+      "png": "04_grouped_learning_curves.png",
+      "svg": "04_grouped_learning_curves.svg",
+      "caption": "分组验证CNN的训练与开发集曲线；evaluation标签不参与早停。",
+      "sha256": "1ce490b2ec39d48d74d1ac895d52ca49ffe15e47cf4ece03ea61974fe1e4f9a4",
+      "source_tables": {
+        "runs/m4_refinement_20261014_v2/grouped/cnn_s20260928/training_history.csv": "8a7b29f855fc5c9bac9f114b8bfc0e1611662f8d545308099612ccac86e86deb",
+        "runs/m4_refinement_20261014_v2/grouped/cnn_s20260929/training_history.csv": "af74862101d7715f705f1d06c8661e5fda900a6429dac86212e9be71df2b0525",
+        "runs/m4_refinement_20261014_v2/grouped/cnn_s20260930/training_history.csv": "f01f5dc426d6e5e05cc5bc84edca154cb82525ad1d31eb62bb2b6f4a97827810"
+      },
+      "visual_review": "reviewed"
+    },
+    {
+      "figure_id": "05_attribution_seed_stability",
+      "png": "05_attribution_seed_stability.png",
+      "svg": "05_attribution_seed_stability.svg",
+      "caption": "同一64条母序列、三个CNN种子的固定区域富集。跨种子稳定性与同模型IG/ISM一致性是不同指标；仍为描述性分析。",
+      "sha256": "4f5002cfcbf77afc84af52341440b9b8b92512649e2aecc93a04d4703fe07e3a",
+      "source_tables": {
+        "runs/m4_refinement_20261014_v2/attribution_stability/region_by_seed.csv": "df848849a1864d4133fb651e6fb3984e4fe38a6f7deca3261dc4f873072070ae"
+      },
+      "visual_review": "reviewed"
+    },
+    {
+      "figure_id": "06_transfer_training_draws",
+      "png": "06_transfer_training_draws.png",
+      "svg": "06_transfer_training_draws.svg",
+      "caption": "误差线表示训练组抽样的标准差；每次抽样的目标test序列组bootstrap区间另存metrics.csv。目标test曾被使用，未称为新盲测。",
+      "sha256": "024b85d53b4d14a2d2f3a3bda492788330b1d910c7a0d442d1bc192a531fd581",
+      "source_tables": {
+        "runs/m4_refinement_20261014_v2/transfer_stability/summary.csv": "8e576cadb5b2a349dc460a0c46ac47b7ffeb7c2aef4cd73c7f1d528623ffb653"
+      },
+      "visual_review": "reviewed"
+    }
+  ],
+  "n_figures": 6
+}

@@ -6,7 +6,7 @@ import numpy as np
 from .data import ROOT, TARGET, load, read_json, read_table, require, sha, write_json
 from .experiment import cnn_predict, masks, metrics
 from .features import encode, kmers, thermal_states
-from .m4_data_eval import SEEDS, read_bundle, run_root, validate_prediction_rows
+from .m4_data_eval import seeds, verify_sealed_release, read_bundle, run_root, validate_prediction_rows
 from .m4_cnn import load_model, embedding
 
 
@@ -16,9 +16,8 @@ def verify(cfg, protocol, visual=True):
     root = run_root(protocol); rows, _ = load(cfg); m = masks(rows); ids = [r['sample_id'] for r in rows]
     y = np.array([float(r['target_log10']) for r in rows]); seq = [r['sequence'] for r in rows]; checks = []
     if (root/'release_manifest.json').exists():
-        release=read_json(root/'release_manifest.json')
-        for name,value in release['artifacts'].items():require(sha(ROOT/name)==value,'Release artifact mismatch: '+name)
-        checks.append('final_release_artifacts_and_materials_hashes')
+        archived=verify_sealed_release(root)
+        checks.append('final_release_artifacts_and_archived_original_sources_hashes')
     for file in sorted(root.rglob('run_manifest.json')):
         meta = read_json(file)
         require(meta['source_test_evaluated'] is False, 'Source test scoring enabled')
@@ -42,9 +41,9 @@ def verify(cfg, protocol, visual=True):
         require({r['sample_id'] for r in read_table(directory/'fit_ids.tsv')} == set(np.array(ids)[m['train']]), 'ML fit includes heldout data')
     checks.append('ridge_svr_dna_head_reload_and_training_only_scalers')
     search = read_table(root/'cnn/search.csv'); selected = read_json(root/'cnn/selected_model.json')
-    require(len(search) == 12 and {(r['condition'],int(r['seed'])) for r in search} == {(c,s) for c in ['C0','C1','C2','C3'] for s in SEEDS}, 'Incomplete CNN grid')
-    winner = min(['C0','C1','C2','C3'], key=lambda c: np.mean([float(r['val_mse_log10']) for r in search if r['condition'] == c]))
-    require(selected['condition'] == winner and selected['representative_seed'] == SEEDS[0], 'CNN selection mismatch')
+    require(len(search) == len(protocol['cnn_configurations'])*len(seeds(protocol)) and {(r['condition'],int(r['seed'])) for r in search} == {(c,s) for c in protocol['cnn_configurations'] for s in seeds(protocol)}, 'Incomplete CNN grid')
+    winner = min(protocol['cnn_configurations'], key=lambda c: np.mean([float(r['val_mse_log10']) for r in search if r['condition'] == c]))
+    require(selected['condition'] == winner and selected['representative_seed'] == seeds(protocol)[0], 'CNN selection mismatch')
     for record in search:
         directory = root/f"cnn/{record['condition']}_s{record['seed']}"; model, t = load_model(directory)
         p = t['min_log10']+(t['max_log10']-t['min_log10'])*cnn_predict(model, encode(seq,87))
@@ -52,10 +51,10 @@ def verify(cfg, protocol, visual=True):
         require(np.isclose(np.mean((p[m['val']]-y[m['val']])**2),float(record['val_mse_log10']),atol=1e-8), 'CNN search score mismatch')
     checks.append('all_12_cnn_runs_reloaded_and_mean_validation_selection_verified')
     kmer = read_bundle(root/'ml/kmer',ids); dna = read_bundle(root/'dna_features',ids)
-    for seed in SEEDS:
+    for seed in seeds(protocol):
         guided = root/f'guided_s{seed}'; recipe = read_json(guided/'feature_recipe.json')
         expected_train = {r['sample_id'] for r in read_table(root/'protocol/attribution_train_ids.tsv')}
-        require(expected_train <= set(np.array(ids)[m['train']]) and len(expected_train) == 256, 'Attribution feature selection leakage')
+        require(expected_train <= set(np.array(ids)[m['train']]) and len(expected_train) == protocol['attribution_train_n'], 'Attribution feature selection leakage')
         with np.load(guided/'training_ig.npz',allow_pickle=False) as z:
             require(set(z['sample_ids']) == expected_train,'Training IG identity mismatch')
             from .m4_data_eval import REGIONS
@@ -68,7 +67,7 @@ def verify(cfg, protocol, visual=True):
         model,_=load_model(ROOT/selected['runs'][str(seed)])
         require(np.allclose(cnn[:8],embedding(model,encode(seq[:8],87)),atol=1e-6),'CNN feature extraction mismatch')
         for stage,parts in [('A0',[kmer]),('A1',[kmer,cnn]),('A2',[kmer,cnn,dna]),('A3',[kmer,cnn,dna,xguided])]:
-            if stage=='A0' and seed!=SEEDS[0]:continue
+            if stage=='A0' and seed!=seeds(protocol)[0]:continue
             directory=root/'ablation'/(stage if stage=='A0' else f'{stage}_s{seed}')
             x=np.column_stack(parts);head=joblib.load(directory/'model.joblib')
             require(np.allclose(head[0].mean_,x[m['train']].mean(0,dtype=np.float64),atol=2e-5),'Fusion scaler leakage')
@@ -80,9 +79,9 @@ def verify(cfg, protocol, visual=True):
     for r in attrs:
         pos=int(r['position_0based']);require(r['nucleotide']==master[r['sample_id']]['sequence'][pos],'Attribution base mismatch')
         attribute_groups.setdefault((r['sample_id'],r['method']),[]).append(pos)
-    require(len(attribute_groups)==128 and all(sorted(p)==list(range(87)) for p in attribute_groups.values()),'Incomplete attribution positions')
+    require(len(attribute_groups)==2*protocol['attribution_val_n'] and all(sorted(p)==list(range(87)) for p in attribute_groups.values()),'Incomplete attribution positions')
     design=read_table(root/'mutation/mutation_design.csv'); pred=read_table(root/'mutation/mutation_predictions.csv')
-    require(len(design)==2880 and len({r['mutation_id'] for r in design})==2880,'Mutation design count mismatch')
+    require(len(design)==45*protocol['attribution_val_n'] and len({r['mutation_id'] for r in design})==45*protocol['attribution_val_n'],'Mutation design count mismatch')
     require([r['mutation_id'] for r in pred]==[r['mutation_id'] for r in design],'Mutation ID order mismatch')
     require(sha(root/'mutation/mutation_design.csv')==read_json(root/'mutation/design_frozen.json')['design_sha256'],'Frozen design changed')
     for r in design:
@@ -93,7 +92,7 @@ def verify(cfg, protocol, visual=True):
     model=log_model(ROOT/selected['representative_run'])
     wild=cnn_predict(model,encode([r['wild_type_sequence'] for r in design],87)); mutant=cnn_predict(model,encode([r['mutant_sequence'] for r in design],87))
     require(np.allclose(mutant-wild,[float(r['delta_log10']) for r in pred],atol=2e-6),'Mutation CNN delta mismatch')
-    require(sum(r['experiment_type']=='amplitude' for r in design)==1920 and sum(r['experiment_type']=='single_direction' for r in design)==960,'Mutation condition counts mismatch')
+    require(sum(r['experiment_type']=='amplitude' for r in design)==30*protocol['attribution_val_n'] and sum(r['experiment_type']=='single_direction' for r in design)==15*protocol['attribution_val_n'],'Mutation condition counts mismatch')
     # Independently recompute PC states for evenly spaced variants rather than trust exported deltas.
     chosen=np.linspace(0,len(design)-1,12,dtype=int);states=thermal_states([design[i]['mutant_sequence'] for i in chosen])
     calibration=read_json(ROOT/'runs'/cfg['runs']['thermo']/'calibration.json')
@@ -158,7 +157,8 @@ def verify(cfg, protocol, visual=True):
     from .audit import verify as verify_m3
     old=verify_m3(cfg)
     require(old['status']=='passed','Legacy M3 verification failed');checks.append('original_M3_verification_passed')
-    result=dict(status='passed',run_id=protocol['output'],checks=checks,n_source_val=1768,n_attribution_parents=64,
-        n_mutants=2880,n_transfer_conditions=8,source_test_evaluated=False,visual_review_required=visual)
-    write_json(root/'verification.json',result)
+    result=dict(status='passed',run_id=protocol['output'],checks=checks,n_source_val=1768,n_attribution_parents=protocol['attribution_val_n'],
+        n_mutants=45*protocol['attribution_val_n'],n_transfer_conditions=8,source_test_evaluated=False,visual_review_required=visual)
+    # A recheck of a sealed release is read-only; keep its original acceptance record.
+    if not (root/'release_manifest.json').exists(): write_json(root/'verification.json',result)
     return result

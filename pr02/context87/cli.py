@@ -21,9 +21,14 @@ def main(argv=None):
     cmd=sub.add_parser('new-run'); cmd.add_argument('--tag',required=True)
     cmd=sub.add_parser('m4',help='Formal M4 experiments and verification, separate from frozen M3 runs')
     cmd.add_argument('--protocol',type=Path,default=ROOT/'configs/m4_protocol_v1.json')
-    cmd.add_argument('--stage',choices=['all','ml','dna','cnn','attribution','mutation','ablation','transfer','evaluate','figures','report','verify'],default='all')
+    cmd.add_argument('--stage',choices=['all','ml','dna','cnn','attribution','mutation','ablation','transfer','evaluate','figures','report','acknowledge','verify'],default='all')
+    cmd.add_argument('--reviewed',nargs='+',default=None,help='Figure IDs actually inspected; only for acknowledge')
     cmd.add_argument('--dna-model-dir',type=Path,default=None,help='Optional local snapshot of the pinned official model')
     cmd.add_argument('--device',choices=['cpu','mps','cuda'],default='cpu',help='Frozen DNA encoder inference device')
+    cmd=sub.add_parser('m4-refine',help='Versioned regularization, genomic-group control and stability checks; leaves PPT unchanged')
+    cmd.add_argument('--protocol',type=Path,default=ROOT/'configs/m4_refinement_v2.json')
+    cmd.add_argument('--stage',choices=['all','regularization','grouped','attribution','transfer','report','acknowledge','verify','publish'],default='all')
+    cmd.add_argument('--reviewed',nargs='+',default=None,help='Every refinement figure ID actually inspected')
     for command in ['analyze-m2m3', 'verify-m2m3', 'acknowledge-m2m3', 'publish-m2m3']:
         cmd=sub.add_parser(command)
         cmd.add_argument('--output',type=Path,default=Path('runs/ecoli87_m2m3_20261013_v1'))
@@ -39,7 +44,11 @@ def main(argv=None):
         load(cfg)
         if args.command=='m4':
             from .m4_pipeline import run
-            result=run(cfg,read_json(args.protocol),args.stage,args.dna_model_dir,args.device)
+            result=run(cfg,read_json(args.protocol),args.stage,args.dna_model_dir,args.device,reviewed=args.reviewed)
+            print(json.dumps(result,ensure_ascii=False,indent=2) if isinstance(result,dict) else result)
+        elif args.command=='m4-refine':
+            from .m4_refinement import run
+            result=run(cfg,read_json(args.protocol),args.stage,reviewed=args.reviewed)
             print(json.dumps(result,ensure_ascii=False,indent=2) if isinstance(result,dict) else result)
         elif args.command=='new-run':
             require(bool(re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_-]{0,40}',args.tag)),'Invalid experiment tag')

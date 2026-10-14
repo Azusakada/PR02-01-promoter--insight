@@ -1,0 +1,8 @@
+{
+  "run_id": "runs/m4_refinement_20261014_v2",
+  "protocol_sha256": "28d679351c960538c2219a45697587ceadb069feb212907bbf34f4bd4b9164a5",
+  "verification_sha256": "d9b8b2e13716b0fc2dfdaa2d217e8b38670e6fc5a0132acfe54f544ee5824e5c",
+  "report_path": "runs/m4_refinement_20261014_v2/reports/REFINEMENT_REVIEW.md",
+  "ppt_updated": false,
+  "baseline": "runs/m4_complete_20261014_v1"
+}

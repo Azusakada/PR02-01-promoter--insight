@@ -1,134 +1,70 @@
-"""Generate M5 report source from the published tables, with no manual metric entry."""
+"""Generate a run-local, source-derived report without publishing final materials."""
 from __future__ import annotations
-from .data import ROOT, read_json, read_table, sha, write_json
-from .m4_data_eval import SEEDS, run_root
+from .data import read_json, read_table, write_json
+from .m4_data_eval import run_root, seeds
 
 
 def build(cfg, protocol):
-    root=run_root(protocol); rel=root.relative_to(ROOT).as_posix()
-    summary=read_table(root/'evaluation/model_summary.csv'); lookup={r['method']:r for r in summary}
-    stages=read_table(root/'ablation/stage_summary.csv'); mutations=read_table(root/'mutation/mutation_summary.csv')
-    directions=read_table(root/'mutation/direction_summary.csv'); direction=next(r for r in directions if r['expected_direction']=='all')
-    agreement=read_table(root/'explanation_analysis/consistency_summary.csv'); overlap=read_table(root/'explanation_analysis/overlap_summary.csv')
-    transfer=read_table(root/'transfer/transfer_metrics.csv'); ig=read_json(root/'attribution/interpretation.json')
-    selected=read_json(root/'cnn/selected_model.json'); search=read_table(root/'cnn/search.csv')
-    groups=read_table(root/'evaluation/group_metrics.csv')
-    paired=read_table(root/'mutation/paired_amplitude.csv')
-    old=read_table(ROOT/'runs'/cfg['runs']['comparison']/'metrics.csv')
-    def f(value,d=4):return f'{float(value):.{d}f}' if value not in ('',None) else '未定义'
-    def perf(r,key):
-        a=f(r[key+'_mean']);sd=r[key+'_sd']
-        return a+' ± '+f(sd) if sd else a
-    def pct(value):return f'{100*float(value):.2f}%'
-    sections=[]
-    def section(title, paragraphs=(), table=None, image=None, sources=()):
-        sections.append(dict(title=title,paragraphs=list(paragraphs),table=table,image=image,sources=list(sources)))
-    def table(headers,rows):return dict(headers=headers,rows=rows)
-    def fig(stem):return rel+'/figures/'+stem+'.png'
-    gain=(1-float(lookup['cnn']['rmse_log10_mean'])/float(lookup['train_mean']['rmse_log10_mean']))*100
-    section('研究概述',[
-        '本项目比较传统机器学习、CNN、冻结DNA预训练表征和Promoter Calculator对大肠杆菌启动子相关表达的预测能力，并检验CNN解释与启动子区域、计算突变变化的关系。主数据为11809条TSS经原论文表核验的87bp序列，跨物种目标为教师提供的591条61bp枯草杆菌记录。',
-        f"在共同的1768条验证序列上，三种子CNN的R²为{perf(lookup['cnn'],'r2_log10')}，Spearman为{perf(lookup['cnn'],'spearman')}，RMSE相对训练均值基线改善{gain:.2f}%。冻结DNABERT-2加Ridge的R²为{f(lookup['dnabert2_ridge']['r2_log10_mean'])}，四阶段融合未带来R²增益。",
-        f"IG与ISM均把−10窗口识别为相对均匀随机位置富集的区域，但Top-5平均Jaccard只有{f(next(r for r in agreement if r['top_k']=='5' and r['metric']=='top_k_jaccard')['mean'])}。High位点突变的输出影响大于Low及Random对照；野生型梯度与CNN单点变化方向一致率为{pct(direction['cnn_agreement'])}，CNN与热力学方向一致率为{pct(direction['cross_model_agreement'])}。",
-        '所有突变结果均来自模型计算。验证集参与模型选择，继承随机划分可能存在邻近基因组上下文重叠；本轮不评价E. coli test，也不将本结果称为独立外部泛化或湿实验因果证明。'],
-        table(['课程项目','本轮交付'],[['PR02-01','M4四项必做实验、选做5/6和M5最终报告、PPT、可复现代码'],['运行身份',protocol['output']],['项目成员','胡昊铭、李宇飞、李玘航、田惠今、陈思远']]),sources=['evaluation/model_summary.csv','mutation/direction_summary.csv'])
-    section('数据来源、坐标与评价协议',[
-        '主数据继承HaochenW/Deep_promoter中的50bp天然序列与表达标签。11884条序列在历史参考U00096.2上均可精确匹配，其中11809条位置唯一，75条多位置命中记录单独排除。上下文扩展保持原始标签和划分，原50bp位于87bp的[17,67)。恢复上下文不等于重新测量启动子强度。',
-        '主序列覆盖TSS上游−67至−1及下游+1至+20，TSS零基索引为67。区间统一左闭右开，生物坐标没有0位。TSS有原论文序列证据，−10、−35、UP等盒区只按固定窗口假设或工具推定解释。',
-        '所有源域模型使用相同87bp、相同log10标签、相同train/val划分。监督拟合、scaler、热力学校准和归因选区只用train；val用于预定选参和描述性评价。CNN采用20260928/29/30三个种子，确定性模型单次报告。置信区间统一为1000次、95%百分位bootstrap，种子20260928。'],
-        table(['数据或区域','数量或零基区间','证据与用途'],[
-            ['E. coli','train 8267 / val 1768 / test 1774','test本轮不评价；表达单位和条件归属仍有未知项'],
-            ['B. subtilis','591行 / 580种序列；354/119/118','重复测量按序列组划分；单位、TSS、方向未知'],
-            ['UP / −35','[7,31) / [32,38)','固定窗口假设'],['spacer / −10','[38,55) / [55,61)','固定窗口假设'],['disc / ITR','[61,67) / [67,87)','固定窗口假设']]),sources=['protocol/source_audit.json'])
-    section('模型和预定搜索范围',[
-        'KNN复用M3冻结基线。Ridge与LinearSVR重新完成预定网格搜索，使用按有效窗口数归一化的k-mer频率。各模型的StandardScaler只拟合train，所有搜索以val的log10 MSE选择。当前SVR明确为LinearSVR，与原论文合成数据上的RBF-SVR不是同一比较条件。',
-        'CNN为两层同长卷积和位置敏感自适应平均池化。卷积通道32/64，卷积核7/5，隐藏32，batch128，AdamW学习率0.001，最多100轮，patience15。四配置各跑三种子，按平均val MSE选配置；代表模型固定用20260928。C0同配置同种子的一次历史运行经核对后复用。',
-        'DNA对照使用官方DNABERT-2-117M冻结权重，完整编码87bp，取最后层序列token均值，排除padding和CLS/SEP，再用train拟合StandardScaler及Ridge。未从头预训练或微调编码器。官方MLM权重未提供的CLS pooler不参与序列表征或预测，编码器参数无缺失。',
-        '热力学模型使用已核验TSS索引67，在spacer 15至20及discriminator 6至10的30种状态中选最小自由能。原始Tx_rate单独保留，再仅用train拟合log10线性校准。本轮复用经复核的M3系数、状态和校准。'],
-        table(['模块','候选或固定参数'],[['Ridge','k=3/4/5；alpha=1/10/100'],['LinearSVR','k=3/4/5；C=0.1/1/10；检查收敛'],['C0 / C1','pool 5 / 20；dropout .3；weight decay .001'],['C2 / C3','pool 20；dropout .1；weight decay .001 / .0001'],['DNABERT-2','revision '+protocol['dna_revision']],['DNA回归头','Ridge alpha=1/10/100；预训练编码器冻结']]),sources=['cnn/search.csv','ml/dnabert2/hyperparameter_search.csv'])
-    section('必做实验1：统一预测性能',[
-        '下表按每个run单独计分，再汇总CNN三个种子的均值与样本标准差。各方法均成功覆盖共同的1768条val ID，覆盖率为100%。训练均值常数预测的Spearman未定义，保留为空，不填成0。MAE与RMSE均在log10原始标签尺度计算。',
-        f"CNN平均R²最高，但绝对解释度仍有限。代表种子20260928的R²仍为{f(next(r for r in old if r['method']=='cnn')['r2_log10'])}；本轮平均值变化主要来自补充种子，并非更改C0结构。传统模型的极小数值差异来自表征交接统一为float32。"],
-        table(['方法','R²','Spearman','MAE','RMSE'],[[r['method'],perf(r,'r2_log10'),perf(r,'spearman'),perf(r,'mae_log10'),perf(r,'rmse_log10')] for r in summary]),
-        image=fig('01_model_comparison'),sources=['evaluation/model_summary.csv','evaluation/coverage.csv'])
-    section('CNN稳定性和分组误差',[
-        f"四配置三种子的平均验证误差选择了{selected['condition']}，即原池化长度5的架构。增加池化长度、减小dropout或weight decay均没有稳定改善本轮验证误差。曲线在较早轮次达到最好值，继续训练后的误差反弹，因此不能用延长训练保证提升。",
-        '强度分组阈值取train三分位，val的低/中/高组为582/570/616条。下表列各方法的组内MAE，CNN取三种子平均。高强度端误差普遍较大，预测向中部收缩。组内R²会受很窄的标签方差影响，不用于跨组性能排序。'],
-        table(['方法','低组MAE','中组MAE','高组MAE'],[[method]+[f(npmean([float(r['mae_log10']) for r in groups if r['method']==method and r['subset']=='val' and r['intensity_group']==g])) for g in ['low','middle','high']] for method in ['ridge','linear_svr','dnabert2_ridge','thermo','cnn']]),
-        image=fig('02_cnn_stability'),sources=['cnn/search.csv','evaluation/group_metrics.csv'])
-    section('必做实验2：Top-k位点与启动子区域',[
-        '在冻结64条val母序列上，对纯CNN代表模型计算IG和ISM。IG以每位0.25碱基概率为基线，64步梯形积分；ISM定义为每个位点三种单碱基替换的平均绝对输出变化。按绝对重要性排名，同分按位置升序，Top-k取5与10。',
-        f"IG的平均及最大completeness误差为{f(ig['mean_absolute_completeness_error_log10'],6)}和{f(ig['max_absolute_completeness_error_log10'],6)} log10。图中展示Top-5命中比例减区域长度/87。−10在两种方法、两种窗口政策下均表现为正的描述性富集，−35未显示一致正向富集，UP和spacer低于均匀随机位置预期。",
-        '随机位置只是假设位置等概率的参照。由于CNN对齐于TSS、位置背景不等价且窗口缺少逐条实验注释，超出此参照不等于证明蛋白结合位点。图中95%区间按母序列重采样，多个区域和方法的比较未校正多重检验。'],image=fig('03_topk_overlap'),sources=['explanation_analysis/overlap_summary.csv','attribution/ig_completeness.csv'])
-    section('选做实验6：两种归因方法的一致性',[
-        'IG与ISM使用同一64条序列和同一checkpoint。Spearman比较每条序列87个位点的绝对重要性排名，Jaccard比较各自Top-k集合。两种方法部分一致，但不能互相替代。',
-        '旧模块中Saliency实际计算梯度乘输入差，本轮没有把它混称为普通梯度。正式结果采用定义明确的IG与ISM，保留旧输出作为历史记录。',
-        '异常案例采用固定规则：Top-5 Jaccard最低与最高各3条，平分按sample_id排序，详见consistency_cases.csv。不同方法反映积分基线与有限替换敏感性的差异；个别序列的Top-k不一致需要逐条解释。'],
-        table(['指标','Top-k','均值','95%区间'],[[r['metric'],r['top_k'],f(r['mean']),f(r['ci_low'])+' 至 '+f(r['ci_high'])] for r in agreement]),image=fig('04_attribution_consistency'),sources=['explanation_analysis/consistency_summary.csv','explanation_analysis/consistency_cases.csv'])
-    section('必做实验3：四阶段逐步消融',[
-        'A0使用选定k-mer；A1添加选定CNN的pooled表征；A2添加冻结DNA表征；A3添加训练归因指导的区域特征。四阶段均用训练集StandardScaler和Ridge头，alpha统一1/10/100，在val选择。A1至A3按三个CNN种子配对比较，A0为确定性单次基线。',
-        '每个种子只在预定256条train序列的IG上按每碱基平均绝对归因选前2个固定区域，冻结配方后提取该窗口k=3频率、GC及适用盒区的共识匹配比例。val未用于选区。三份配方和训练IG均保留以复核。',
-        '本轮融合逐步降低R²，A2/A3的验证R²低于0，说明这些具体融合模型甚至不如预测验证均值的常数参照。新增表征可能带来冗余和估计方差；这一解释是待进一步检验的假设。本结果不能推出预训练DNA模型在其他任务上无用，也不能将A1冒称为纯CNN。'],
-        table(['阶段','R²均值','Spearman均值','RMSE均值'],[[r['stage'],f(r['r2_log10_mean']),f(r['spearman_mean']),f(r['rmse_log10_mean'])] for r in stages]),image=fig('07_staged_ablation'),sources=['ablation/stage_summary.csv'])
-    section('必做实验4：等数量突变的幅度对照',[
-        '对每条母序列按IG绝对值选High前5位和Low后5位，Random从两组之外取5位。每组10次均匀替换为其他碱基，设计文件先保存再预测，共64×3×10=1920条变体。所有序列长度87bp、TSS索引67保持一致。',
-        f"High−Low的平均绝对影响差为{f(paired[0]['mean_absolute_delta_difference'])}，95%区间{f(paired[0]['ci_low'])}至{f(paired[0]['ci_high'])}；High−Random为{f(paired[1]['mean_absolute_delta_difference'])}，区间{f(paired[1]['ci_low'])}至{f(paired[1]['ci_high'])}。这支持High位点对该CNN输出更敏感。",
-        'High组有符号平均变化接近0，说明随机改变重要位点并不必然减弱预测强度。每组先汇总同一母序列的10条变体，再按64条母序列bootstrap，避免把重复变体当作独立样本。'],
-        table(['组','母序列/变体','平均绝对变化','95%区间'],[[r['group'],'64 / 640',f(r['mean_absolute_delta_log10']),f(r['ci_low'])+' 至 '+f(r['ci_high'])] for r in mutations]),image=fig('05_mutation_amplitude'),sources=['mutation/mutation_summary.csv','mutation/paired_amplitude.csv'])
-    section('必做实验4：单点方向与跨模型分歧',[
-        '每条母序列High前5位分别穷举其他3种碱基，共960条单点变体。预期delta取野生型梯度的替换通道减原通道值，不使用已经计算出的ISM变化作为预期。正/负/近零阈值固定为1e-4 log10。预期正向477条、负向483条，近零0条。',
-        f"梯度预期与CNN实际变化一致率为{pct(direction['cnn_agreement'])}，与热力学变化一致率为{pct(direction['thermo_agreement'])}；CNN与热力学一致率为{pct(direction['cross_model_agreement'])}。区间按母序列聚类重采样，不能把960条变体当作独立的960次生物实验。",
-        '同一CNN的一阶局部近似与有限替换高度一致，提供解释自洽性的证据。热力学与CNN的低一致率反映模型目标、机制和拟合关系不同，不能据此判定哪个方向是生物真实变化。disagreement_cases.csv按两模型delta差绝对值选前10个案例，供核查。'],
-        table(['比较','一致率','95%区间'],[[label,pct(direction[key]),pct(direction[key+'_ci_low'])+' 至 '+pct(direction[key+'_ci_high'])] for key,label in [('cnn_agreement','梯度预期 / CNN'),('thermo_agreement','梯度预期 / 热力学'),('cross_model_agreement','CNN / 热力学')]]),image=fig('06_mutation_direction'),sources=['mutation/direction_summary.csv','mutation/disagreement_cases.csv'])
-    section('选做实验5：跨物种迁移',[
-        '目标域沿用现有354/119/118行的序列组划分，相同61bp序列不跨集合。固定代表CNN使用显式61bp实例和原源域权重，k-mer使用按窗口数归一化的频率。few-shot从目标train取嵌套20/50/100组，冻结源表征，只拟合目标回归头，在目标val选alpha。',
-        'zero-shot Ridge/CNN的目标Spearman分别约0.177和0.216，冻结CNN的100组few-shot约0.263。20到50到100组不呈稳定单调提升，各95%区间较宽且互相重叠，不能仅凭最高点声称显著优于其他条件。跨域单位未知，zero-shot的极差绝对误差只作尺度失配诊断。',
-        '目标test已在项目先前实验中评价过，本轮是同一基准上的扩展；未将它重新称为首次盲测。没有目标TSS和方向信息，因此没有在61bp目标序列上强行套用固定TSS热力学模型。'],
-        table(['条件','训练组数','Spearman','95%区间'],[[r['condition'].replace('few_shot_','').replace('_groups',''),r['n_train_groups'],f(r['spearman']),f(r['spearman_ci_low'])+' 至 '+f(r['spearman_ci_high'])] for r in transfer]),image=fig('08_cross_species'),sources=['transfer/transfer_metrics.csv','transfer/transfer_manifest.json'])
-    section('研究问题的回答与限制',[
-        'RQ1：在当前87bp、继承划分和天然表达标签下，CNN的描述性验证表现优于传统基线及校准热力学模型，但解释度有限。热力学模型可以运行并提供状态和盒区分析，直接预测天然表达强度时较弱。强度端点误差、缺失的细胞状态和转录后影响是合理解释方向，当前实验未将这些成因分离。',
-        'RQ2：−10窗口的Top-k富集得到IG与ISM的共同描述性支持；−35、UP和spacer没有同样证据。IG与ISM的平均排序相关约0.510，Top-5 Jaccard约0.368，说明具体重要位点受归因方法影响。所有盒区均为假设或工具推定，均匀随机位置参照不能代替实验注释。',
-        'RQ3：高归因位点的随机突变对CNN输出造成更大绝对变化，一阶梯度对单点变化方向有很高自洽性；跨模型方向一致率不足一半。由此可支持计算敏感性和模型内部一致性，不能宣称已完成真实生物因果验证。',
-        '数据限制：源域标签的完整单位和条件对应尚不明确，天然RNA表达并非纯启动子起始率；目标域缺少论文、测量单位、TSS和方向。短上下文不能编码全部调控因素，但本实验没有证明“长度是低分的唯一原因”。',
-        '评价限制：模型选参及报告复用val，当前分数存在选择偏差；历史随机划分可能含邻近上下文，历史test也曾被使用。本轮三种子标准差只反映训练随机性，bootstrap只反映当前固定模型与抽样单位下的波动，不是跨实验或跨基因组泛化区间。',
-        '后续优先级：取得测量元数据和独立实验数据；用严格基因组分组划分评价；对多序列背景实施预注册的单点突变湿实验。在此之前不靠继续搜索同一val来宣称能力提高。'])
-    section('复现、交付与课程任务对应',[
-        '配置、逐条预测、特征ID、权重摘要、预处理拟合来源和图表源表全部保留。每个run的manifest绑定输入SHA256和执行源码，旧源码的精确快照保存在reports/source_snapshots。历史M3数据及运行文件继续保留，M4写入独立目录。',
-        '已交付目录可直接复核。完整重跑须复制protocol并修改output为新目录；相同身份的已完成阶段只检查摘要后复用，不覆盖既有结果。DNA表征文件已随结果保存，常规复核不需要重新下载469MB预训练权重。重新提取或预测任意新序列时需官方固定revision权重。',
-        '基本复核：python -m pr02 m4 --stage verify。完整实验：python -m pr02 m4 --protocol configs/你的新协议.json --stage all --device cpu。可用mps或cuda加速DNA推理，数值容差需在跨设备复核记录中说明。依赖先安装requirements.txt，再安装requirements_dnalm.txt。',
-        '报告与答辩材料引用同一运行身份。M3中期汇报不重新制作；本文件和PPT为M5最终交付。没有预设必须取得高准确率，负结果与边界同样纳入最终结论。'],
-        table(['任务','对应交付'],[['必做1 性能比较','evaluation/逐模型、公共集合、覆盖率、分组误差'],['必做2 位点分析','attribution/ + explanation_analysis/ Top-5/10与窗口对照'],['必做3 逐步消融','ablation/ A0至A3，10个冻结模型与逐条预测'],['必做4 突变检验','mutation/ 1920幅度变体、960单点方向变体'],['选做5 跨物种','transfer/ 8条件与序列组bootstrap'],['选做6 多归因一致性','IG/ISM排序相关、Top-k Jaccard和异常案例'],['M5 最终交付','本报告、可编辑PPT、运行入口、契约和验收记录']]),sources=['verification.json'])
-    references=[
-        ['课程要求','project-pool(2).pdf，PR02-01第45至47页，代码要求参照第9页'],
-        ['当前数据与代码','https://github.com/Azusakada/PR02-01-promoter--insight'],
-        ['原始50bp数据与模型','https://github.com/HaochenW/Deep_promoter'],
-        ['Deep_promoter原论文','https://pmc.ncbi.nlm.nih.gov/articles/PMC7337522/'],
-        ['原TSS图谱论文','https://pmc.ncbi.nlm.nih.gov/articles/PMC4288677/'],
-        ['Promoter Calculator','https://www.nature.com/articles/s41467-022-32829-5'],
-        ['DNABERT-2官方实现','https://github.com/MAGICS-LAB/DNABERT_2'],
-        ['本轮DNA权重版本','https://huggingface.co/'+protocol['dna_model']+'/tree/'+protocol['dna_revision']],
-    ]
-    section('来源与结果索引',[
-        '本报告的数字来自本仓库冻结源表，外部来源用于说明数据和模型出处。教师CSV只保留现有来源身份，没有为其补造论文、单位或测量条件。',
-        '每张结果图同时保留PNG、SVG及源表摘要。源表的完整相对路径写在各节之后，完整文件摘要见figures/figure_manifest.json和各run_manifest.json。',
-        '核心索引：evaluation/model_summary.csv、explanation_analysis/overlap_summary.csv、explanation_analysis/consistency_summary.csv、ablation/stage_summary.csv、mutation/direction_summary.csv、transfer/transfer_metrics.csv。'],
-        table(['来源','文件或链接'],references))
-    content=dict(title='启动子强度预测与位点解释',subtitle='PR02-01 项目 M5 最终报告',date='2026年10月14日',
-                 run_id=protocol['output'],members=['胡昊铭','李宇飞','李玘航','田惠今','陈思远'],sections=sections,
-                 references=references,source_hashes={str(p.relative_to(ROOT)):sha(p) for p in [root/'evaluation/model_summary.csv',root/'ablation/stage_summary.csv',root/'mutation/direction_summary.csv',root/'transfer/transfer_metrics.csv']})
-    report=ROOT/'reports';write_json(report/'M5_REPORT_CONTENT.json',content)
-    md=['# '+content['title'],'',content['subtitle']+' · '+content['date'],'','运行：`'+protocol['output']+'`','']
+    root = run_root(protocol); report = root/'reports'; report.mkdir(parents=True, exist_ok=True)
+    def f(v): return f'{float(v):.4f}' if v not in ('', None) else '未定义'
+    summary = read_table(root/'evaluation/model_summary.csv')
+    stages = read_table(root/'ablation/stage_summary.csv')
+    overlap = read_table(root/'explanation_analysis/overlap_summary.csv')
+    agreement = read_table(root/'explanation_analysis/consistency_summary.csv')
+    mutations = read_table(root/'mutation/mutation_summary.csv')
+    directions = read_table(root/'mutation/direction_summary.csv')
+    transfer = read_table(root/'transfer/transfer_metrics.csv')
+    selected = read_json(root/'cnn/selected_model.json')
+    sections = []
+    def section(title, paragraphs, headers, rows, sources, image=None):
+        sections.append(dict(title=title, paragraphs=paragraphs, table=dict(headers=headers, rows=rows),
+                             sources=sources, image=(protocol['output']+'/figures/'+image+'.png') if image else None))
+    section('数据与评价协议', [
+        '主数据为TSS核验的87bp大肠杆菌天然表达记录，目标域为教师提供的61bp枯草杆菌数据。两域完整测量单位和条件仍不明确。',
+        '拟合与归一化只使用train，val参与模型选择和描述性评价。继承随机划分可能包含邻近基因组窗口；历史test曾被使用，本轮源域test不评分。'],
+        ['配置','本次实际值'], [['运行',protocol['output']], ['CNN种子',str(list(seeds(protocol)))],
+        ['CNN候选',str(protocol['cnn_configurations'])], ['Ridge alpha',str(protocol['ridge_alpha'])],
+        ['bootstrap',str(protocol['bootstrap_repeats'])+'次 / '+str(protocol['confidence'])+' / seed '+str(protocol['bootstrap_seed'])],
+        ['归因train / val',str(protocol['attribution_train_n'])+' / '+str(protocol['attribution_val_n'])]], ['protocol/protocol.json'])
+    section('必做1：性能比较', ['各run先独立计分，再汇总CNN种子均值和样本标准差。CNN选择配置为'+selected['condition']+'。验证集用于选参，不能把下表当作独立泛化成绩。'],
+        ['方法','R²均值','Spearman均值','RMSE均值','种子SD(R²)'],
+        [[r['method'],f(r['r2_log10_mean']),f(r['spearman_mean']),f(r['rmse_log10_mean']),f(r['r2_log10_sd'])] for r in summary],
+        ['evaluation/model_summary.csv'], '01_model_comparison')
+    section('必做2：位点与区域', ['IG和ISM解释选定的纯CNN。固定窗口与PC推定窗口分别统计；扣除长度/87作为均匀位置参照。区间按母序列重采样，未作多重比较显著性声明，也不等于实测结合注释。'],
+        ['方法','窗口','区域','Top-k','富集均值','区间'],
+        [[r['method'],r['annotation_status'],r['region'],r['top_k'],f(r['mean_excess_fraction']),f(r['excess_ci_low'])+' 至 '+f(r['excess_ci_high'])] for r in overlap],
+        ['explanation_analysis/overlap_summary.csv'], '03_topk_overlap')
+    section('必做3：逐步消融', ['A0为k-mer，A1添加CNN，A2添加冻结DNA表征，A3添加仅由train归因选区产生的特征。三个CNN种子配对，统一使用train拟合的StandardScaler和Ridge；alpha按本协议在val选择。',
+        '各阶段相对前一阶段的变化直接列于表中。该结论仅针对本次特征、参数和划分，不能推出某类表征在其他任务无效。'],
+        ['阶段','R²均值','Spearman均值','RMSE均值','相对前阶段ΔR²'],
+        [[r['stage'],f(r['r2_log10_mean']),f(r['spearman_mean']),f(r['rmse_log10_mean']),f(r['delta_r2_from_previous'])] for r in stages],
+        ['ablation/stage_summary.csv'], '07_staged_ablation')
+    section('必做4：等数量计算突变', ['同一母序列在High/Low/Random组均替换5个位点，各重复10次。设计先保存再预测。母序列内先汇总，再按母序列bootstrap。'],
+        ['组','母序列数','变体数','平均绝对变化','区间'],
+        [[r['group'],r['n_parent'],r['n_mutants'],f(r['mean_absolute_delta_log10']),f(r['ci_low'])+' 至 '+f(r['ci_high'])] for r in mutations],
+        ['mutation/mutation_summary.csv'], '05_mutation_amplitude')
+    section('必做4：单点方向', ['预期方向来自野生型梯度的替换通道减原通道，不使用ISM实际变化回填预期。区间按母序列聚类，属于模型内部自洽性与跨模型比较，不能证明真实生物因果。'],
+        ['预期类别','变体数','梯度/CNN','梯度/PC','CNN/PC'],
+        [[r['expected_direction'],r['n_mutants'],f(r['cnn_agreement']),f(r['thermo_agreement']),f(r['cross_model_agreement'])] for r in directions],
+        ['mutation/direction_summary.csv'], '06_mutation_direction')
+    section('选做5：跨物种', ['相同目标序列按组划分，few-shot只拟合目标train，在目标val选alpha。目标test已在历史实验使用，属于原基准扩展；单位未知时主要解释Spearman。目标TSS和方向未知，不套用固定TSS热力学模型。'],
+        ['条件','训练组数','Spearman','test组bootstrap区间'],
+        [[r['condition'],r['n_train_groups'],f(r['spearman']),f(r['spearman_ci_low'])+' 至 '+f(r['spearman_ci_high'])] for r in transfer],
+        ['transfer/transfer_metrics.csv'], '08_cross_species')
+    section('选做6：归因一致性', ['同一CNN、同一母序列上的IG/ISM一致性与跨CNN种子稳定性是不同问题。下表只回答前者。'],
+        ['Top-k','指标','均值','区间'],[[r['top_k'],r['metric'],f(r['mean']),f(r['ci_low'])+' 至 '+f(r['ci_high'])] for r in agreement],
+        ['explanation_analysis/consistency_summary.csv'], '04_attribution_consistency')
+    content = dict(title='启动子强度预测与位点解释',subtitle='PR02-01 本次运行报告（待定稿）',
+        run_id=protocol['output'],date='2026年10月14日',members=['胡昊铭','李宇飞','李玘航','田惠今','陈思远'],
+        sections=sections,references=[],final_materials_updated=False)
+    write_json(report/'M5_REPORT_CONTENT.json',content)
+    lines=['# '+content['title'],'',content['subtitle'],'','运行：`'+protocol['output']+'`','']
     for s in sections:
-        md+=['## '+s['title'],'']
-        for paragraph in s['paragraphs']:md+=[paragraph,'']
-        if s['table']:
-            t=s['table'];md+=['| '+' | '.join(t['headers'])+' |','| '+' | '.join(['---']*len(t['headers']))+' |']
-            md+=['| '+' | '.join(str(c).replace('|','/') for c in r)+' |' for r in t['rows']];md+=['']
-        if s['image']:md+=['![结果图](../'+s['image']+')','']
-        if s['sources']:md+=['源表：'+ '、'.join('`'+rel+'/'+p+'`' for p in s['sources']),'']
-    (report/'M5_FINAL_REPORT.md').write_text('\n'.join(md),encoding='utf-8')
+        lines+=['## '+s['title'],'']
+        for paragraph in s['paragraphs']:lines+=[paragraph,'']
+        t=s['table'];lines+=['| '+' | '.join(t['headers'])+' |','| '+' | '.join(['---']*len(t['headers']))+' |']
+        lines+=['| '+' | '.join(map(str,r))+' |' for r in t['rows']];lines+=['']
+        if s['image']:lines+=['![结果图](../figures/'+s['image'].split('/')[-1]+')','']
+        lines+=['源表：'+ '、'.join('`'+protocol['output']+'/'+p+'`' for p in s['sources']),'']
+    (report/'M5_FINAL_REPORT.md').write_text('\n'.join(lines),encoding='utf-8')
     return content
-
-
-def npmean(values):
-    return sum(values)/len(values)

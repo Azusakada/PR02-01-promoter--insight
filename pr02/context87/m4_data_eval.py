@@ -3,50 +3,121 @@ from __future__ import annotations
 
 import importlib.metadata
 import json
+import hashlib
+import shutil
 from pathlib import Path
 
 import numpy as np
 from scipy.stats import spearmanr
 
 from .data import ROOT, TARGET, digest_ids, load, read_json, read_table, require, sha, write_json, write_table
-from .experiment import git_revision, input_hashes, masks, metrics, predictions
+from .experiment import code_hashes, git_revision, input_hashes, masks, metrics, predictions
 
 SEEDS = (20260928, 20260929, 20260930)
 REGIONS = {'UP': (7, 31), '-35': (32, 38), 'spacer': (38, 55), '-10': (55, 61)}
 
 
+def seeds(protocol):
+    return tuple(protocol.get('seeds', SEEDS))
+
+
+def config_digest(value):
+    return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(',', ':'), allow_nan=False).encode()).hexdigest()
+
+
+def validate_protocol(protocol):
+    require(protocol.get('source_test_evaluated') is False, 'Source test scoring must remain disabled')
+    values = seeds(protocol)
+    require(bool(values) and len(values) == len(set(values)) and all(type(s) is int and 0 <= s < 2**32 for s in values), 'Invalid seeds')
+    require(type(protocol['bootstrap_repeats']) is int and protocol['bootstrap_repeats'] >= 100, 'Invalid bootstrap repeats')
+    require(type(protocol['bootstrap_seed']) is int and 0 <= protocol['bootstrap_seed'] < 2**32, 'Invalid bootstrap seed')
+    require(0 < protocol['confidence'] < 1, 'Invalid confidence level')
+    require(bool(protocol['ridge_alpha']) and all(a > 0 for a in protocol['ridge_alpha']), 'Invalid Ridge grid')
+    require(bool(protocol['top_k']) and all(type(k) is int and 1 <= k <= 87 for k in protocol['top_k']), 'Invalid top-k')
+    require({5, 10} <= set(protocol['top_k']), 'Reports require both Top-5 and Top-10; additional k values are allowed')
+    require(type(protocol['attribution_train_n']) is int and protocol['attribution_train_n'] > 0, 'Invalid attribution train count')
+    require(type(protocol['attribution_val_n']) is int and protocol['attribution_val_n'] > 0, 'Invalid attribution val count')
+    require(type(protocol['ig_steps']) is int and protocol['ig_steps'] >= 2, 'Invalid IG steps')
+    allowed = {'C0', 'C1', 'C2', 'C3'}
+    grid = protocol['cnn_configurations']
+    require(bool(grid) and len(grid) == len(set(grid)) and set(grid) <= allowed, 'Invalid CNN configurations')
+
+
+def effective_protocol(directory):
+    for parent in (Path(directory), *Path(directory).parents):
+        file = parent/'protocol/protocol.json'
+        if file.exists(): return read_json(file)
+    return None
+
+
 def run_root(protocol):
     output = ROOT / protocol['output']
-    require(output.resolve().is_relative_to((ROOT/'runs').resolve()), 'M4 output must remain inside repository runs/')
+    require(output.resolve() != (ROOT/'runs').resolve() and output.resolve().is_relative_to((ROOT/'runs').resolve()), 'M4 output must be a child of repository runs/')
     return output
 
 
 def finish(directory, cfg, details=None, upstream=()):
     directory = Path(directory)
+    protocol = effective_protocol(directory)
+    executed = code_hashes()
+    for name, digest in executed.items():
+        path = ROOT/name
+        snapshot = ROOT/'reports/source_snapshots'/(digest+path.suffix)
+        if not snapshot.exists():
+            snapshot.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(path, snapshot)
     write_json(directory/'run_manifest.json', dict(
-        schema_version='m4_interface_v1', run_id=directory.relative_to(ROOT).as_posix(),
+        schema_version='m4_interface_v2', run_id=directory.relative_to(ROOT).as_posix(),
         input_hashes=input_hashes(cfg), code_commit=git_revision(),
-        code_hashes={p.relative_to(ROOT).as_posix(): sha(p) for p in sorted((ROOT/'pr02/context87').glob('m4_*.py'))},
+        config_sha256=config_digest(cfg), protocol_sha256=config_digest(protocol),
+        code_hashes=executed,
         environment={p: importlib.metadata.version(p) for p in ['numpy', 'scipy', 'scikit-learn', 'torch']},
         source_test_evaluated=False, details=details or {},
         upstream={str(Path(p).relative_to(ROOT)): sha(p) for p in upstream},
         artifacts={p.relative_to(directory).as_posix(): sha(p) for p in sorted(directory.rglob('*'))
-                   if p.is_file() and p.name != 'run_manifest.json'}))
+                   if p.is_file() and p != directory/'run_manifest.json'}))
 
 
-def completed(directory):
+def verify_sealed_release(root):
+    """Historical executable/docs may be archived; numerical outputs must stay in place."""
+    file = Path(root)/'release_manifest.json'
+    if not file.exists(): return []
+    archived = []
+    for name, expected in read_json(file)['artifacts'].items():
+        path = ROOT/name
+        if path.is_file() and sha(path) == expected: continue
+        eligible = name.startswith('pr02/') or name == 'README.md'
+        snapshot = ROOT/'reports/release_snapshots'/(expected+path.suffix)
+        require(eligible and snapshot.is_file() and sha(snapshot) == expected, 'Release artifact mismatch: '+name)
+        archived.append(name)
+    return archived
+
+
+def completed(directory, cfg=None, protocol=None, archived_code=False):
     file = Path(directory)/'run_manifest.json'
     if not file.exists():
         return False
     meta = read_json(file)
     for name, value in meta['artifacts'].items():
-        require(sha(Path(directory)/name) == value, 'Changed completed artifact: '+name)
+        path = Path(directory)/name
+        require(path.is_file() and sha(path) == value, 'Changed completed artifact: '+name)
+    for field, message in [('upstream', 'upstream'), ('input_hashes', 'source input'), ('code_hashes', 'executed code')]:
+        for name, value in meta.get(field, {}).items():
+            path = ROOT/name
+            if field == 'code_hashes' and archived_code and (not path.exists() or sha(path) != value):
+                path = ROOT/'reports/source_snapshots'/(value+path.suffix)
+            require(path.is_file() and sha(path) == value, 'Changed '+message+'; use a new run: '+name)
+    if cfg is not None:
+        require(meta.get('config_sha256') == config_digest(cfg), 'Effective config changed; use a new run')
+    if protocol is not None:
+        require(meta.get('protocol_sha256') == config_digest(protocol), 'Protocol changed; use a new run')
     return True
 
 
 def initialize(cfg, protocol):
+    validate_protocol(protocol)
     directory = run_root(protocol)/'protocol'
-    if completed(directory):
+    if completed(directory, cfg, protocol):
         require(read_json(directory/'protocol.json') == protocol, 'Protocol changed; use a new output')
         require(read_json(directory/'run_manifest.json')['input_hashes'] == input_hashes(cfg), 'Source inputs changed; use a new run')
         return directory
@@ -55,9 +126,12 @@ def initialize(cfg, protocol):
     train = [r for r in rows if r['split'] == 'train']
     val = [r for r in rows if r['split'] == 'val']
     old_ids = read_table(ROOT/'runs'/cfg['runs']['explain']/'sample_ids.tsv')
-    require(len(old_ids) == 64 and {r['sample_id'] for r in old_ids} <= {r['sample_id'] for r in val}, 'Attribution cohort mismatch')
-    rng = np.random.default_rng(SEEDS[0])
-    ids = sorted(rng.choice(len(train), 256, replace=False))
+    require({r['sample_id'] for r in old_ids} <= {r['sample_id'] for r in val}, 'Attribution cohort mismatch')
+    require(protocol['attribution_train_n'] <= len(train) and protocol['attribution_val_n'] <= len(val), 'Attribution cohort too large')
+    rng = np.random.default_rng(seeds(protocol)[0])
+    ids = sorted(rng.choice(len(train), protocol['attribution_train_n'], replace=False))
+    if len(old_ids) != protocol['attribution_val_n']:
+        old_ids = [dict(sample_id=val[i]['sample_id']) for i in sorted(rng.choice(len(val), protocol['attribution_val_n'], replace=False))]
     write_table(directory/'attribution_train_ids.tsv', [dict(sample_id=train[i]['sample_id']) for i in ids])
     write_table(directory/'attribution_val_ids.tsv', old_ids)
     target_split = read_table(ROOT/'runs'/cfg['runs']['transfer']/'target_split.tsv')
@@ -74,7 +148,7 @@ def initialize(cfg, protocol):
         limitations=['Inherited random source split may share nearby genomic context',
                      'Historical source test and target test were previously reported; neither is a pristine blind benchmark'],
         input_hashes=input_hashes(cfg), target_sha256=sha(TARGET/'samples.tsv')))
-    finish(directory, cfg, dict(seeds=list(SEEDS), training_ids_sha256=digest_ids(r['sample_id'] for r in train)))
+    finish(directory, cfg, dict(seeds=list(seeds(protocol)), training_ids_sha256=digest_ids(r['sample_id'] for r in train)))
     return directory
 
 
@@ -117,8 +191,11 @@ def export_predictions(cfg, method, directory, rows, values, raw=None):
         write_table(file, out)
 
 
-def bootstrap(values, statistic=np.mean, groups=None, repeats=1000):
-    values = np.asarray(values); rng = np.random.default_rng(SEEDS[0])
+def bootstrap(values, statistic=np.mean, groups=None, repeats=None, protocol=None):
+    protocol = protocol or {}
+    repeats = repeats if repeats is not None else protocol.get('bootstrap_repeats', 1000)
+    confidence = protocol.get('confidence', .95)
+    values = np.asarray(values); rng = np.random.default_rng(protocol.get('bootstrap_seed', SEEDS[0]))
     groups = np.arange(len(values)) if groups is None else np.asarray(groups)
     unique = np.unique(groups)
     lookup = [np.flatnonzero(groups == group) for group in unique]
@@ -128,7 +205,7 @@ def bootstrap(values, statistic=np.mean, groups=None, repeats=1000):
         value = statistic(values[sample])
         if value is not None and np.isfinite(value): estimates.append(float(value))
     require(len(estimates) > repeats*.9, 'Too many undefined bootstrap estimates')
-    return tuple(float(x) for x in np.quantile(estimates, [.025, .975]))
+    return tuple(float(x) for x in np.quantile(estimates, [(1-confidence)/2, (1+confidence)/2]))
 
 
 def validate_prediction_rows(export, truth, cfg, subset):
@@ -153,14 +230,14 @@ def validate_prediction_rows(export, truth, cfg, subset):
 
 def evaluate(cfg, protocol):
     root = run_root(protocol); directory = root/'evaluation'
-    if completed(directory): return directory
+    if completed(directory, cfg, protocol): return directory
     directory.mkdir(parents=True, exist_ok=True)
     rows, _ = load(cfg); train_y = np.array([float(r['target_log10']) for r in rows if r['split'] == 'train'])
     thresholds = np.quantile(train_y, [1/3, 2/3]); selected = read_json(root/'cnn/selected_model.json')
     sources = [('knn', None, ROOT/'runs'/cfg['runs']['knn']),
                ('ridge', None, root/'ml/ridge'), ('linear_svr', None, root/'ml/svr'),
                ('dnabert2_ridge', None, root/'ml/dnabert2'), ('thermo', None, ROOT/'runs'/cfg['runs']['thermo'])]
-    sources += [('cnn', seed, ROOT/selected['runs'][str(seed)]) for seed in SEEDS]
+    sources += [('cnn', seed, ROOT/selected['runs'][str(seed)]) for seed in seeds(protocol)]
     scores = []; groups = []; coverage = []; used_ids = []; exports = []; upstream = []
     for subset in ('train', 'val'):
         truth = [r for r in rows if r['split'] == subset]; y = np.array([float(r['target_log10']) for r in truth])

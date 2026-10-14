@@ -1,0 +1,6 @@
+contrast,mean_delta_r2,ci_low,ci_high,bootstrap_unit,seed_aggregation
+cnn_minus_kmer_ridge,0.012454610308622818,-0.008988993282455667,0.03225748477920063,20kb genomic block,"mean of per-seed scores, not ensemble prediction"
+A1_minus_kmer_ridge,0.029425561336185867,0.009308452255544481,0.0467806367231038,20kb genomic block,"mean of per-seed scores, not ensemble prediction"
+A2_minus_kmer_ridge,0.020497708380092173,0.00412235877516798,0.0340948189361245,20kb genomic block,"mean of per-seed scores, not ensemble prediction"
+A3_minus_kmer_ridge,0.026170350849527405,0.004099982701272345,0.044666640017154584,20kb genomic block,"mean of per-seed scores, not ensemble prediction"
+dnabert2_ridge_minus_kmer_ridge,-0.015478400756517937,-0.028546169762414884,-0.0025169686514378755,20kb genomic block,"mean of per-seed scores, not ensemble prediction"

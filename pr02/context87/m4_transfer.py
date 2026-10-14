@@ -7,13 +7,13 @@ from .data import ROOT, TARGET, read_json, read_table, require, write_json, writ
 from .experiment import cnn_predict, metrics
 from .features import encode, kmers
 from .m4_cnn import embedding, load_model
-from .m4_data_eval import SEEDS, bootstrap, completed, finish, run_root
+from .m4_data_eval import seeds, bootstrap, completed, finish, run_root
 from .m4_ml_dnalm import fit_head
 
 
 def run(cfg, protocol):
     root = run_root(protocol); directory = root/'transfer'
-    if completed(directory): return directory
+    if completed(directory, cfg, protocol): return directory
     directory.mkdir(parents=True, exist_ok=True)
     rows = read_table(TARGET/'samples.tsv'); split = read_table(root/'protocol/target_split.tsv')
     require([r['sample_id'] for r in split] == [r['sample_id'] for r in rows], 'Target split ID mismatch')
@@ -29,12 +29,12 @@ def run(cfg, protocol):
     zero_cnn = transform['min_log10']+(transform['max_log10']-transform['min_log10'])*cnn_predict(model, xcnn)
     conditions = [('zero_shot_ridge', 0, saved['model'].predict(kmer), 'source_label_scale'),
                   ('zero_shot_cnn', 0, zero_cnn, 'source_label_scale')]
-    order = sorted(sets['train']); np.random.default_rng(SEEDS[0]).shuffle(order)
+    order = sorted(sets['train']); np.random.default_rng(seeds(protocol)[0]).shuffle(order)
     searches = []
     for n in (20, 50, 100):
         fit = np.isin(groups, order[:n]); require(np.all(assignment[fit] == 'train'), 'Target heldout label used in fitting')
         for kind, x in [('kmer', kmer), ('frozen_cnn', frozen)]:
-            head, search = fit_head(x, y, fit, val)
+            head, search = fit_head(x, y, fit, val, protocol['ridge_alpha'])
             name = f'few_shot_{kind}_{n}_groups'
             joblib.dump(head, directory/(name+'.joblib'))
             write_table(directory/(name+'_fit_ids.tsv'), [dict(sample_id=r['sample_id']) for r, use in zip(rows, fit) if use])
@@ -43,7 +43,7 @@ def run(cfg, protocol):
     result = []; predictions = []
     for name, n, p, scale in conditions:
         z = np.column_stack([y[test], p[test]])
-        low, high = bootstrap(z, statistic=lambda a: float(spearmanr(a[:, 0], a[:, 1]).statistic), groups=groups[test])
+        low, high = bootstrap(z, statistic=lambda a: float(spearmanr(a[:, 0], a[:, 1]).statistic), groups=groups[test], protocol=protocol)
         result.append(dict(condition=name, n_train_groups=n, **metrics(y[test], p[test]), spearman_ci_low=low, spearman_ci_high=high,
                            bootstrap_unit='target_sequence_group', prediction_scale=scale))
         for r, subset, actual, prediction in zip(rows, assignment, y, p):
@@ -54,7 +54,7 @@ def run(cfg, protocol):
     write_table(directory/'transfer_metrics.csv', result); write_table(directory/'predictions.csv', predictions)
     write_table(directory/'search.csv', searches)
     write_json(directory/'transfer_manifest.json', dict(source_length=87, target_length=61, target_units='unknown',
-        target_tss='unknown', target_orientation='unknown', n_conditions=8, representative_seed=SEEDS[0],
+        target_tss='unknown', target_orientation='unknown', n_conditions=8, representative_seed=seeds(protocol)[0],
         target_counts={s: int((assignment == s).sum()) for s in ('train', 'val', 'test')},
         few_shot_policy='nested seeded groups, train fit, val alpha selection, frozen source representation',
         scale_interpretation='zero-shot Spearman primary; MAE/RMSE/R2 diagnostic because source/target assay units are not established',

@@ -1,0 +1,12 @@
+{
+  "method": "kmer_ridge",
+  "seed": null,
+  "alpha": 10000.0,
+  "n_features": 256,
+  "alpha_at_grid_boundary": false,
+  "n": 1768,
+  "r2_log10": 0.08415074679513701,
+  "mae_log10": 0.4488268160325614,
+  "rmse_log10": 0.5916097126888011,
+  "spearman": 0.27325254740675725
+}

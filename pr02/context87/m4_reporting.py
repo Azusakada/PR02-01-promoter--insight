@@ -4,15 +4,15 @@ import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from .data import ROOT, read_json, read_table, sha, write_json, write_table
-from .m4_data_eval import SEEDS, completed, finish, run_root
+from .data import ROOT, read_json, read_table, require, sha, write_json, write_table
+from .m4_data_eval import seeds, completed, finish, run_root
 
 COLORS = ['#386A91', '#E39B3D', '#679C87', '#A6687B']
 
 
 def figures(cfg, protocol):
     root = run_root(protocol); directory = root/'figures'
-    if completed(directory): return directory
+    if completed(directory, cfg, protocol): return directory
     directory.mkdir(parents=True, exist_ok=True); records = []
     plt.rcParams.update({'font.size': 11, 'axes.spines.top': False, 'axes.spines.right': False,
                          'figure.facecolor': 'white', 'savefig.facecolor': 'white', 'svg.fonttype': 'none'})
@@ -31,34 +31,34 @@ def figures(cfg, protocol):
         ax.bar(np.arange(len(rows)), a, color=COLORS[0], yerr=err, capsize=4)
         ax.set_xticks(np.arange(len(rows)), labels, rotation=35, ha='right'); ax.axhline(0, color='#888888', lw=.7)
         ax.set_title(title); ax.set_ylabel('Validation score')
-    fig.suptitle('Source validation n=1,768; CNN mean ± sample SD across 3 seeds')
-    save('01_model_comparison', fig, ['evaluation/model_summary.csv'], '各模型使用同一1768条验证序列；CNN显示三个种子的均值及样本标准差。')
+    fig.suptitle(f"Source validation; CNN mean +/- SD across {len(seeds(protocol))} seeds")
+    save('01_model_comparison', fig, ['evaluation/model_summary.csv'], '各模型使用同一验证集合；CNN显示协议种子的均值及样本标准差。')
     search = read_table(root/'cnn/search.csv'); fig, axes = plt.subplots(1, 2, figsize=(12, 4.5))
-    for i, condition in enumerate(['C0', 'C1', 'C2', 'C3']):
+    for i, condition in enumerate(protocol['cnn_configurations']):
         vals = [np.sqrt(float(r['val_mse_log10'])) for r in search if r['condition'] == condition]
-        axes[0].scatter(np.full(3, i), vals, color=COLORS[i], s=40)
+        axes[0].scatter(np.full(len(vals), i), vals, color=COLORS[i%len(COLORS)], s=40)
         axes[0].plot([i-.18, i+.18], [np.mean(vals)]*2, color='black', lw=2)
-    axes[0].set_xticks(range(4), ['C0', 'C1', 'C2', 'C3']); axes[0].set(ylabel='Validation RMSE (log10)', title='All predeclared CNN configurations')
+    axes[0].set_xticks(range(len(protocol['cnn_configurations'])), protocol['cnn_configurations']); axes[0].set(ylabel='Validation RMSE (log10)', title='All predeclared CNN configurations')
     selected = read_json(root/'cnn/selected_model.json')
-    for i, seed in enumerate(SEEDS):
+    for i, seed in enumerate(seeds(protocol)):
         history = read_table(ROOT/selected['runs'][str(seed)]/'training_history.csv')
-        axes[1].plot([int(r['epoch']) for r in history], [float(r['val_mse']) for r in history], color=COLORS[i], label=str(seed))
+        axes[1].plot([int(r['epoch']) for r in history], [float(r['val_mse']) for r in history], color=COLORS[i%len(COLORS)], label=str(seed))
     axes[1].set(xlabel='Epoch', ylabel='Validation MSE (train min-max scale)', title='Selected configuration: '+selected['condition']); axes[1].legend(fontsize=9)
-    save('02_cnn_stability', fig, ['cnn/search.csv']+[str((ROOT/selected['runs'][str(seed)]/'training_history.csv').relative_to(root)) for seed in SEEDS], '四配置均按预定三种子比较；代表模型固定采用20260928，未按最佳单种子挑选。')
+    save('02_cnn_stability', fig, ['cnn/search.csv']+[str((ROOT/selected['runs'][str(seed)]/'training_history.csv').relative_to(root)) for seed in seeds(protocol)], '配置与种子按本次协议完整比较；代表模型固定采用协议第一个种子。')
     overlap = read_table(root/'explanation_analysis/overlap_summary.csv'); fig, axes = plt.subplots(2, 2, figsize=(11, 8))
     for ax, (method, status) in zip(axes.flat, [(m, s) for m in ['integrated_gradients', 'ism_mean_absolute'] for s in ['canonical_window_assumption', 'model_inferred']]):
         rr = [r for r in overlap if r['method'] == method and r['annotation_status'] == status and r['top_k'] == '5']
         a = np.array([float(r['mean_excess_fraction']) for r in rr]); lows = a-[float(r['excess_ci_low']) for r in rr]; highs = np.array([float(r['excess_ci_high']) for r in rr])-a
         ax.bar([r['region'] for r in rr], a, color=COLORS[0], yerr=np.vstack([lows, highs]), capsize=4); ax.axhline(0, color='gray', lw=.8)
         ax.set(title=('IG' if method == 'integrated_gradients' else 'ISM')+' / '+('fixed windows' if status.startswith('canonical') else 'PC-inferred windows'), ylabel='Top-5 fraction minus length/87')
-    fig.suptitle('64 parent sequences; 95% parent bootstrap intervals, descriptive')
+    fig.suptitle(f"{protocol['attribution_val_n']} parents; {100*protocol['confidence']:g}% descriptive bootstrap intervals")
     save('03_topk_overlap', fig, ['explanation_analysis/overlap_summary.csv'], 'Top-5与区域的重合比例扣除区域长度/87。固定窗口与热力学推定窗口分别展示；区间未做多重比较校正。')
     consistency = read_table(root/'explanation_analysis/consistency.csv'); fig, axes = plt.subplots(1, 2, figsize=(10, 4.3))
     rr = [r for r in consistency if r['top_k'] == '5']
     axes[0].hist([float(r['spearman']) for r in rr], bins=15, color=COLORS[0]); axes[0].set(xlabel='Within-sequence IG/ISM rank correlation', ylabel='Parent sequences', title='Absolute importance ranking')
     for i, k in enumerate(['5', '10']):
         a = [float(r['top_k_jaccard']) for r in consistency if r['top_k'] == k]
-        axes[1].scatter(np.full(len(a), i)+np.linspace(-.15,.15,len(a)), a, s=12, alpha=.5, color=COLORS[i])
+        axes[1].scatter(np.full(len(a), i)+np.linspace(-.15,.15,len(a)), a, s=12, alpha=.5, color=COLORS[i%len(COLORS)])
         axes[1].plot([i-.2, i+.2], [np.mean(a)]*2, color='black', lw=2)
     axes[1].set_xticks([0,1], ['Top-5', 'Top-10']); axes[1].set(ylabel='IG/ISM Jaccard', title='Agreement varies by sequence', ylim=(-.03,1.05))
     save('04_attribution_consistency', fig, ['explanation_analysis/consistency.csv'], 'IG与ISM解释同一个CNN；一致性衡量模型解释方法的相似程度，不作为独立生物验证。')
@@ -66,12 +66,12 @@ def figures(cfg, protocol):
     a = np.array([float(r['mean_absolute_delta_log10']) for r in amplitude]); low = a-[float(r['ci_low']) for r in amplitude]; high = np.array([float(r['ci_high']) for r in amplitude])-a
     ax.bar([r['group'] for r in amplitude], a, color=COLORS[:3], yerr=np.vstack([low,high]), capsize=5)
     ax.set(ylabel='Mean |mutant − wild-type| (log10)', title='Equal-count mutations: 5 positions, 10 repeats per parent')
-    save('05_mutation_amplitude', fig, ['mutation/mutation_summary.csv'], 'High/Low/Random各640条变体，来自同一64条母序列。先按母序列汇总，区间按母序列重采样。')
+    save('05_mutation_amplitude', fig, ['mutation/mutation_summary.csv'], 'High/Low/Random来自同一批母序列，各组每条母序列10个变体。先按母序列汇总，区间按母序列重采样。')
     directions = read_table(root/'mutation/direction_summary.csv'); all_row = next(r for r in directions if r['expected_direction'] == 'all')
     fig, ax = plt.subplots(figsize=(8, 4.5)); keys = ['cnn_agreement','thermo_agreement','cross_model_agreement']; a = np.array([float(all_row[k]) for k in keys])
     low = a-[float(all_row[k+'_ci_low']) for k in keys]; high = np.array([float(all_row[k+'_ci_high']) for k in keys])-a
     ax.bar(['Gradient vs CNN','Gradient vs PC','CNN vs PC'], a, color=COLORS[:3], yerr=np.vstack([low,high]), capsize=5)
-    ax.set(ylabel='Direction agreement fraction', ylim=(0,1.03), title='960 single substitutions; 64-parent clustered bootstrap')
+    ax.set(ylabel='Direction agreement fraction', ylim=(0,1.03), title=f"{15*protocol['attribution_val_n']} substitutions; {protocol['attribution_val_n']}-parent bootstrap")
     save('06_mutation_direction', fig, ['mutation/direction_summary.csv'], '预期方向来自野生型梯度一阶替换分数，随后与实际CNN变化及热力学变化比较；三者均为计算证据。')
     stages = read_table(root/'ablation/stage_summary.csv'); fig, axes = plt.subplots(1, 2, figsize=(11, 4.5))
     for ax, key, title in zip(axes, ['r2_log10','rmse_log10'], ['Validation R² (log10)', 'Validation RMSE (log10)']):
@@ -87,3 +87,18 @@ def figures(cfg, protocol):
     write_json(directory/'figure_manifest.json', dict(figures=records, n_figures=len(records)))
     finish(directory, cfg, dict(n_figures=len(records), visual_review='pending'), [root/s for s in ['evaluation/model_summary.csv','ablation/stage_summary.csv','mutation/direction_summary.csv','transfer/transfer_metrics.csv']])
     return directory
+
+
+def acknowledge(cfg, protocol, reviewed):
+    root = run_root(protocol); directory = root/'figures'
+    require(not (root/'release_manifest.json').exists(), 'Sealed release cannot be modified')
+    require(completed(directory, cfg, protocol, archived_code=True), 'Figures have not been generated')
+    file = directory/'figure_manifest.json'; meta = read_json(file)
+    require(set(reviewed) == {r['figure_id'] for r in meta['figures']} and len(reviewed) == len(meta['figures']), 'Name every figure actually inspected')
+    for row in meta['figures']:
+        require(sha(directory/row['png']) == row['sha256'], 'Figure changed since generation')
+        row['visual_review'] = 'reviewed'
+    old = read_json(directory/'run_manifest.json')
+    write_json(file, meta)
+    finish(directory, cfg, dict(n_figures=len(reviewed), visual_review='reviewed'), [ROOT/p for p in old['upstream']])
+    return dict(status='reviewed', figure_ids=reviewed)

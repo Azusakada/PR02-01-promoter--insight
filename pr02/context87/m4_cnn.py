@@ -9,7 +9,7 @@ import numpy as np
 from .data import ROOT, load, read_json, read_table, write_json, write_table
 from .experiment import cnn_class, cnn_predict, input_hashes, masks, train_network
 from .features import encode
-from .m4_data_eval import SEEDS, bundle, completed, export_predictions, finish, run_root
+from .m4_data_eval import seeds, bundle, completed, export_predictions, finish, run_root
 
 
 def load_model(directory, length=87):
@@ -30,26 +30,32 @@ def embedding(model, x):
 def run(cfg, protocol):
     import torch
     root = run_root(protocol)/'cnn'
-    if completed(root): return root
+    if completed(root, cfg, protocol): return root
     root.mkdir(parents=True, exist_ok=True)
     rows, transform = load(cfg); m = masks(rows); x = encode([r['sequence'] for r in rows], 87)
     y = np.array([float(r['target_log10']) for r in rows]); low = transform['min_log10']; span = transform['max_log10']-low
     all_search = []
-    for condition, pooling, dropout, decay in [('C0', 5, .3, .001), ('C1', 20, .3, .001), ('C2', 20, .1, .001), ('C3', 20, .1, .0001)]:
-        for seed in SEEDS:
+    configurations = {'C0': (5, .3, .001), 'C1': (20, .3, .001), 'C2': (20, .1, .001), 'C3': (20, .1, .0001)}
+    for condition in protocol['cnn_configurations']:
+        pooling, dropout, decay = configurations[condition]
+        for seed in seeds(protocol):
             directory = root/f'{condition}_s{seed}'
-            if completed(directory):
+            if completed(directory, cfg, protocol):
                 all_search.append(read_json(directory/'selection_record.json')); continue
             directory.mkdir(parents=True, exist_ok=True)
             current = copy.deepcopy(cfg); current['seed'] = seed
             current['cnn']['model'].update(pooled_length=pooling, dropout=dropout)
             current['cnn']['training']['weight_decay'] = decay
             print(f'M4 CNN {condition} seed={seed}', flush=True)
-            if condition == 'C0' and seed == SEEDS[0]:
-                old = ROOT/'runs'/cfg['runs']['cnn']
+            old = ROOT/'runs'/cfg['runs']['cnn']
+            reusable = (condition == 'C0' and seed == cfg['seed'] and current == cfg
+                        and (old/'run_manifest.json').exists()
+                        and read_json(old/'run_manifest.json').get('config') == current)
+            if reusable:
+                completed(old, archived_code=True)
                 checkpoint = torch.load(old/'model.pt', map_location='cpu', weights_only=True)
-                assert checkpoint['model_config'] == current['cnn']['model']
-                assert read_json(old/'run_manifest.json')['config'] == current
+                if checkpoint['model_config'] != current['cnn']['model']:
+                    raise ValueError('Historical CNN configuration mismatch')
                 shutil.copyfile(old/'model.pt', directory/'model.pt')
                 history = read_table(old/'training_history.csv')
                 model, _ = load_model(directory)
@@ -69,16 +75,16 @@ def run(cfg, protocol):
             write_json(directory/'selection_record.json', record)
             finish(directory, cfg, record)
             all_search.append(record)
-    winner = min(('C0', 'C1', 'C2', 'C3'), key=lambda c: np.mean([r['val_mse_log10'] for r in all_search if r['condition'] == c]))
-    chosen = {str(seed): (root/f'{winner}_s{seed}').relative_to(ROOT).as_posix() for seed in SEEDS}
+    winner = min(protocol['cnn_configurations'], key=lambda c: np.mean([r['val_mse_log10'] for r in all_search if r['condition'] == c]))
+    chosen = {str(seed): (root/f'{winner}_s{seed}').relative_to(ROOT).as_posix() for seed in seeds(protocol)}
     for seed, source in chosen.items():
         directory = ROOT/source; model, _ = load_model(directory)
         bundle(root/f'features_s{seed}', embedding(model, x), rows, 'supervised_cnn_pooled', cfg,
                dict(source_run=source, checkpoint_sha256=__import__('hashlib').sha256((directory/'model.pt').read_bytes()).hexdigest(),
                     fit_subset='train', seed=int(seed), pooling=model.pool.output_size))
     write_table(root/'search.csv', all_search)
-    write_json(root/'selected_model.json', dict(condition=winner, runs=chosen, representative_seed=SEEDS[0],
-                representative_run=chosen[str(SEEDS[0])], selection='minimum mean validation log10 MSE over three seeds',
+    write_json(root/'selected_model.json', dict(condition=winner, runs=chosen, representative_seed=seeds(protocol)[0],
+                representative_run=chosen[str(seeds(protocol)[0])], selection='minimum mean validation log10 MSE over configured seeds',
                 length_policy='87/61 bp explicit adaptive-average-pooling model instances, identical trained weights'))
-    finish(root, cfg, dict(selected_condition=winner, n_configurations=4, n_seeds=3))
+    finish(root, cfg, dict(selected_condition=winner, n_configurations=len(protocol['cnn_configurations']), n_seeds=len(seeds(protocol))))
     return root

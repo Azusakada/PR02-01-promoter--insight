@@ -1,0 +1,31 @@
+{
+  "run": "runs/m4_complete_20261014_v1",
+  "release_manifest_sha256": "95248695933e5f4e8ceb4aa1cc18cf3875e9dd640b96db7b2913d71778ed4a65",
+  "archived_original_source_or_readme": [
+    "README.md",
+    "pr02/context87/cli.py",
+    "pr02/context87/m4_ablation.py",
+    "pr02/context87/m4_attribution.py",
+    "pr02/context87/m4_case_notes.py",
+    "pr02/context87/m4_cnn.py",
+    "pr02/context87/m4_data_eval.py",
+    "pr02/context87/m4_dnalm_features.py",
+    "pr02/context87/m4_explanation_analysis.py",
+    "pr02/context87/m4_final_report.py",
+    "pr02/context87/m4_ml_dnalm.py",
+    "pr02/context87/m4_pipeline.py",
+    "pr02/context87/m4_reporting.py",
+    "pr02/context87/m4_thermo_mutation.py",
+    "pr02/context87/m4_transfer.py",
+    "pr02/context87/m4_verify.py"
+  ],
+  "reused": [
+    "frozen pretrained DNA features",
+    "three original selected CNN checkpoints and features",
+    "training-only guided feature recipes",
+    "original target grouped split",
+    "original attribution parent IDs"
+  ],
+  "source_test_evaluated": false,
+  "interpretation": "Original validation has been used for model selection; not a new blind test"
+}

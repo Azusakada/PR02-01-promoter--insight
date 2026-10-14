@@ -38,7 +38,7 @@ def run_traditional(cfg, protocol):
     cache = {}
     for kind in ('ridge', 'svr'):
         directory = root/kind
-        if completed(directory): continue
+        if completed(directory, cfg, protocol): continue
         directory.mkdir(parents=True, exist_ok=True); searches = []; best = None; best_loss = np.inf
         for k in protocol['ml_k']:
             if k not in cache: cache[k] = kmers(seqs, k).astype(np.float32)
@@ -75,7 +75,7 @@ def run_traditional(cfg, protocol):
 
 def run_dna_head(cfg, protocol):
     root = run_root(protocol); directory = root/'ml/dnabert2'
-    if completed(directory): return directory
+    if completed(directory, cfg, protocol): return directory
     directory.mkdir(parents=True, exist_ok=True)
     rows, _ = load(cfg); m = masks(rows); y = np.array([float(r['target_log10']) for r in rows])
     x = read_bundle(root/'dna_features', [r['sample_id'] for r in rows])

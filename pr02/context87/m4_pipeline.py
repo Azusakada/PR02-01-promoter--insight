@@ -60,7 +60,10 @@ def predict_log10(sequences, model_ref):
     raise ValueError('Unknown model reference: '+kind)
 
 
-def run(cfg, protocol, stage='all', model_dir=None, device='cpu'):
+def run(cfg, protocol, stage='all', model_dir=None, device='cpu', reviewed=None):
+    if stage == 'verify':
+        from .m4_verify import verify
+        return verify(cfg, protocol)
     initialize(cfg, protocol)
     if stage in ('all', 'ml'):
         from .m4_ml_dnalm import run_traditional
@@ -97,7 +100,7 @@ def run(cfg, protocol, stage='all', model_dir=None, device='cpu'):
         write_model_refs(cfg, protocol)
         build_cases(cfg, protocol)
         build(cfg, protocol)
-    if stage == 'verify':
-        from .m4_verify import verify
-        return verify(cfg, protocol)
+    if stage == 'acknowledge':
+        from .m4_reporting import acknowledge
+        return acknowledge(cfg, protocol, reviewed or [])
     return run_root(protocol)

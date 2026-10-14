@@ -1,0 +1,12 @@
+{
+  "method": "dnabert2_ridge",
+  "seed": null,
+  "alpha": 10000.0,
+  "n_features": 768,
+  "alpha_at_grid_boundary": false,
+  "n": 1768,
+  "r2_log10": 0.06588036645534101,
+  "mae_log10": 0.4526032615050027,
+  "rmse_log10": 0.5974816170169482,
+  "spearman": 0.24965170290328675
+}
