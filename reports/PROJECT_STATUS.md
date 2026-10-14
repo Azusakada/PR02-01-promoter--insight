@@ -17,7 +17,7 @@ PR02-01 启动子强度预测与关键位点归因。资料日期为2026年10月
 | 选做5 | 跨物种zero-shot与五次few-shot抽样 | runs/m4_refinement_20261014_v2/transfer_stability/ |
 | 选做6 | IG与ISM一致性 跨CNN种子稳定性 | runs/m4_refinement_20261014_v2/attribution_stability/ |
 | M5报告 | 完整研究报告与复现索引 | [Word](final/PR02-01_REPORT.docx)与[在线报告](final/PR02-01_REPORT.md) |
-| 答辩材料 | 现有PPT为修订前版本 | M5_DEFENSE_FINAL.pptx |
+| M5答辩 | 修订结果，16页正文与3页备查 | [可编辑PPT](defense/PR02-01_DEFENSE.pptx) |
 
 ## 评价范围
 

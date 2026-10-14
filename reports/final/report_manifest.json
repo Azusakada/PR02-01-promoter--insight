@@ -86,9 +86,9 @@
     "runs/m4_complete_20261014_v1/release_manifest.json": "95248695933e5f4e8ceb4aa1cc18cf3875e9dd640b96db7b2913d71778ed4a65"
   },
   "artifacts": {
-    "README.md": "1ca148d4bd6026a64bbe24a0f6fc0d461d488c2a3eb7600991c74cb7a41a616e",
+    "README.md": "6b9de8dc630942c5469165b328f966003ac0399cbe9a5fcbac6bb8d8c3e04ac6",
     "reports/PROJECT_REFINEMENT_20261014.md": "589be18e747099c8678393ca5325d4f9d309897364f2ea96a8649344920737b4",
-    "reports/PROJECT_STATUS.md": "9dd816e3f60b1a1049b7c1fc833664ed951ed6f89450975cde9158520f0e2e9d",
+    "reports/PROJECT_STATUS.md": "48feb28605dab784eb4d4e84c4e660a0161f22e101e23e543473b9fcf2f1f909",
     "reports/final/PR02-01_REPORT.docx": "524dacd5e15b6e19d69da418017e2c36685b6ad44cc4c4be0dd90731b7c0dea4",
     "reports/final/PR02-01_REPORT.md": "48a61a04c9c999ed665f01a155330a899f7be378d2482465e81d51d15989786e",
     "reports/final/figures/01_training_distribution.png": "7cac600ed69826dffd44be684458fce2c3d1dbf7ed9fad4e2da96c06db2880a9",
@@ -115,6 +115,6 @@
     "requirements_report.txt": "d5eb9478fe74bcecd7a31b34098f0316b9beab512c22daa9aef87aa1496cc1f1",
     "scripts/build_course_docx.py": "80949accc66aff39814771c75d4a44568624d9cfe85d117770c364bd04bf5d5b",
     "scripts/build_course_report.py": "00d1fb62a1edc0633a0e20bc145007024249862ce3d04fcc6e476a5e34d395ac",
-    "scripts/verify_course_report.py": "b9899d801abd0a2400ad3a331ee27597aa6250840c1f05115507cf6c5b01c8bf"
+    "scripts/verify_course_report.py": "e45af6cb755f25055a072af8c27365951954614aafee7aa3ac8e447d62ece528"
   }
 }

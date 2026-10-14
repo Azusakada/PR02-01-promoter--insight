@@ -1,0 +1,12 @@
+{
+  "presentation": "reports/defense/PR02-01_DEFENSE.pptx",
+  "presentation_sha256": "ce0ecc8d7118383f0c832e30b408078330fde6b28762a02ba6f92bdadb332b80",
+  "report": "reports/final/PR02-01_REPORT.md",
+  "report_content_sha256": "63b9d337f15177099eae7f778ce25cac7862e7209f34c6cc976406797eb24d78",
+  "content_commit": "0b8ca2cc745b3289aad2738aaeb14d37a092f287",
+  "total_slides": 19,
+  "main_slides": 16,
+  "reference_slides": 3,
+  "authoring_script": "scripts/build_defense_slides.mjs",
+  "authoring_script_sha256": "726cb4f23c87ce5af98d2bc44b8dd909eff647c1a96dc4b96e2509b677cb421b"
+}

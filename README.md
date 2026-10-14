@@ -6,10 +6,11 @@
 
 - [完整研究报告](reports/final/PR02-01_REPORT.md)
 - [可编辑Word报告](reports/final/PR02-01_REPORT.docx)
+- [可编辑答辩PPT](reports/defense/PR02-01_DEFENSE.pptx)
 - [数据与实验状态](reports/PROJECT_STATUS.md)
 - [正则化与稳健性结果](reports/PROJECT_REFINEMENT_20261014.md)
 
-报告包含数据构建、探索分析、性能比较、区域归因、消融、计算突变、跨物种迁移及RQ1—RQ3的回答。当前正文和表格采用修订实验结果。历史报告与答辩PPT见文末版本索引。
+报告与答辩PPT采用相同的修订实验结果，包含性能比较、区域归因、消融、计算突变、跨物种迁移及RQ1—RQ3的回答。PPT共19页，其中16页正文、3页备查。历史材料见文末版本索引。
 
 ## 主要结果
 
@@ -60,6 +61,7 @@ python -m pr02 m4 --stage verify
 | 实验接口 | [M4_REFINEMENT_V2.md](contracts/M4_REFINEMENT_V2.md) |
 | 当前结果索引 | `results/context87/refinement_current.json` |
 | 当前报告索引 | `results/context87/report_current.json` |
+| 当前答辩PPT索引 | `results/context87/presentation_current.json` |
 | 测试与重载记录 | [REFINEMENT_CHECKS_20261014.json](reports/REFINEMENT_CHECKS_20261014.json) |
 
 新实验复制协议并将output改为新的runs子目录，baseline保留为原封存运行：
@@ -87,6 +89,14 @@ python scripts/verify_course_report.py
 ```
 
 重建报告后需重新渲染并逐页检查，更新`reports/final/layout_review.json`中的文档摘要和检查记录，再运行`python scripts/verify_course_report.py --record`登记新版本。
+
+答辩PPT的构建入口为`scripts/build_defense_slides.mjs`，读取同一报告内容及冻结源表。需在提供`@oai/artifact-tool`的演示文稿运行时中设置`PR02_NODE_MODULES`、`PR02_PRESENTATIONS_SKILL`和`PR02_RUNTIME_PYTHON`，再执行：
+
+```bash
+node scripts/build_defense_slides.mjs
+```
+
+PPT中的10个数据图表、8张表及正文均可编辑。新版本通过`PR02_PPTX_OUTPUT`指定新的输出文件，保留历史版本。
 
 ## 测试
 

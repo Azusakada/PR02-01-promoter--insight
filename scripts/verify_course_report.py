@@ -238,7 +238,7 @@ def verify(record=False):
         (OUT/'report_manifest.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2)+'\n')
         index = dict(report='reports/final/PR02-01_REPORT.md', word='reports/final/PR02-01_REPORT.docx',
                      manifest='reports/final/report_manifest.json', manifest_sha256=digest(OUT/'report_manifest.json'),
-                     checks='reports/final/report_checks.json', ppt_updated=False)
+                     checks='reports/final/report_checks.json')
         (ROOT/'results/context87/report_current.json').write_text(json.dumps(index, indent=2)+'\n')
     else:
         manifest = json.loads((OUT/'report_manifest.json').read_text())
