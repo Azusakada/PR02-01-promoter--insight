@@ -1,0 +1,8 @@
+{
+  "report": "reports/final/PR02-01_REPORT.md",
+  "word": "reports/final/PR02-01_REPORT.docx",
+  "manifest": "reports/final/report_manifest.json",
+  "manifest_sha256": "d6f4504b75b9d4ef0e888bd025afe027f93ba8295d0618c348164593555a4ff6",
+  "checks": "reports/final/report_checks.json",
+  "ppt_updated": false
+}

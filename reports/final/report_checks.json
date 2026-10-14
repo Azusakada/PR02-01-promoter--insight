@@ -1,0 +1,19 @@
+{
+  "status": "passed",
+  "sections": 15,
+  "tables": 14,
+  "figures": 9,
+  "reviewed_pages": 15,
+  "source_records": 11809,
+  "target_records": 591,
+  "prediction_exports_recomputed": 36,
+  "refined_heads": 11,
+  "transfer_fits": 32,
+  "numerical_aggregates": "passed",
+  "conditional_baseline": "passed",
+  "document_content_and_tables": "passed",
+  "current_document_prose": "passed",
+  "metadata_and_revisions": "passed",
+  "original_release_and_ppt": "preserved",
+  "source_test_scored": false
+}

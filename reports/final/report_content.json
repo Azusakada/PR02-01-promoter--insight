@@ -1,0 +1,1427 @@
+{
+  "title": "启动子强度预测与关键位点归因",
+  "subtitle": "PR02-01 课程项目研究报告",
+  "date": "2026年10月14日",
+  "members": [
+    "胡昊铭",
+    "李宇飞",
+    "李玘航",
+    "田惠今",
+    "陈思远"
+  ],
+  "sections": [
+    {
+      "title": "摘要",
+      "new_page": false,
+      "blocks": [
+        {
+          "type": "paragraph",
+          "text": "本研究以11,809条TSS位置经核验的大肠杆菌87 bp序列为主数据，比较传统回归、卷积神经网络、冻结DNA预训练表征和Promoter Calculator对启动子相关表达的预测能力，并通过位点归因、计算突变和跨物种迁移分析模型的解释性。回归目标为原始表达关联值的log10变换。"
+        },
+        {
+          "type": "paragraph",
+          "text": "在共同的1,768条验证序列上，纯CNN的三种子平均R²为0.1160，Spearman为0.3077；扩大回归头正则化范围后，k-mer与CNN表征融合的R²为0.1174，继续加入DNA表征和归因区域特征后的R²分别为0.1100和0.1144。重新训练的基因组区域分组对照中，纯CNN和k-mer与CNN表征融合的R²分别为0.0993和0.1162。"
+        },
+        {
+          "type": "paragraph",
+          "text": "IG与ISM均显示−10区域的描述性富集，且该区域现象在三个CNN种子下保持一致；精确位点的跨种子稳定性较低。高归因位点的等数量替换产生更大的预测变化，梯度与CNN单点替换方向一致率为98.23%，反映模型内部的局部自洽性。枯草杆菌100组few-shot冻结CNN在五次训练抽样中的Spearman为0.2075±0.0162，未呈现相对zero-shot CNN的稳定收益。"
+        },
+        {
+          "type": "paragraph",
+          "text": "关键词  启动子强度  卷积神经网络  热力学模型  位点归因  跨物种迁移"
+        },
+        {
+          "type": "subheading",
+          "text": "研究问题"
+        },
+        {
+          "type": "paragraph",
+          "text": "RQ1比较数据驱动模型与热力学模型的预测表现；RQ2检验重要位点与−10、−35、spacer和UP区域的关系；RQ3检验高贡献位点替换对预测强度及方向的影响。"
+        }
+      ]
+    },
+    {
+      "title": "1 数据来源与研究设计",
+      "new_page": true,
+      "blocks": [
+        {
+          "type": "paragraph",
+          "text": "主数据取自Wang等发布的Deep_promoter仓库[1]。其天然序列预测任务以公开dRNA-seq转录组数据为基础，原始TSS图谱来自Thomason等[2]。本研究使用仓库中的50 bp序列及其表达标签，经历史参考基因组U00096.2双链精确定位并与原TSS表核对，恢复为覆盖TSS上游67 bp及下游20 bp的87 bp上下文。"
+        },
+        {
+          "type": "paragraph",
+          "text": "原始11,884条记录中，11,809条参考位置唯一，75条多位置命中记录单独排除。上下文恢复保留原标签和继承划分。天然表达关联值还受到细胞状态、转录后过程等因素影响，与孤立启动子的纯转录起始率属于不同观测量；保留文件尚不足以确定每条标签的完整单位及测量条件。"
+        },
+        {
+          "type": "paragraph",
+          "text": "枯草杆菌数据由课程教师提供，共591条61 bp记录、580种不同序列，用作跨物种目标域。重复序列按组划分。文件未附论文、强度单位、TSS和方向信息，迁移评价以Spearman排序相关为主。"
+        },
+        {
+          "type": "table",
+          "number": 1,
+          "caption": "数据集与划分",
+          "headers": [
+            "数据",
+            "序列长度",
+            "训练 开发或验证 评价"
+          ],
+          "rows": [
+            [
+              "大肠杆菌继承划分",
+              "87 bp",
+              "8,267 / 1,768 / 1,774"
+            ],
+            [
+              "大肠杆菌区域分组",
+              "87 bp",
+              "5,985 / 2,003 / 1,998"
+            ],
+            [
+              "枯草杆菌序列分组",
+              "61 bp",
+              "354 / 119 / 118"
+            ]
+          ],
+          "widths": [
+            1.8,
+            1.1,
+            3.8
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "源域继承划分中的test不参与本研究的模型计分；区域分组仅使用原train与val，并排除49条跨区域边界窗口。历史源域test与目标域test曾在项目早期分析中使用，故所有结果均按内部基准评价解释。"
+        },
+        {
+          "type": "table",
+          "number": 2,
+          "caption": "固定分析窗口与TSS坐标",
+          "headers": [
+            "区域",
+            "零基区间",
+            "相对TSS位置"
+          ],
+          "rows": [
+            [
+              "UP",
+              "[7, 31)",
+              "−60至−37"
+            ],
+            [
+              "−35盒",
+              "[32, 38)",
+              "−35至−30"
+            ],
+            [
+              "spacer",
+              "[38, 55)",
+              "−29至−13"
+            ],
+            [
+              "−10盒",
+              "[55, 61)",
+              "−12至−7"
+            ],
+            [
+              "discriminator",
+              "[61, 67)",
+              "−6至−1"
+            ],
+            [
+              "初始转录区",
+              "[67, 87)",
+              "+1至+20"
+            ]
+          ],
+          "widths": [
+            1.8,
+            2.0,
+            2.9
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "序列索引67对应TSS，生物相对坐标跳过0。固定窗口用于统一比较；逐序列盒区另由Promoter Calculator推定。两类窗口均保留各自的假设与模型来源。"
+        }
+      ]
+    },
+    {
+      "title": "2 强度分布与区域特征",
+      "new_page": true,
+      "blocks": [
+        {
+          "type": "paragraph",
+          "text": "描述统计仅使用8,267条训练序列。原始表达值具有较长右尾，模型在log10尺度拟合和评价。CNN目标归一化的最小值与最大值由训练集确定；验证数据保留实际范围。"
+        },
+        {
+          "type": "paragraph",
+          "text": "−10窗口的平均GC比例较低，体现A/T富集；但单个盒区的共识匹配度与表达强度的单调关系较弱。区域GC、共识相似度和spacer长度分别描述不同性质，不能据某一指标的弱相关排除组合效应。"
+        },
+        {
+          "type": "table",
+          "number": 3,
+          "caption": "训练集序列特征与表达强度",
+          "headers": [
+            "特征",
+            "平均特征值",
+            "Spearman"
+          ],
+          "rows": [
+            [
+              "全序列 GC",
+              "0.4604",
+              "-0.2094"
+            ],
+            [
+              "−10 GC",
+              "0.2326",
+              "-0.0083"
+            ],
+            [
+              "−35 GC",
+              "0.4645",
+              "-0.0831"
+            ],
+            [
+              "UP GC",
+              "0.4765",
+              "-0.1525"
+            ],
+            [
+              "−10 共识匹配",
+              "0.4870",
+              "-0.0221"
+            ],
+            [
+              "−35 共识匹配",
+              "0.3216",
+              "0.0189"
+            ]
+          ],
+          "widths": [
+            2.8,
+            1.9,
+            2.0
+          ]
+        },
+        {
+          "type": "figure",
+          "number": 1,
+          "title": "训练集表达分布及区域特征",
+          "path": "figures/01_training_distribution.png",
+          "caption": "左图为log10表达分布；右图为固定窗口特征与log10表达的Spearman相关。共识匹配采用TATAAT和TTGACA，统计单位为训练序列。"
+        },
+        {
+          "type": "paragraph",
+          "text": "热力学推定的spacer以17 bp最常见，训练集有4,330条，占52.38%；推定长度与表达的Spearman为-0.0008。这些结果支持结合多个局部特征建模，未显示仅靠spacer长度即可有效排序。"
+        }
+      ]
+    },
+    {
+      "title": "3 预测模型与评价方法",
+      "new_page": true,
+      "blocks": [
+        {
+          "type": "paragraph",
+          "text": "KNN使用理化特征和距离加权回归；Ridge与LinearSVR使用按有效窗口数归一化的k-mer频率。StandardScaler仅拟合训练样本。回归头以验证集log10 MSE选择参数。Ridge正则化范围为1、10、100、1,000、10,000、100,000和1,000,000；扩大范围的对照保持输入表征和样本不变。"
+        },
+        {
+          "type": "paragraph",
+          "text": "CNN使用ACGT独热编码、两层一维卷积及自适应平均池化，再经全连接层输出。四组配置分别改变池化长度、dropout与weight decay，以三个训练种子的平均验证误差选择C0。代表模型固定采用种子20260928，用于位点解释和突变预测；性能统计保留全部三个种子。"
+        },
+        {
+          "type": "paragraph",
+          "text": "DNA表征采用冻结的DNABERT-2-117M[3]。完整编码87 bp序列，取最后一层有效序列token的均值，排除padding和特殊token，再拟合Ridge头。编码器不使用本项目标签更新参数。"
+        },
+        {
+          "type": "paragraph",
+          "text": "Promoter Calculator描述σ70启动子的转录起始热力学[4]。在已核验TSS处枚举spacer 15至20 bp及discriminator 6至10 bp的30种状态，选择最小自由能状态。原始Tx_rate经训练集拟合的log10线性关系映射到本数据的表达尺度。"
+        },
+        {
+          "type": "table",
+          "number": 4,
+          "caption": "模型设置",
+          "headers": [
+            "模块",
+            "输入或结构",
+            "拟合与选择"
+          ],
+          "rows": [
+            [
+              "KNN",
+              "理化特征 距离加权",
+              "邻居数21 101 501 1501"
+            ],
+            [
+              "Ridge与LinearSVR",
+              "k-mer频率 训练集标准化",
+              "Ridge扩展alpha；LinearSVR C为0.1 1 10"
+            ],
+            [
+              "CNN C0",
+              "通道32 64；卷积核7 5；池化长度5；隐藏层32",
+              "dropout 0.3；weight decay 0.001"
+            ],
+            [
+              "CNN训练",
+              "AdamW；学习率0.001；batch 128",
+              "最多100轮；patience 15；三个种子"
+            ],
+            [
+              "DNA回归",
+              "冻结768维表征与Ridge",
+              "训练集拟合；验证集选择alpha"
+            ],
+            [
+              "热力学",
+              "固定TSS与逐序列最优状态",
+              "训练集拟合尺度校准"
+            ]
+          ],
+          "widths": [
+            1.3,
+            2.6,
+            2.8
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "R²、MAE和RMSE均在log10表达尺度计算；Spearman评价排序。每个训练种子先独立计分，再报告均值及样本标准差，不将三份预测作为独立样本。置信区间按母序列、目标序列组或基因组区域重采样，统计单位随实验确定。"
+        }
+      ]
+    },
+    {
+      "title": "4 原划分上的预测性能",
+      "new_page": true,
+      "blocks": [
+        {
+          "type": "paragraph",
+          "text": "所有方法在同一1,768条验证序列上计分，覆盖率为100%。Ridge与DNA回归使用扩展正则化范围后的结果，KNN、LinearSVR、热力学及纯CNN保留相同训练设计。验证集承担模型选择，因此该组成绩反映内部基准上的描述性比较。"
+        },
+        {
+          "type": "table",
+          "number": 5,
+          "caption": "共同验证集预测性能",
+          "headers": [
+            "模型",
+            "R²",
+            "Spearman",
+            "RMSE",
+            "MAE"
+          ],
+          "rows": [
+            [
+              "KNN",
+              "0.0519",
+              "0.2202",
+              "0.6019",
+              "0.4569"
+            ],
+            [
+              "k-mer Ridge",
+              "0.0842",
+              "0.2733",
+              "0.5916",
+              "0.4488"
+            ],
+            [
+              "LinearSVR",
+              "0.0705",
+              "0.2638",
+              "0.5960",
+              "0.4501"
+            ],
+            [
+              "DNA + Ridge",
+              "0.0659",
+              "0.2497",
+              "0.5975",
+              "0.4526"
+            ],
+            [
+              "Promoter Calculator",
+              "0.0136",
+              "0.1047",
+              "0.6140",
+              "0.4681"
+            ],
+            [
+              "CNN",
+              "0.1160±0.0071",
+              "0.3077±0.0143",
+              "0.5812±0.0023",
+              "0.4429±0.0055"
+            ],
+            [
+              "训练均值",
+              "0.0000",
+              "未定义",
+              "0.6182",
+              "0.4716"
+            ]
+          ],
+          "widths": [
+            1.65,
+            1.25,
+            1.25,
+            1.25,
+            1.3
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "CNN项显示三个种子的均值±样本标准差，其余为单次确定性拟合。训练均值预测的Spearman未定义。纯CNN的平均R²为0.1160，说明其具有一定预测能力，但表达方差的解释比例仍有限。"
+        },
+        {
+          "type": "figure",
+          "number": 2,
+          "title": "共同验证集模型比较",
+          "path": "figures/02_model_comparison.png",
+          "caption": "误差线仅表示CNN训练种子标准差；常数预测的排序相关留空。各方法采用相同的87 bp输入范围与log10评价尺度。"
+        },
+        {
+          "type": "paragraph",
+          "text": "热力学模型的R²为0.0136，弱于本数据上的CNN与k-mer Ridge。其机制目标是转录起始，而标签来自天然表达观测；二者差异可能影响拟合，但本实验未分离测量噪声、上下文长度和模型容量各自造成的误差。"
+        }
+      ]
+    },
+    {
+      "title": "5 正则化与表征消融",
+      "new_page": true,
+      "blocks": [
+        {
+          "type": "paragraph",
+          "text": "表征按A0至A3逐步增加：A0为k-mer，A1加入CNN池化表征，A2加入冻结DNA表征，A3加入归因选择区域的k-mer、GC及适用盒区的共识匹配特征。全部阶段使用训练集StandardScaler与Ridge头，A1至A3按三个CNN种子配对。"
+        },
+        {
+          "type": "paragraph",
+          "text": "每个种子的归因区域由预定256条训练序列的IG按每碱基平均绝对贡献选择前两个区域；区域配方冻结后应用于验证序列。A3维度随所选区域是否含盒区共识特征略有不同。"
+        },
+        {
+          "type": "table",
+          "number": 6,
+          "caption": "逐阶段表征消融",
+          "headers": [
+            "阶段",
+            "特征维度",
+            "R²均值",
+            "Spearman均值",
+            "RMSE均值"
+          ],
+          "rows": [
+            [
+              "A0 k-mer",
+              "256",
+              "0.0842",
+              "0.2733",
+              "0.5916"
+            ],
+            [
+              "A1 + CNN",
+              "576",
+              "0.1174",
+              "0.3118",
+              "0.5808"
+            ],
+            [
+              "A2 + DNA",
+              "1,344",
+              "0.1100",
+              "0.3043",
+              "0.5832"
+            ],
+            [
+              "A3 + 归因",
+              "1,475至1,476",
+              "0.1144",
+              "0.3094",
+              "0.5817"
+            ]
+          ],
+          "widths": [
+            1.4,
+            1.25,
+            1.35,
+            1.35,
+            1.35
+          ]
+        },
+        {
+          "type": "figure",
+          "number": 3,
+          "title": "正则化范围与表征消融",
+          "path": "figures/03_regularization_ablation.png",
+          "caption": "左图比较原范围与扩展范围，深色误差线为三个种子的样本标准差；右图显示完整alpha搜索，A3阴影为种子标准差。所有输入表征、训练样本及CNN种子保持一致。"
+        },
+        {
+          "type": "paragraph",
+          "text": "各源域回归头均在内部候选alpha=10,000处取得最低验证误差。A3的平均R²由−0.0273提高至0.1144，表明有限正则化范围明显影响了旧设置下的融合表现。修订后的A2仍低于A1，A3有所回升但未超过A1；该点估计未提供DNA或归因特征稳定增益的证据。"
+        }
+      ]
+    },
+    {
+      "title": "6 基因组区域分组验证",
+      "new_page": true,
+      "blocks": [
+        {
+          "type": "paragraph",
+          "text": "为检验相邻上下文跨集合的影响，将原train与val按20 kb基因组区域分组。跨区域边界的87 bp窗口被排除，相同序列及其反向互补副本绑定分组。新train、dev和evaluation分别为5,985、2,003和1,998条，任意两集合之间的双链基因组窗口重叠均为0。"
+        },
+        {
+          "type": "paragraph",
+          "text": "归一化、scaler、热力学校准、CNN和归因选区均按新train重新拟合。CNN固定C0结构，早停和回归头选择只使用dev；evaluation标签不参与这些选择。冻结的外部预训练DNA表征可复用。"
+        },
+        {
+          "type": "table",
+          "number": 7,
+          "caption": "区域分组评价性能",
+          "headers": [
+            "模型",
+            "R²均值",
+            "种子SD",
+            "Spearman均值"
+          ],
+          "rows": [
+            [
+              "k-mer Ridge",
+              "0.0868",
+              "未定义",
+              "0.2978"
+            ],
+            [
+              "DNA + Ridge",
+              "0.0713",
+              "未定义",
+              "0.2673"
+            ],
+            [
+              "KNN",
+              "0.0395",
+              "未定义",
+              "0.2051"
+            ],
+            [
+              "LinearSVR",
+              "0.0731",
+              "未定义",
+              "0.2684"
+            ],
+            [
+              "Promoter Calculator",
+              "0.0357",
+              "未定义",
+              "0.1774"
+            ],
+            [
+              "训练均值",
+              "-0.0004",
+              "未定义",
+              "未定义"
+            ],
+            [
+              "CNN",
+              "0.0993",
+              "0.0049",
+              "0.2982"
+            ],
+            [
+              "A1",
+              "0.1162",
+              "0.0006",
+              "0.3177"
+            ],
+            [
+              "A2",
+              "0.1073",
+              "0.0130",
+              "0.3167"
+            ],
+            [
+              "A3",
+              "0.1130",
+              "0.0036",
+              "0.3158"
+            ]
+          ],
+          "widths": [
+            2.2,
+            1.5,
+            1.5,
+            1.5
+          ]
+        },
+        {
+          "type": "figure",
+          "number": 4,
+          "title": "区域分组评价中的模型表现",
+          "path": "figures/05_genomic_validation.png",
+          "caption": "CNN和消融阶段分别报告三个种子的均值及标准差。evaluation与原验证集的组成不同，二者分数差不能直接解释为窗口重叠造成的偏差。"
+        },
+        {
+          "type": "paragraph",
+          "text": "A1在区域分组对照中的平均R²为0.1162，k-mer Ridge为0.0868，纯CNN为0.0993。整体表现仍处于较低解释度范围。该对照是同一基因组上的一次内部空间划分，历史标签也曾用于项目开发；其结论范围限于此设计。"
+        }
+      ]
+    },
+    {
+      "title": "7 训练稳定性与分组误差",
+      "new_page": true,
+      "blocks": [
+        {
+          "type": "paragraph",
+          "text": "三个区域分组CNN均在较早阶段取得较低开发集误差，训练误差随后继续下降，开发集误差开始波动或回升。早停依据dev而非evaluation，延长训练不能据此视为可靠的性能改进。"
+        },
+        {
+          "type": "paragraph",
+          "text": "为比较不同强度范围的误差，按原训练集log10强度的三分位阈值划分验证样本。下表使用修订后的Ridge头、原纯CNN和热力学预测；CNN先按种子计算组内MAE，再取平均。"
+        },
+        {
+          "type": "table",
+          "number": 8,
+          "caption": "原验证集不同强度组的MAE",
+          "headers": [
+            "强度组",
+            "样本数",
+            "CNN",
+            "Ridge",
+            "热力学",
+            "均值基线"
+          ],
+          "rows": [
+            [
+              "低强度",
+              582,
+              "0.5184",
+              "0.5248",
+              "0.5497",
+              "0.5582"
+            ],
+            [
+              "中强度",
+              570,
+              "0.2003",
+              "0.1844",
+              "0.1723",
+              "0.1644"
+            ],
+            [
+              "高强度",
+              616,
+              "0.5960",
+              "0.6217",
+              "0.6646",
+              "0.6740"
+            ]
+          ],
+          "widths": [
+            1.1,
+            0.7,
+            1.225,
+            1.225,
+            1.225,
+            1.225
+          ]
+        },
+        {
+          "type": "figure",
+          "number": 5,
+          "title": "区域分组CNN学习曲线",
+          "path": "figures/06_learning_curves.png",
+          "caption": "纵轴为新train最小最大归一化尺度上的MSE。不同种子的最佳轮次分别依据开发集误差确定。"
+        },
+        {
+          "type": "paragraph",
+          "text": "低强度和高强度组中，CNN的MAE低于Ridge及热力学。中强度组的热力学MAE为0.1723，低于CNN的0.2003，但训练均值基线更低，为0.1644；该区间的低误差可受预测向中部收缩影响。组内R²受较窄标签方差影响，故条件比较同时呈现MAE及常数参照。"
+        }
+      ]
+    },
+    {
+      "title": "8 重要位点与启动子区域",
+      "new_page": true,
+      "blocks": [
+        {
+          "type": "paragraph",
+          "text": "对固定64条验证母序列，以均匀ACGT概率0.25为基线计算64步梯形积分的Integrated Gradients[5]，并以每个位点三种替换造成的平均绝对log10变化定义ISM。按绝对重要性选择Top-5和Top-10，同分时按位置升序。"
+        },
+        {
+          "type": "paragraph",
+          "text": "Top-k区域命中比例减去区域长度/87，得到相对均匀随机位置的描述性富集。固定窗口和PC推定窗口分别统计。三个种子在每条母序列内先平均，再按64条母序列进行bootstrap。"
+        },
+        {
+          "type": "table",
+          "number": 9,
+          "caption": "固定窗口Top-5区域富集",
+          "headers": [
+            "方法",
+            "区域",
+            "平均富集",
+            "95%区间",
+            "正向种子数"
+          ],
+          "rows": [
+            [
+              "IG",
+              "UP",
+              "-0.1384",
+              "-0.1727 至 -0.0998",
+              "0/3"
+            ],
+            [
+              "IG",
+              "-35",
+              "-0.0158",
+              "-0.0335 至 0.0060",
+              "0/3"
+            ],
+            [
+              "IG",
+              "spacer",
+              "-0.1152",
+              "-0.1360 至 -0.0944",
+              "0/3"
+            ],
+            [
+              "IG",
+              "-10",
+              "0.1237",
+              "0.0800 至 0.1665",
+              "3/3"
+            ],
+            [
+              "ISM",
+              "UP",
+              "-0.1165",
+              "-0.1509 至 -0.0779",
+              "0/3"
+            ],
+            [
+              "ISM",
+              "-35",
+              "-0.0190",
+              "-0.0356 至 -0.0023",
+              "1/3"
+            ],
+            [
+              "ISM",
+              "spacer",
+              "-0.0642",
+              "-0.0881 至 -0.0339",
+              "0/3"
+            ],
+            [
+              "ISM",
+              "-10",
+              "0.1685",
+              "0.1300 至 0.2112",
+              "3/3"
+            ]
+          ],
+          "widths": [
+            0.75,
+            1.0,
+            1.3,
+            2.6,
+            1.1
+          ]
+        },
+        {
+          "type": "figure",
+          "number": 6,
+          "title": "三个CNN种子的区域归因",
+          "path": "figures/07_regional_attribution.png",
+          "caption": "图中为固定窗口Top-5富集。两种方法在三个种子下均关注−10区域；−35、UP和spacer未显示同样一致的正向模式。"
+        },
+        {
+          "type": "paragraph",
+          "text": "在IG和ISM、固定及PC推定窗口、Top-5及Top-10的所有组合中，−10区域的三个种子平均富集均为正。该现象与核心启动子区域的生物意义相容；均匀位置参照仍受TSS对齐和模型位置偏好的限制，区间按描述性结果报告。"
+        }
+      ]
+    },
+    {
+      "title": "9 归因方法与跨种子一致性",
+      "new_page": true,
+      "blocks": [
+        {
+          "type": "paragraph",
+          "text": "同一模型中IG与ISM的相关衡量归因定义之间的一致性；不同CNN种子之间的比较则衡量拟合随机性引起的位置变化。两者使用相同的87个位点和64条母序列，并分别计算排序Spearman及Top-k集合的Jaccard。"
+        },
+        {
+          "type": "table",
+          "number": 10,
+          "caption": "归因一致性与位置稳定性",
+          "headers": [
+            "比较",
+            "位点排序相关",
+            "Top-5 Jaccard",
+            "Top-10 Jaccard"
+          ],
+          "rows": [
+            [
+              "同一CNN的IG与ISM",
+              "0.5105",
+              "0.3677",
+              "0.4201"
+            ],
+            [
+              "跨种子IG",
+              "0.2861",
+              "0.2024",
+              "0.2274"
+            ],
+            [
+              "跨种子ISM",
+              "0.4242",
+              "0.2522",
+              "0.2743"
+            ]
+          ],
+          "widths": [
+            2.1,
+            1.5,
+            1.55,
+            1.55
+          ]
+        },
+        {
+          "type": "figure",
+          "number": 7,
+          "title": "不同种子的重要性位置分布",
+          "path": "figures/08_position_importance.png",
+          "caption": "每条序列的绝对重要性先按全长总量归一化，再对64条母序列平均。颜色反映相对重要性比例，IG与ISM各自归一化，未直接比较两种方法的原始分数幅度。"
+        },
+        {
+          "type": "paragraph",
+          "text": "跨种子Top-5 Jaccard仅约0.20至0.25，说明具体位点排序受模型训练随机性影响。−10区域的一致富集与精确碱基的不稳定可以同时存在，区域层面的证据强于单次Top-k清单。IG沿基线积分，ISM评价离散替换，方法差异也会改变局部排序。"
+        },
+        {
+          "type": "paragraph",
+          "text": "三个种子的IG最大绝对completeness误差为0.006847 log10。该数值检验积分近似是否满足输出差分关系，用于归因计算的数值质量控制。"
+        }
+      ]
+    },
+    {
+      "title": "10 计算突变与方向检验",
+      "new_page": true,
+      "blocks": [
+        {
+          "type": "paragraph",
+          "text": "对每条母序列分别选择IG贡献最高5位、最低5位，以及从两组之外随机选择5位，构成High、Low和Random组。各组重复10次，每次均替换为其他碱基，共1,920条等数量变体。设计在预测前保存；统计先在母序列内汇总，再按母序列重采样。"
+        },
+        {
+          "type": "table",
+          "number": 11,
+          "caption": "等数量替换的预测幅度",
+          "headers": [
+            "组",
+            "变体数",
+            "平均绝对变化",
+            "95%母序列区间"
+          ],
+          "rows": [
+            [
+              "high",
+              "640",
+              "0.1270",
+              "0.1018 至 0.1539"
+            ],
+            [
+              "low",
+              "640",
+              "0.0476",
+              "0.0414 至 0.0538"
+            ],
+            [
+              "random",
+              "640",
+              "0.0671",
+              "0.0593 至 0.0753"
+            ]
+          ],
+          "widths": [
+            1.2,
+            1.1,
+            1.7,
+            2.7
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "High−Random的平均绝对变化差为0.0600 log10，95%区间为0.0367至0.0832；High−Low差为0.0795，区间为0.0563至0.1041。高归因位置对该CNN输出更敏感。High组的平均有符号变化接近0，随机改变重要位置并不预设增强或减弱。"
+        },
+        {
+          "type": "paragraph",
+          "text": "方向检验对每条母序列的High 5位穷举其他3种碱基，共960条单点变体。预期方向来自野生型梯度的替换通道减原通道，随后与实际CNN变化及重新枚举状态后的热力学变化比较；近零阈值为10⁻⁴ log10。"
+        },
+        {
+          "type": "table",
+          "number": 12,
+          "caption": "单点变化方向一致率",
+          "headers": [
+            "比较",
+            "一致率",
+            "95%母序列聚类区间"
+          ],
+          "rows": [
+            [
+              "梯度预期与CNN",
+              "98.23%",
+              "97.29% 至 99.06%"
+            ],
+            [
+              "梯度预期与热力学",
+              "44.48%",
+              "40.10% 至 48.96%"
+            ],
+            [
+              "CNN与热力学",
+              "44.27%",
+              "40.21% 至 48.85%"
+            ]
+          ],
+          "widths": [
+            2.6,
+            1.2,
+            2.9
+          ]
+        },
+        {
+          "type": "figure",
+          "number": 8,
+          "title": "计算突变的幅度与方向",
+          "path": "figures/09_mutation_validation.png",
+          "caption": "左图为等数量替换的绝对效应；右图为单点方向一致率。两图区间均以64条母序列为重采样单位，960条替换未作为独立生物测量。"
+        },
+        {
+          "type": "paragraph",
+          "text": "梯度与CNN的98.23%一致率提供局部线性近似与有限替换的自洽性证据；CNN与热力学的一致率为44.27%，显示两个预测函数存在明显分歧。变体缺少实测表达标签，方向一致性仍属于计算验证。"
+        }
+      ]
+    },
+    {
+      "title": "11 跨物种迁移与训练抽样",
+      "new_page": true,
+      "blocks": [
+        {
+          "type": "paragraph",
+          "text": "目标域保留354/119/118行的序列分组划分，相同61 bp序列不跨集合。zero-shot直接应用源域模型；few-shot固定源表征，在目标train拟合回归头，并在目标val选择alpha。k-mer采用窗口频率，CNN用相同源权重实例化61 bp自适应池化网络。"
+        },
+        {
+          "type": "paragraph",
+          "text": "采用五个固定训练组排列，每个排列内20、50和100组嵌套，完整保留30项few-shot拟合及2项zero-shot。跨抽样标准差衡量训练组选择的波动；每次抽样的目标test序列组bootstrap区间单独保存。"
+        },
+        {
+          "type": "table",
+          "number": 13,
+          "caption": "目标test迁移结果",
+          "headers": [
+            "条件",
+            "训练组数",
+            "抽样次数",
+            "Spearman",
+            "R²均值"
+          ],
+          "rows": [
+            [
+              "Ridge zero-shot",
+              "0",
+              "1",
+              "0.2095",
+              "-9.0441"
+            ],
+            [
+              "CNN zero-shot",
+              "0",
+              "1",
+              "0.2161",
+              "-10.1542"
+            ],
+            [
+              "k-mer few-shot",
+              "20",
+              "5",
+              "0.0841±0.0788",
+              "-0.0816"
+            ],
+            [
+              "CNN few-shot",
+              "20",
+              "5",
+              "0.0824±0.1107",
+              "-0.0747"
+            ],
+            [
+              "k-mer few-shot",
+              "50",
+              "5",
+              "0.1481±0.0605",
+              "-0.0141"
+            ],
+            [
+              "CNN few-shot",
+              "50",
+              "5",
+              "0.1805±0.0709",
+              "-0.0324"
+            ],
+            [
+              "k-mer few-shot",
+              "100",
+              "5",
+              "0.1809±0.0189",
+              "0.0176"
+            ],
+            [
+              "CNN few-shot",
+              "100",
+              "5",
+              "0.2075±0.0162",
+              "-0.0007"
+            ]
+          ],
+          "widths": [
+            1.6,
+            1.05,
+            1.05,
+            1.7,
+            1.3
+          ]
+        },
+        {
+          "type": "figure",
+          "number": 9,
+          "title": "跨物种训练组抽样稳定性",
+          "path": "figures/10_cross_species.png",
+          "caption": "误差线为五次训练组抽样的样本标准差。虚线为zero-shot结果。目标域test共118行，已在项目历史分析中使用。"
+        },
+        {
+          "type": "paragraph",
+          "text": "100组few-shot冻结CNN的平均Spearman为0.2075，接近zero-shot CNN的0.2161；20组时波动较大。旧设置的一次抽样约0.263，而五次抽样同时采用了扩展alpha范围，故两组差异包含抽样与正则化变化。当前设计未显示稳定的迁移增益。目标单位未知，跨域zero-shot的绝对尺度误差仅作诊断。"
+        }
+      ]
+    },
+    {
+      "title": "12 讨论与结论",
+      "new_page": true,
+      "blocks": [
+        {
+          "type": "subheading",
+          "text": "RQ1 预测性能与模型适用范围"
+        },
+        {
+          "type": "paragraph",
+          "text": "在天然表达关联标签、相同87 bp输入和共同验证样本下，CNN与k-mer回归的点估计优于校准热力学模型。区域分组评价中这种总体差异仍存在，但所有模型的解释度有限。k-mer与CNN表征融合的表现较好，继续增加DNA表征和归因区域特征未形成稳定的递增收益。"
+        },
+        {
+          "type": "paragraph",
+          "text": "分强度观察时，CNN在低、高强度组的MAE较低；热力学在中强度组低于CNN，但仍高于常数基线。因此，中强度区间的结果尚不足以证明热力学机制解释更准确，模型比较需要同时考虑全体样本与条件基线。"
+        },
+        {
+          "type": "paragraph",
+          "text": "正则化对照表明，高维表征的回归头设置会改变结论。扩大alpha后，融合R²由负值回到约0.11；这一变化应归于固定表征下的估计方式调整。对预训练模型的评价还受冻结编码、池化方式与天然表达任务的匹配程度影响，本实验仅覆盖一种实现。"
+        },
+        {
+          "type": "subheading",
+          "text": "RQ2 核心区域与精确位点"
+        },
+        {
+          "type": "paragraph",
+          "text": "−10在两种归因定义、两类窗口及三个CNN种子下均出现区域平均富集；−35、UP和spacer缺少同样一致的模式。位点层面的跨种子Jaccard较低，因此可支持模型学习了部分核心区域信号，但对某一个碱基的生物作用仍应保持不确定性。"
+        },
+        {
+          "type": "subheading",
+          "text": "RQ3 计算敏感性与突变指导"
+        },
+        {
+          "type": "paragraph",
+          "text": "高归因位置的等数量替换带来更大的CNN输出变化，一阶梯度较好地预测该模型的单点变化方向。跨模型方向分歧和缺少实测变体标签限制了因果解释。归因适合用于筛选候选突变，真实增强或减弱效应需要配对表达测量验证。"
+        },
+        {
+          "type": "subheading",
+          "text": "研究限制"
+        },
+        {
+          "type": "paragraph",
+          "text": "源域标签来源于天然转录组，目标域缺少完整测量元数据；不同实验标尺之间的可比性尚不明确。固定与工具推定盒区没有逐条结合位点实验注释，均匀随机位置也未消除所有位置背景差异。区域富集与多个模型对照的区间均按描述性结果解释，未作多重比较校正。"
+        },
+        {
+          "type": "paragraph",
+          "text": "原验证集参与选参，历史源域与目标域test也曾被观察；空间分组是单次内部对照。训练种子标准差、母序列bootstrap和训练抽样标准差分别反映条件性波动，均未覆盖跨实验批次或外部新基因组的泛化不确定性。"
+        },
+        {
+          "type": "subheading",
+          "text": "结论"
+        },
+        {
+          "type": "paragraph",
+          "text": "本研究在统一数据口径下完成性能比较、区域归因、逐阶段消融与计算突变检验，并通过跨物种和多归因方法分析扩展解释。结果支持正则化与区域稳定性检查对启动子建模的重要性；预测精度、精确位点一致性和跨域收益仍有明显限制。"
+        }
+      ]
+    },
+    {
+      "title": "参考文献",
+      "new_page": true,
+      "blocks": [
+        {
+          "type": "reference",
+          "number": 1,
+          "text": "Wang Y, Wang H, Wei L, Li S, Liu L, Wang X. Synthetic promoter design in Escherichia coli based on a deep generative network. Nucleic Acids Research. 2020;48(12):6403–6412.",
+          "url": "https://doi.org/10.1093/nar/gkaa325"
+        },
+        {
+          "type": "reference",
+          "number": 2,
+          "text": "Thomason MK, Bischler T, Eisenbart SK, et al. Global transcriptional start site mapping using differential RNA sequencing reveals novel antisense RNAs in Escherichia coli. Journal of Bacteriology. 2015;197(1):18–28.",
+          "url": "https://doi.org/10.1128/JB.02096-14"
+        },
+        {
+          "type": "reference",
+          "number": 3,
+          "text": "Zhou Z, Ji Y, Li W, Dutta P, Davuluri R, Liu H. DNABERT-2: Efficient Foundation Model and Benchmark for Multi-Species Genome. ICLR 2024.",
+          "url": "https://arxiv.org/abs/2306.15006"
+        },
+        {
+          "type": "reference",
+          "number": 4,
+          "text": "LaFleur TL, Hossain A, Salis HM. Automated model-predictive design of synthetic promoters to control transcriptional profiles in bacteria. Nature Communications. 2022;13:5159.",
+          "url": "https://doi.org/10.1038/s41467-022-32829-5"
+        },
+        {
+          "type": "reference",
+          "number": 5,
+          "text": "Sundararajan M, Taly A, Yan Q. Axiomatic Attribution for Deep Networks. Proceedings of Machine Learning Research. 2017;70:3319–3328.",
+          "url": "https://proceedings.mlr.press/v70/sundararajan17a.html"
+        },
+        {
+          "type": "reference",
+          "number": 6,
+          "text": "HaochenW. Deep_promoter 源数据与代码仓库.",
+          "url": "https://github.com/HaochenW/Deep_promoter"
+        },
+        {
+          "type": "reference",
+          "number": 7,
+          "text": "PR02-01 项目代码与实验记录.",
+          "url": "https://github.com/Azusakada/PR02-01-promoter--insight"
+        },
+        {
+          "type": "paragraph",
+          "text": "课程要求来源为project-pool(2).pdf中的PR02-01条目；枯草杆菌数据来源为教师提供的Bacillus-subtilis-promoter-strength.csv。"
+        }
+      ]
+    },
+    {
+      "title": "附录 复现说明与结果索引",
+      "new_page": true,
+      "blocks": [
+        {
+          "type": "paragraph",
+          "text": "基础依赖固定于requirements.txt。已交付DNA特征可直接用于数值核验；重新编码新序列时使用固定版本DNABERT-2权重。模型、预测、拟合ID、协议和源表以文件摘要关联。"
+        },
+        {
+          "type": "code",
+          "text": "python -m pip install -r requirements.txt\npython -m pr02 m4-refine --stage verify\npython -m pr02 m4 --stage verify"
+        },
+        {
+          "type": "paragraph",
+          "text": "两个验证命令分别核验修订实验与原始归因、突变等记录。核验包括模型重载、训练集预处理来源、预测与指标复算、区域分组和文件摘要。"
+        },
+        {
+          "type": "table",
+          "number": 14,
+          "caption": "实验与结果目录",
+          "headers": [
+            "实验",
+            "目录"
+          ],
+          "rows": [
+            [
+              "原划分性能与正则化",
+              "R1/regularization/"
+            ],
+            [
+              "区域分组控制",
+              "R1/grouped/"
+            ],
+            [
+              "三种子归因稳定性",
+              "R1/attribution_stability/"
+            ],
+            [
+              "跨物种五次训练抽样",
+              "R1/transfer_stability/"
+            ],
+            [
+              "IG与ISM一致性",
+              "R0/explanation_analysis/"
+            ],
+            [
+              "计算突变与方向",
+              "R0/mutation/"
+            ],
+            [
+              "逐条数据与坐标",
+              "data/03_Ecoli_strength87/"
+            ]
+          ],
+          "widths": [
+            2.3,
+            4.4
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "R0 = runs/m4_complete_20261014_v1；R1 = runs/m4_refinement_20261014_v2。训练表征、模型配置和逐种子结果分别保留在相应目录中。"
+        },
+        {
+          "type": "paragraph",
+          "text": "报告文字与表格由scripts/build_course_report.py从源表生成，Word由scripts/build_course_docx.py排版。report_manifest.json保存报告、图表和源文件摘要。"
+        }
+      ]
+    }
+  ],
+  "references": [
+    {
+      "text": "Wang Y, Wang H, Wei L, Li S, Liu L, Wang X. Synthetic promoter design in Escherichia coli based on a deep generative network. Nucleic Acids Research. 2020;48(12):6403–6412.",
+      "url": "https://doi.org/10.1093/nar/gkaa325"
+    },
+    {
+      "text": "Thomason MK, Bischler T, Eisenbart SK, et al. Global transcriptional start site mapping using differential RNA sequencing reveals novel antisense RNAs in Escherichia coli. Journal of Bacteriology. 2015;197(1):18–28.",
+      "url": "https://doi.org/10.1128/JB.02096-14"
+    },
+    {
+      "text": "Zhou Z, Ji Y, Li W, Dutta P, Davuluri R, Liu H. DNABERT-2: Efficient Foundation Model and Benchmark for Multi-Species Genome. ICLR 2024.",
+      "url": "https://arxiv.org/abs/2306.15006"
+    },
+    {
+      "text": "LaFleur TL, Hossain A, Salis HM. Automated model-predictive design of synthetic promoters to control transcriptional profiles in bacteria. Nature Communications. 2022;13:5159.",
+      "url": "https://doi.org/10.1038/s41467-022-32829-5"
+    },
+    {
+      "text": "Sundararajan M, Taly A, Yan Q. Axiomatic Attribution for Deep Networks. Proceedings of Machine Learning Research. 2017;70:3319–3328.",
+      "url": "https://proceedings.mlr.press/v70/sundararajan17a.html"
+    },
+    {
+      "text": "HaochenW. Deep_promoter 源数据与代码仓库.",
+      "url": "https://github.com/HaochenW/Deep_promoter"
+    },
+    {
+      "text": "PR02-01 项目代码与实验记录.",
+      "url": "https://github.com/Azusakada/PR02-01-promoter--insight"
+    }
+  ],
+  "source_hashes": {
+    "data/03_Ecoli_strength87/samples.tsv": "a039b99467494c0e2bd76b654239005ff7076f6cc917809206f5d85b096eba32",
+    "data/04_Bsub_strength61/samples.tsv": "c951466e12740f1d32ade1c6aabddf40e8903d09038b942f7b308626b902d23c",
+    "configs/m4_refinement_v2.json": "dceebcb21ed4e8c5fdaa40c953bddd96de8a9533860a02507b9235473e5b57ae",
+    "project_config.json": "406a9cee5919a6806fd4459f43bd280285974c38758a189da3360af4543833fb",
+    "runs/m4_complete_20261014_v1/cnn/selected_model.json": "84287fbbf1ffe3212be65296dc03c9045552a67db3920b266aadd19724d5e335",
+    "runs/m4_complete_20261014_v1/cnn/search.csv": "ca950171ad314fd292fb0b277aad95f00bb2ca473de31e09cc00e98c2a090800",
+    "runs/m4_complete_20261014_v1/evaluation/model_summary.csv": "ccd90bd38cc0fa3d24f1ce74a87e1739280d572a9279d4acbf9c58a2fb057721",
+    "runs/m4_refinement_20261014_v2/regularization/summary.csv": "516e6a685bdd6a50d4b585ed629af51ed3fd01f9850379ae669c17f1e4127914",
+    "runs/m4_refinement_20261014_v2/grouped/summary.csv": "ca4516201bda936dbe3a71e1d58e8bddd27dc7bd5f638c6124ef4c2934966ada",
+    "runs/m4_refinement_20261014_v2/grouped/split_audit.json": "760c348135fa6707614ae7713dc73f97f0892fe02a785f5fe3f1ce51a2d20d72",
+    "runs/m4_complete_20261014_v1/explanation_analysis/consistency_summary.csv": "1b9dd9657c455fae7bafa98478f5cbe1a9f74b03f9608556788e7119d6587bb2",
+    "runs/m4_refinement_20261014_v2/attribution_stability/cross_seed_summary.csv": "8f020aaa72273064a691f615e90abc1651352f50d9d5095a15d14819aa49a459",
+    "runs/m4_refinement_20261014_v2/attribution_stability/region_across_seeds.csv": "257f31766c51bc1c397fdc19a55b717fa000005f889ff6c48400e4d2d6cfe5c7",
+    "runs/m4_complete_20261014_v1/mutation/mutation_summary.csv": "86a1da8f527afd85a372b77e31fbd75f3ecc1615dc93627eb2755070a87b8daf",
+    "runs/m4_complete_20261014_v1/mutation/paired_amplitude.csv": "614dd69a74b58c8cce60de810ed3fc298697014f1f130db84632dbaecd9393cd",
+    "runs/m4_complete_20261014_v1/mutation/direction_summary.csv": "92b6df6bc99c67ac9953890658dbe99357e096e3465c54a6dc1a2ad6f0ce7217",
+    "runs/m4_refinement_20261014_v2/transfer_stability/summary.csv": "8e576cadb5b2a349dc460a0c46ac47b7ffeb7c2aef4cd73c7f1d528623ffb653",
+    "runs/m4_refinement_20261014_v2/regularization/metrics.csv": "083d35f3b5f27515a3e786753b67486f0ef4c2cf897aa7073cd4c6740006743b",
+    "runs/m4_complete_20261014_v1/ablation/stage_summary.csv": "467cf2ed18ee83b34bf8307ecaf736e46535fcb5fb8f2ba46dc9fb90bce489d6",
+    "runs/m4_refinement_20261014_v2/regularization/search.csv": "6b176f9b2d18afc66b7ff63e6bb6ceaae761751648417a57d5df850d496f4a13",
+    "runs/m4_refinement_20261014_v2/figures/03_grouped_validation.png": "90661a0137a5bd21a30679ed1078bb4dd0871938be812d7986b757ab73a99b77",
+    "runs/m4_refinement_20261014_v2/figures/03_grouped_validation.svg": "2c9b325943f5c408035d93b0929462fc08aeb812fb43bf281c6d95cdbb0f7217",
+    "runs/m4_refinement_20261014_v2/figures/04_grouped_learning_curves.png": "1ce490b2ec39d48d74d1ac895d52ca49ffe15e47cf4ece03ea61974fe1e4f9a4",
+    "runs/m4_refinement_20261014_v2/figures/04_grouped_learning_curves.svg": "210062555d8b7f0d8928133aded021c993868e91e2bc3ae63f2885bdf45743ba",
+    "runs/m4_refinement_20261014_v2/grouped/cnn_s20260928/training_history.csv": "8a7b29f855fc5c9bac9f114b8bfc0e1611662f8d545308099612ccac86e86deb",
+    "runs/m4_refinement_20261014_v2/grouped/cnn_s20260929/training_history.csv": "af74862101d7715f705f1d06c8661e5fda900a6429dac86212e9be71df2b0525",
+    "runs/m4_refinement_20261014_v2/grouped/cnn_s20260930/training_history.csv": "f01f5dc426d6e5e05cc5bc84edca154cb82525ad1d31eb62bb2b6f4a97827810",
+    "runs/m4_refinement_20261014_v2/figures/05_attribution_seed_stability.png": "4f5002cfcbf77afc84af52341440b9b8b92512649e2aecc93a04d4703fe07e3a",
+    "runs/m4_refinement_20261014_v2/figures/05_attribution_seed_stability.svg": "8086f9252a60d9ce39c1b5d3a21738963f4145e574110a5150e2a1887e4b0d84",
+    "runs/m4_refinement_20261014_v2/attribution_stability/region_by_seed.csv": "df848849a1864d4133fb651e6fb3984e4fe38a6f7deca3261dc4f873072070ae",
+    "runs/m4_refinement_20261014_v2/attribution_stability/s20260928/scores.npz": "43efdfb1ae03c6241596e1b533d4b25060df523d000984f34023684174763119",
+    "runs/m4_refinement_20261014_v2/attribution_stability/s20260929/scores.npz": "2c1c19811ddf383de10f73f59380a0e2cc4f05e4e6188ec9b21acef7de70d762",
+    "runs/m4_refinement_20261014_v2/attribution_stability/s20260930/scores.npz": "3f41e293e2ceddeade4ed18b2ff59e9d8cf41be4b2da42ce45c3f1812755284b",
+    "runs/m4_refinement_20261014_v2/regularization/kmer_ridge/predictions.csv": "5c85c1ada587f7724eb5f7c853715c6cbc1f4618e3c89788f309e4a830e86f72",
+    "runs/m4_complete_20261014_v1/cnn/C0_s20260928/predictions_val.csv": "1a6f321baea93867d9177bcd24364be891dbbe153c93455ce0e019b0c6eeb7f8",
+    "runs/m4_complete_20261014_v1/cnn/C0_s20260929/predictions_val.csv": "658dc118e006d838d37bdfc5d2fa767a2c2f88ef790cdd8b2517236aeebfd69f",
+    "runs/m4_complete_20261014_v1/cnn/C0_s20260930/predictions_val.csv": "36922631c62695d458b99d5ea0ec3dd27b347f72205b5521eab67cc347062289",
+    "runs/ecoli87_thermo_20261013_v1/predictions_val.csv": "4ce7c9e98e0970391b703430208b5fe1a1fcf3c037f18f6c0ffc75ecfaae4fec",
+    "runs/ecoli87_m3_completion_20261013_v1/source_tables/spacing_correlations.csv": "7118260a7117fd2e5faf98a5dae1fa5e4def75608e56fc274e0e907ec5e3d545",
+    "runs/ecoli87_m3_completion_20261013_v1/source_tables/spacing_summary.csv": "f942de49a36863a684f98131cf1f708eae8b3bee99ed5ac246d51880e3a5c91c",
+    "runs/m4_refinement_20261014_v2/attribution_stability/ig_completeness.csv": "9cf1d5e470064e509c6f98a3ab35704beea6136d3c7273b747aa70050c893959"
+  },
+  "figures": [
+    {
+      "path": "figures/01_training_distribution.png",
+      "inputs": [
+        "data/03_Ecoli_strength87/samples.tsv"
+      ]
+    },
+    {
+      "path": "figures/02_model_comparison.png",
+      "inputs": [
+        "runs/m4_complete_20261014_v1/evaluation/model_summary.csv",
+        "runs/m4_refinement_20261014_v2/regularization/summary.csv"
+      ]
+    },
+    {
+      "path": "figures/03_regularization_ablation.png",
+      "inputs": [
+        "runs/m4_complete_20261014_v1/ablation/stage_summary.csv",
+        "runs/m4_refinement_20261014_v2/regularization/summary.csv",
+        "runs/m4_refinement_20261014_v2/regularization/search.csv"
+      ]
+    },
+    {
+      "path": "figures/05_genomic_validation.png",
+      "inputs": [
+        "runs/m4_refinement_20261014_v2/grouped/summary.csv"
+      ],
+      "original": "runs/m4_refinement_20261014_v2/figures/03_grouped_validation.png"
+    },
+    {
+      "path": "figures/06_learning_curves.png",
+      "inputs": [
+        "runs/m4_refinement_20261014_v2/grouped/cnn_s20260928/training_history.csv",
+        "runs/m4_refinement_20261014_v2/grouped/cnn_s20260929/training_history.csv",
+        "runs/m4_refinement_20261014_v2/grouped/cnn_s20260930/training_history.csv"
+      ],
+      "original": "runs/m4_refinement_20261014_v2/figures/04_grouped_learning_curves.png"
+    },
+    {
+      "path": "figures/07_regional_attribution.png",
+      "inputs": [
+        "runs/m4_refinement_20261014_v2/attribution_stability/region_by_seed.csv"
+      ],
+      "original": "runs/m4_refinement_20261014_v2/figures/05_attribution_seed_stability.png"
+    },
+    {
+      "path": "figures/08_position_importance.png",
+      "inputs": [
+        "runs/m4_refinement_20261014_v2/attribution_stability/s20260928/scores.npz",
+        "runs/m4_refinement_20261014_v2/attribution_stability/s20260929/scores.npz",
+        "runs/m4_refinement_20261014_v2/attribution_stability/s20260930/scores.npz"
+      ]
+    },
+    {
+      "path": "figures/09_mutation_validation.png",
+      "inputs": [
+        "runs/m4_complete_20261014_v1/mutation/mutation_summary.csv",
+        "runs/m4_complete_20261014_v1/mutation/direction_summary.csv"
+      ]
+    },
+    {
+      "path": "figures/10_cross_species.png",
+      "inputs": [
+        "runs/m4_refinement_20261014_v2/transfer_stability/summary.csv"
+      ]
+    }
+  ],
+  "checks": {
+    "source_counts": {
+      "train": 8267,
+      "val": 1768,
+      "test": 1774
+    },
+    "target_rows": 591,
+    "target_unique_sequences": 580,
+    "grouped_counts": {
+      "train": 5985,
+      "dev": 2003,
+      "evaluation": 1998
+    },
+    "zero_cross_subset_overlaps": true,
+    "all_refined_heads_selected_alpha_10000": true,
+    "main_scores": [
+      {
+        "method": "knn",
+        "r2": 0.0519081375639473
+      },
+      {
+        "method": "kmer_ridge",
+        "r2": 0.08415074679513701
+      },
+      {
+        "method": "linear_svr",
+        "r2": 0.07049257027301192
+      },
+      {
+        "method": "dnabert2_ridge",
+        "r2": 0.06588036645534101
+      },
+      {
+        "method": "thermo",
+        "r2": 0.013649025658716285
+      },
+      {
+        "method": "cnn",
+        "r2": 0.11596701048525974
+      },
+      {
+        "method": "train_mean",
+        "r2": -4.33449719297041e-05
+      }
+    ],
+    "group_mae": [
+      {
+        "group": "低强度",
+        "n": 582,
+        "cnn_mae": 0.5183577463582223,
+        "ridge_mae": 0.5248276617711776,
+        "pc_mae": 0.5496538015785851,
+        "mean_mae": 0.5581923075754394
+      },
+      {
+        "group": "中强度",
+        "n": 570,
+        "cnn_mae": 0.20029914635312376,
+        "ridge_mae": 0.18443553319282172,
+        "pc_mae": 0.1723268522013679,
+        "mean_mae": 0.16443942019451557
+      },
+      {
+        "group": "高强度",
+        "n": 616,
+        "cnn_mae": 0.596016746896692,
+        "ridge_mae": 0.6216686001214853,
+        "pc_mae": 0.6646346994391724,
+        "mean_mae": 0.6739833527887922
+      }
+    ],
+    "eda": [
+      {
+        "feature": "全序列 GC",
+        "mean": 0.4603596351092628,
+        "spearman": -0.20938281519995264
+      },
+      {
+        "feature": "−10 GC",
+        "mean": 0.23259142776500946,
+        "spearman": -0.008317263888044251
+      },
+      {
+        "feature": "−35 GC",
+        "mean": 0.4645377202532156,
+        "spearman": -0.083121387414563
+      },
+      {
+        "feature": "UP GC",
+        "mean": 0.47653824442562803,
+        "spearman": -0.1524729383822459
+      },
+      {
+        "feature": "−10 共识匹配",
+        "mean": 0.4869763315995323,
+        "spearman": -0.022134006183676634
+      },
+      {
+        "feature": "−35 共识匹配",
+        "mean": 0.3216200959638724,
+        "spearman": 0.018933887039285523
+      }
+    ],
+    "source_test_scored": false
+  }
+}

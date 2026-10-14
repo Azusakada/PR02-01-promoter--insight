@@ -1,62 +1,35 @@
-> 本文是 2026-10-05 的历史状态。当前 87 bp 迁移、实验结果和后续事项见 [ECOLI87_MIGRATION.md](ECOLI87_MIGRATION.md)。
+# 项目数据与实验状态
 
-# PR02 01 五人项目当前交付
+PR02-01 启动子强度预测与关键位点归因。资料日期为2026年10月14日，代码发布分支为main。
 
-更新日期 2026-10-05。仓库 D:\PR02-01-promoter--insight。默认配置 project_config.json，发布入口 main，成员开发分支保留。本次整合在 csy 开发，统一交付入口为 main；清理和发布验收见 REPOSITORY_CLEANUP_20261005.md。
+## 数据
 
-已整合 main 数据/KNN、member-b 热力学、csy CNN、liqihang Ridge/SVR 和 feature/eda-annotation-m2m3。李玘航主线已到位，区域探索分析已接入；M4 归因、突变与消融仍待推进。
+主数据为11,809条大肠杆菌87 bp序列，TSS索引67，标签继承天然表达数据。跨物种目标为591条枯草杆菌61 bp记录，相同序列按组划分。
 
-## 当前验证集结果
+## 任务与结果
 
-五方法共同 val 1,782 条，完整请求 1,783 条。唯一参考上下文匹配的共同子集另报 1,767 条。R² 和 MAE 为 log10 strength 尺度，证据级别 preliminary。
+| 阶段 | 内容 | 结果入口 |
+| --- | --- | --- |
+| M1 | 数据来源 回归目标 坐标核验 | data/03_Ecoli_strength87/ |
+| M2 | 训练集分布 区域特征 spacer关系 | [研究报告第2节](final/PR02-01_REPORT.md) |
+| M3 | KNN Ridge LinearSVR 热力学基线 | runs/m4_complete_20261014_v1/ |
+| M4 | CNN DNA表征 归因 消融 计算突变 | 原始完整实验及修订实验目录 |
+| 选做5 | 跨物种zero-shot与五次few-shot抽样 | runs/m4_refinement_20261014_v2/transfer_stability/ |
+| 选做6 | IG与ISM一致性 跨CNN种子稳定性 | runs/m4_refinement_20261014_v2/attribution_stability/ |
+| M5报告 | 完整研究报告与复现索引 | [Word](final/PR02-01_REPORT.docx)与[在线报告](final/PR02-01_REPORT.md) |
+| 答辩材料 | 现有PPT为修订前版本 | M5_DEFENSE_FINAL.pptx |
 
-| 方法 | log10 R² | Spearman | log10 MAE | 成功请求 |
-|---|---:|---:|---:|---:|
-| knn_physchem_full | 0.017841 | 0.123234 | 0.467671 | 1783/1783 |
-| thermo_regseq2 | 0.029041 | 0.151955 | 0.464151 | 1782/1783 |
-| cnn_1d | 0.073950 | 0.227578 | 0.453482 | 1783/1783 |
-| kmer3_ridge | 0.052757 | 0.219489 | 0.459778 | 1783/1783 |
-| kmer3_svr | 0.009121 | 0.227552 | 0.446457 | 1783/1783 |
+## 评价范围
 
-CNN/KNN/Ridge/SVR 基于原 50 bp，热力学使用补取的 150 bp，信息范围不同。单次 val 结果不足以证明稳定优劣。SVR 的 Spearman 较高、MAE 较低，但 R² 较低，因此不能只用单一指标概括其表现。
+原划分验证集1,768条，参与超参数选择。空间分组train/dev/evaluation为5,985/2,003/1,998条，重新拟合所有监督模型与预处理，跨集合基因组窗口重叠为零。历史源域test不重新计分；目标域test属于已使用基准。
 
-## 本轮修复与核验
+模型在天然表达标签上的R²约为0.1。−10区域归因较稳定，精确碱基的一致性有限；DNA增量和跨物种few-shot未显示稳定收益。详细解释见[研究报告](final/PR02-01_REPORT.md)。
 
-- 替换 Ridge 私人路径及自行恢复 split 的默认脚本，统一使用公共冻结输入；独立核对全部 k=3/4/5 计数、词表、行索引及理化特征。
-- 修复混合 val/test 标准入口与 log10 输出填写 normalized/transform 的接口错误；保留原始交付 ZIP。
-- 沿用原 val 选定 k=3、alpha=100、LinearSVR C=10，在统一依赖环境只用 train 重拟合；重载全部 val，Ridge 系数独立复算。
-- 新增模型 run_manifest、哈希、拟合 ID、完整 val 与覆盖；CLI/new-run/run-all 及当前结果索引接入五方法。
-- 比较 ID 绑定样本、方法、run_id 与预测哈希；新增模型而共同 ID 不变时也产生新版本。统一误差分析使用相同 ID 定义。
-- 修复分析运行对全仓未提交改动的差异捕获遗漏，保持 dirty 标记与 source_patch 记录一致。
-- 新增图表注册和过期预测检查；已发布验证报告保持只读，防止跨环境诊断数值变化破坏索引哈希。
-- 五方法图改为多行布局，62 项误差指标复算并实际检查 3 张图。已有非空输出拒绝覆盖。
+## 验证记录
 
-此前 main 集成验收为 90 项；本轮新增检查与修复见 reports/REPOSITORY_AUDIT_20261005.md。数据、模型、校准、统一指标与图表验收见 reports/integration_validation.json。reports/clean_checkout_verification.json 为此前 main 的证据；本轮清理后的独立 Git 检出、模型重载与 main 发布见 [清理验收记录](repository_cleanup_validation_20261005.json)。
+数值实验通过149项测试、实际配置变更检查、独立环境模型重载和图像检查。原始实验与修订实验均按文件摘要关联数据、代码及产物。
 
-## 成员职责
-
-| 成员 | 当前已交付 | 后续任务 |
-|---|---|---|
-| 李宇飞 | 公共主表、split、transform、KNN 与统一评测 | 数据维护与跨方法评价 |
-| 李玘航 | k-mer 特征、Ridge、SVR、搜索与预测 | 传统 ML 对照及后续泛化 |
-| 田惠今 | 热力学推断、train 校准、失败与覆盖 | 多重定位及实验适用性说明 |
-| 陈思远 | CNN、五线集成、管理与验收 | CNN 泛化、消融、归因与突变 |
-| 胡昊铭 | EDA、来源审查、五方法误差与案例、区域特征与强度分析 | 区域组合、可变位置和间隔分析；来源资料可得时完善 |
-
-## 2026-10-05 区域分析修订
-
-已接入胡昊铭提交 3c779b9 的分析代码，修正多来源匹配被合并为“唯一”的问题，完整保存原始记录编号。614 条位置一致匹配中，608 条来源唯一、6 条多来源但换算位置相同。区域使用 tool_inferred 记录推定性质，并显式启用探索统计，可靠外部注释另行计数。
-
-新增三张中文图及源表，报告先讲 −10 的 A/T 富集、−35 特征较弱，以及简单特征与强度关系较弱的发现；方法和范围集中说明。中期无需等待新增实验注释。见 [区域分析报告](../analysis_m2m3/reports/region_analysis_20261005_v2/region_relationship.md)。
-
-## 当前路径
-
-results/current.json 注册唯一当前结果。history 保留复现必需的原交付，重复旧结果移出工作树；恢复方法见清理说明。不可覆盖的模型运行、五方法比较和误差图由 project_config.json 绑定。新增实验依照 README 创建新 tag，完成图像检查后再 publish。
-
-本轮新增临时文件和交付快照在 D:\CodexAnalysis\PR02-01\20261005-repository-audit；复用原有 Python 环境，未新建 C 盘大型运行环境。
-
-## 2026-10-05 全仓审查与默认入口更新
-
-主表和 split 的重建与原文件逐字节一致，原始数组、清洗脚本和划分配置已进入仓库。k-mer 新导出补齐公共索引字段；热力学新输入显式声明正反方向扫描，历史输入保持原记录。统一 verify 增加配置与模型身份检查、原始数据追溯、三个分析运行的数值复算。
-
-默认 CNN 采用已选定的 avg5_medium 模型，五方法总表与误差图已重新生成并通过验收。比较运行为 comparison_val_five_methods_20261005_v3；旧默认配置与结果按清理说明归档，当前工作树只保留有效比较。完整中期文字和演示安排见 [中期报告](MIDTERM_REPORT_20261005.md)。仓库尚无 PPT 文件，汇报前需据此完成排版和试讲。
+```bash
+python -m pr02 m4-refine --stage verify
+python -m pr02 m4 --stage verify
+```

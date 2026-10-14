@@ -1,157 +1,108 @@
-# PR02-01 Promoter Insight
+# PR02-01 启动子强度预测与关键位点归因
 
-默认主数据已迁移为 **11,809 条经原论文 TSS 表核验的 E. coli 87 bp 序列**。
-强度值来自原 50 bp 数据，未替换标签；87 bp 上下文从历史参考基因组 U00096.2 恢复。
-教师给出的 **591 条 61 bp 枯草杆菌强度记录**作为跨物种目标数据。
+以11,809条TSS经核验的大肠杆菌87 bp序列为主数据，比较传统回归、CNN、冻结DNA表征和Promoter Calculator，分析重要位点与计算突变，并使用591条枯草杆菌61 bp记录开展跨物种对照。
 
-原 50 bp 的代码、数据、模型和报告是历史版本，入口见 [旧版说明](README_ecoli50_legacy.md)。
-当前配置是 [project_config.json](project_config.json)，当前结果在 `results/context87/`，
-数据契约见 [CONTEXT87_V3.md](contracts/CONTEXT87_V3.md)，迁移记录见 [报告](reports/ECOLI87_MIGRATION.md)。
+## 研究报告
 
-## 当前完善版本（2026年10月14日）
+- [完整研究报告](reports/final/PR02-01_REPORT.md)
+- [可编辑Word报告](reports/final/PR02-01_REPORT.docx)
+- [数据与实验状态](reports/PROJECT_STATUS.md)
+- [正则化与稳健性结果](reports/PROJECT_REFINEMENT_20261014.md)
 
-当前实验修订采用 [m4_refinement_v2.json](configs/m4_refinement_v2.json)，
-规则见 [M4_REFINEMENT_V2.md](contracts/M4_REFINEMENT_V2.md)。
-修订包含扩展正则化、重新训练的基因组分组验证、三个CNN种子的解释稳定性和五次跨物种训练抽样。
-最新结论以 [完善核验报告](runs/m4_refinement_20261014_v2/reports/REFINEMENT_REVIEW.md)
-及 `results/context87/refinement_current.json` 为准。
-项目判断与结论解释见 [本轮完善结果](reports/PROJECT_REFINEMENT_20261014.md)。
+报告包含数据构建、探索分析、性能比较、区域归因、消融、计算突变、跨物种迁移及RQ1—RQ3的回答。当前正文和表格采用修订实验结果。历史报告与答辩PPT见文末版本索引。
 
-**最终项目内容尚待确认，PPT、Word和旧版正式报告保留历史版本，暂不重新制作。**
-旧报告中的参数范围和结论不能直接当作本次修订结论。
+## 主要结果
 
-```bash
-python -m pr02 m4-refine --stage verify
-```
+共同验证集为1,768条序列，指标在log10表达尺度计算。CNN与消融阶段先对每个训练种子计分，再报告三个种子的均值。验证集参与选参，分数属于内部基准评价。
 
-完整重跑先复制修订协议并修改 `output` 为新的 `runs/` 子目录；保留 `baseline` 指向原封存运行。
-常规修订复用已交付的冻结DNA表征，不需要重新下载编码器：
+| 模型或表征 | 验证R² | Spearman |
+| --- | ---: | ---: |
+| k-mer Ridge | 0.0842 | 0.2733 |
+| 冻结DNABERT-2与Ridge | 0.0659 | 0.2497 |
+| 纯CNN | 0.1160 | 0.3077 |
+| k-mer与CNN表征 A1 | 0.1174 | 0.3118 |
+| 继续加入DNA表征 A2 | 0.1100 | 0.3043 |
+| 继续加入归因区域 A3 | 0.1144 | 0.3094 |
 
-```bash
-python -m pr02 m4-refine --protocol configs/你的新修订协议.json --stage all
-```
+区域分组的1,998条评价序列与train/dev之间的双链窗口重叠为零，A1的平均R²为0.1162。−10区域在三个CNN种子中保持描述性富集，具体Top-k位点的一致性较低。高归因位点的替换对CNN输出更敏感；变体结果属于计算证据。跨物种100组few-shot冻结CNN的五次抽样Spearman为0.2075±0.0162，未显示相对zero-shot的稳定收益。
 
-完成后实际查看图，再按接口文档登记检查和发布结果索引。新报告写入自己的run目录，
-不会自动重建PPT。断点续跑会检查完整配置、协议、上游和源码；变化时须使用新目录。
+## 数据与坐标
 
-## 历史M4/M5 v1交付（2026年10月14日）
+源域标签沿用Deep_promoter天然表达数据；原50 bp在参考U00096.2上定位并扩展为87 bp。11,884条记录中保留11,809条位置唯一的记录，75条多位置记录单独排除。训练、验证、历史测试行数为8,267/1,768/1,774。
 
-正式实验位于 `runs/m4_complete_20261014_v1/`，协议为
-[m4_protocol_v1.json](configs/m4_protocol_v1.json)，接口见
-[M4_INTERFACE_V1.md](contracts/M4_INTERFACE_V1.md)。已完成四项必做实验，以及
-选做5跨物种迁移、选做6两种归因的一致性。
+序列覆盖TSS上游−67至−1与下游+1至+20，TSS索引为67，原50 bp位于[17,67)。TSS有原论文序列证据；盒区采用固定窗口假设或模型推定。
 
-- [完整报告（在线阅读）](reports/M5_FINAL_REPORT.md)
-- [可编辑Word报告](reports/M5_FINAL_REPORT.docx)
-- [可编辑答辩PPT](reports/M5_DEFENSE_FINAL.pptx)
-- [案例分析](reports/M4_CASE_ANALYSIS.md)、[实验说明](reports/M4_EXPERIMENT_NOTES.md)
-- [最终验收与复现说明](reports/M4_M5_RELEASE.md)
+目标域为教师提供的591条61 bp枯草杆菌记录，580种序列按组划分为354/119/118行。目标单位、实验条件、TSS和方向未知，跨物种主要解释Spearman。数据契约见[CONTEXT87_V3.md](contracts/CONTEXT87_V3.md)。
 
-CNN四配置各三种子，共12个候选记录，平均验证MSE选择原C0架构。
-在共同1768条验证序列上，CNN三种子R²为 **0.1160±0.0071**，Spearman为
-**0.3077±0.0143**。冻结DNABERT-2+Ridge的R²为0.0102；四阶段融合没有R²增益。
-−10窗口得到IG/ISM的描述性Top-k富集支持；高归因位点突变更敏感，但计算结果不等于湿实验因果。
+## 安装与核验
 
-安装基础依赖后，直接复核已交付结果，无须下载DNA原始权重：
-
-```bash
-python -m pr02 m4 --stage verify
-```
-
-完整重跑先安装DNA依赖，并复制协议到新文件、将 `output` 改成新的 `runs/` 目录：
-
-```bash
-python -m pip install -r requirements_dnalm.txt
-python -m pr02 m4 --protocol configs/m4_protocol_my_run.json --stage all --device cpu
-```
-
-DNA模型固定为官方 `zhihan1996/DNABERT-2-117M` revision
-`7bce263b15377fc15361f52cfab88f8b586abda0`。可用 `--device mps` 或 `cuda` 加速DNA推理；
-也可通过 `--dna-model-dir` 提供该revision的本地完整快照。原始预训练权重约469MB，按引用下载，
-不存入Git。已完成阶段按摘要复用，不能通过修改同一协议来覆盖旧结果。
-
-可分别执行 `ml`、`dna`、`cnn`、`attribution`、`mutation`、`ablation`、`transfer`、
-`evaluate`、`figures`、`report` 阶段。`report` 从源表重建Markdown、案例说明和Word/PPT共用内容，
-Word构建入口为 `scripts/build_m5_docx.py`（另需python-docx）；PPT构建器为
-`scripts/build_m5_slides.mjs`（使用交付说明中的Artifact Tool运行时）。
-
-胡昊铭的新版 M2/M3 补充分析见 [交接与复现说明](reports/ECOLI87_M2M3_HANDOFF.md)：
-10张中文图、三种尺度的EDA、固定/推定区域分析、五方法分组误差和80条规则化案例记录。
-分析报告入口为 [新版报告](runs/ecoli87_m2m3_20261013_v1/analysis_report.md)，不沿用历史50/81bp结论。
-
-M3 收尾见 [补齐分析与基线诊断](runs/ecoli87_m3_completion_20261013_v1/analysis_report.md)
-和 [验收说明](reports/M3_COMPLETION_20261013.md)：补齐 spacer 与强度关系、强弱组区域对照、
-训练均值基线、训练/验证差距和 CNN 学习曲线；新增5张图与12份源表，复用冻结模型。
-M3 分析交付与模型准确率分别解释；M4及本次修订另有独立运行记录。
-
-## 安装与运行
-
-建议 Python 3.12。依赖固定在 requirements.txt。
-ZIP 解压后的目录也可直接使用；没有 Git 元数据时，运行记录仍保存代码文件 SHA256，code_commit 记为空。
+建议Python 3.12。
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
 python -m pr02 validate-data
-python -m pr02 verify
+python -m pr02 m4-refine --stage verify
+python -m pr02 m4 --stage verify
 ```
 
-已交付运行目录用于复核，不覆盖重跑。新实验先创建配置，再运行：
+两个验证命令分别检查修订实验与原始归因、突变记录，包含模型重载、预处理来源、指标复算、序列分组与文件摘要。已交付的冻结DNA特征可直接核验；重新编码新序列时需固定版本的官方权重。
+
+## 结果目录
+
+| 内容 | 入口 |
+| --- | --- |
+| 主数据与分组 | `data/03_Ecoli_strength87/`、`data/04_Bsub_strength61/` |
+| 原始完整实验 | `runs/m4_complete_20261014_v1/` |
+| 正则化与稳健性实验 | `runs/m4_refinement_20261014_v2/` |
+| 修订协议 | [m4_refinement_v2.json](configs/m4_refinement_v2.json) |
+| 实验接口 | [M4_REFINEMENT_V2.md](contracts/M4_REFINEMENT_V2.md) |
+| 当前结果索引 | `results/context87/refinement_current.json` |
+| 当前报告索引 | `results/context87/report_current.json` |
+| 测试与重载记录 | [REFINEMENT_CHECKS_20261014.json](reports/REFINEMENT_CHECKS_20261014.json) |
+
+新实验复制协议并将output改为新的runs子目录，baseline保留为原封存运行：
 
 ```bash
-python -m pr02 new-run --tag experiment01
-python -m pr02 --config configs/project_ecoli87_experiment01.json run-all --research
+python -m pr02 m4-refine --protocol configs/your_protocol.json --stage all
 ```
 
-`run-all` 完成 KNN、k-mer Ridge、LinearSVR、CNN、固定 TSS 的 Promoter Calculator、
-同批验证样本比较、EDA、坐标及误差分析。加 `--research` 还会完成三种归因、High/Low/Random
-等数量突变、四项重新训练的消融，以及 E. coli→B. subtilis 的 zero-shot/few-shot 对照。
-也可分别调用 `run-knn`、`run-ridge-svr`、`run-cnn`、`run-thermo`、`evaluate`、`analyze`、
-`explain`、`mutate`、`ablate`、`transfer`。各运行目录不可覆盖；归因和突变依赖当前 CNN checkpoint。
+完成后查看全部结果图，按接口文档登记图像检查，再验证与发布本地结果索引。续跑核对完整配置、上游文件和源码，变化时要求新运行目录。报告保存在各自目录，历史实验保留原始版本。
 
-检查生成的 figures 后，登记视觉检查并发布本地结果：
+## 报告重建
 
 ```bash
-python -m pr02 --config configs/project_ecoli87_experiment01.json acknowledge-figures
-python -m pr02 --config configs/project_ecoli87_experiment01.json publish
+python -m pip install -r requirements_report.txt
+python scripts/build_course_report.py
+python scripts/build_course_docx.py
 ```
 
-`acknowledge-figures` 是操作者已实际查看图后的记录，不能代替看图。
-`publish` 只更新本地结果索引；不会发布网站或合并 GitHub 分支。
+Word采用思源黑体排版；渲染环境需安装可用的中文字体。正文、表格和图表索引由同一结构化内容生成，源文件摘要保存在reports/final/report_manifest.json。
 
-## 数据和解释范围
-
-主数据的原 50 bp 位于 `[17:67]`，TSS 在索引 67，整个序列对应 −67…−1、+1…+20。
-验证时重做基因组双链精确定位，并逐条检查原标签、继承划分和原论文 51 nt（−50…+1）序列。
-75 条多位置命中数据保留在排除文件中，避免任意选择上下文。训练/验证/测试数量是 8267/1768/1774。
-归一化参数只由训练集拟合。
-
-热力学模型在已验证 TSS 上枚举 30 种 spacer/discriminator 组合，选择最小自由能状态。
-五个模型均使用同一段 87 bp；其热力学转录率另用训练集拟合 log10 线性校准。
-TSS 有原论文证据，−10/−35/UP 等盒区仍是模型推定；固定窗口分析注明其假设。
-
-枯草杆菌相同序列的重复测量按组划分，不能跨集合。k-mer 用窗口频率处理长度差异；
-CNN 显式使用 61 bp 自适应池化实例及冻结源权重。few-shot 对照拟合目标域回归头。
-教师数据缺少单位、实验条件、TSS 和方向信息，因此跨域 zero-shot 优先解释 Spearman，
-不把跨域绝对误差作为共同强度单位下的结论。
-
-归因、突变和消融属于计算实验；突变预测不是湿实验测量。此次 E. coli test 保持不评价。
-沿用的是历史随机划分，邻近参考上下文可能重叠，且旧项目曾报告 test 指标，不能称为全新盲测。
-M4已补齐三种子与冻结DNA语言模型；当前修订另含基因组分组验证，与PR01-02外部结果比较仍属后续研究。
-
-## 复核
+检查现有报告的源文件、指标复算、Word表格和版本摘要：
 
 ```bash
-python -m pr02 rebuild-data --output work/rebuilt_ecoli87
+python scripts/verify_course_report.py
+```
+
+重建报告后需重新渲染并逐页检查，更新`reports/final/layout_review.json`中的文档摘要和检查记录，再运行`python scripts/verify_course_report.py --record`登记新版本。
+
+## 测试
+
+```bash
 python -m unittest discover -s tests -v
 python -m unittest discover -s CNN/tests -v
 python contracts/scripts/test_contracts.py
+python -m unittest discover -s analysis_m2m3/tests -v
 ```
 
-verify 会重载模型、复算预测和公共验证指标，检查 scaler、热力学校准、计算突变和目标域序列分组。
-旧数据复现使用显式配置：
+数值实验通过149项测试及独立环境重载核验。报告的数值、引用、图表和文档结构另作检查。
 
-```bash
-python -m pr02 --config configs/project_ecoli50_legacy.json validate-data
-```
+## 历史版本
+
+- [87 bp实验v1报告](reports/M5_FINAL_REPORT.md)与[历史答辩PPT](reports/M5_DEFENSE_FINAL.pptx)：使用修订前的参数和结果。
+- [M3分析](runs/ecoli87_m3_completion_20261013_v1/analysis_report.md)：区域特征、spacer和基线诊断。
+- [50 bp版本说明](README_ecoli50_legacy.md)：原始代码与数据入口。
+
+历史记录用于追溯。研究结论以当前研究报告及其源表为准。

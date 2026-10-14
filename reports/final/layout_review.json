@@ -1,0 +1,30 @@
+{
+  "status": "passed",
+  "document_sha256": "524dacd5e15b6e19d69da418017e2c36685b6ad44cc4c4be0dd90731b7c0dea4",
+  "page_count": 15,
+  "reviewed_pages": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ],
+  "checks": [
+    "Chinese glyphs and font rendering",
+    "No clipped or overlapping chart labels",
+    "Complete tables and captions",
+    "Consistent headings and page numbers",
+    "No isolated continuation paragraphs"
+  ],
+  "rendered_pdf_sha256": "2b4f633cfcfe32786af190f041640d2c849cd0f095d780a62193c21b133d82e3"
+}
