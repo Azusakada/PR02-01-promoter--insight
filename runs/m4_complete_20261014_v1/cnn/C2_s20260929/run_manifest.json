@@ -1,0 +1,48 @@
+{
+  "schema_version": "m4_interface_v1",
+  "run_id": "runs/m4_complete_20261014_v1/cnn/C2_s20260929",
+  "input_hashes": {
+    "data/03_Ecoli_strength87/samples.tsv": "a039b99467494c0e2bd76b654239005ff7076f6cc917809206f5d85b096eba32",
+    "data/03_Ecoli_strength87/split_manifest.tsv": "8ba07dce6dca9a33f0937561b8ddd5565e5fdf727411f83725f604785bfcf1cb",
+    "data/03_Ecoli_strength87/label_transform.json": "941706ea727addc436f92c8ffaa928ddf41460bd99f41c03e1f533ae90a24bcd"
+  },
+  "code_commit": "14458c15a4a3da98798ea455f13c76a26482833d",
+  "code_hashes": {
+    "pr02/context87/m4_ablation.py": "1984b976a9244812bf7a84ae5d8bb592bca1811643d14b846026db6523d87f8e",
+    "pr02/context87/m4_attribution.py": "83b1da32c36f1f2df47bca06c4b28ebb729cb89da40a6a76cc9ee47718cac09c",
+    "pr02/context87/m4_cnn.py": "b68c927d69619888de3781b853c97a64fa99707dba15dd13e39af74b34cf8598",
+    "pr02/context87/m4_data_eval.py": "075c384aaedf9cba9488a919cdab59928f53548ec472790753d02c499a505d67",
+    "pr02/context87/m4_dnalm_features.py": "b4ec62755f51953a1241cba4f6fbe488ff1dd38bdd2f729f8eb9a294c6d3b370",
+    "pr02/context87/m4_explanation_analysis.py": "b04734699a2f36aae4097952db3b867bfb492976f683dfbf84ad4516bcaebeba",
+    "pr02/context87/m4_ml_dnalm.py": "238c94afd00e3db4b3b9ae82ee2be6a05645148d31401f2effde5d53c4ee8c63",
+    "pr02/context87/m4_thermo_mutation.py": "aab346352baa8899a1ad256dfd07aa367bba1d5e35b8056f1cd26a8edec21247"
+  },
+  "environment": {
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "scikit-learn": "1.9.1",
+    "torch": "2.14.1"
+  },
+  "source_test_evaluated": false,
+  "details": {
+    "condition": "C2",
+    "seed": 20260929,
+    "pooling": 20,
+    "dropout": 0.1,
+    "weight_decay": 0.001,
+    "val_mse_log10": 0.3455123595477098,
+    "best_epoch": 12,
+    "epochs": 27,
+    "reused_run": null
+  },
+  "upstream": {},
+  "artifacts": {
+    "config.json": "3cbda06b87df913659e239da25f719c4eff9a257ecfe248db2682dd7f6ba5527",
+    "metrics.csv": "9dc57d1f6e27db78b85e0715ee84a4685fedc44932a8c577d47689367141cf56",
+    "model.pt": "e9ad8792691a87d49b92e41ccf6f6d157079272f513a7101a2067aa30129cf98",
+    "predictions_train.csv": "8df26601f04a9c372f61b1484642edaed84180ed5f37bfca5f0fe1996b36af49",
+    "predictions_val.csv": "43de52b32c860d382efa7fb7c8f25656fed0da7e0cbc6c7f8e2ca9a0560babe0",
+    "selection_record.json": "d3138fa464502c52a2f3cf200b6e291d91313b41a4120796ffa8123b57d47544",
+    "training_history.csv": "5fcf84916fbcfbf0f2943305e9b79c8dd0f178909a99123c877605a8f58630ea"
+  }
+}

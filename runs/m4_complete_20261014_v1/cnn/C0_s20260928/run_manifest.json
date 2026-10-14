@@ -1,0 +1,42 @@
+{
+  "schema_version": "m4_interface_v1",
+  "run_id": "runs/m4_complete_20261014_v1/cnn/C0_s20260928",
+  "input_hashes": {
+    "data/03_Ecoli_strength87/samples.tsv": "a039b99467494c0e2bd76b654239005ff7076f6cc917809206f5d85b096eba32",
+    "data/03_Ecoli_strength87/split_manifest.tsv": "8ba07dce6dca9a33f0937561b8ddd5565e5fdf727411f83725f604785bfcf1cb",
+    "data/03_Ecoli_strength87/label_transform.json": "941706ea727addc436f92c8ffaa928ddf41460bd99f41c03e1f533ae90a24bcd"
+  },
+  "code_commit": "14458c15a4a3da98798ea455f13c76a26482833d",
+  "code_hashes": {
+    "pr02/context87/m4_cnn.py": "b68c927d69619888de3781b853c97a64fa99707dba15dd13e39af74b34cf8598",
+    "pr02/context87/m4_data_eval.py": "075c384aaedf9cba9488a919cdab59928f53548ec472790753d02c499a505d67"
+  },
+  "environment": {
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "scikit-learn": "1.9.1",
+    "torch": "2.14.1"
+  },
+  "source_test_evaluated": false,
+  "details": {
+    "condition": "C0",
+    "seed": 20260928,
+    "pooling": 5,
+    "dropout": 0.3,
+    "weight_decay": 0.001,
+    "val_mse_log10": 0.34092576512803063,
+    "best_epoch": 17,
+    "epochs": 32,
+    "reused_run": "runs/ecoli87_cnn_20261013_v1"
+  },
+  "upstream": {},
+  "artifacts": {
+    "config.json": "d07b52ffe74ae1344064c5dd50f3157eae89b4a6446164a158eda64215f4b0f2",
+    "metrics.csv": "cb944fe9398d0c28007b86b9d8df51ba0d4b2622524326ed53d48bde47b19d61",
+    "model.pt": "fdced9a235dda9ddccb6782c6ac778307d7004976226d6a9143788fc9554db69",
+    "predictions_train.csv": "4ef149d6caca976d96f0ba5a38b25c86e061224060c2137956b55959fa4bf4b6",
+    "predictions_val.csv": "1a6f321baea93867d9177bcd24364be891dbbe153c93455ce0e019b0c6eeb7f8",
+    "selection_record.json": "299dbba67e3e12ae5af17ba265e5ebc5f1a76098797c1440784ba803c472bacc",
+    "training_history.csv": "d84cc51c0771d2416495cb3f111c517cab40337e0695ac4414a306106d8598cd"
+  }
+}

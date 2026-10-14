@@ -1,0 +1,19 @@
+{
+  "model_kind": "svr",
+  "method_name": "svr",
+  "run_id": "runs/m4_complete_20261014_v1/ml/svr",
+  "checkpoint_path": "runs/m4_complete_20261014_v1/ml/svr/model.joblib",
+  "checkpoint_sha256": "6453278dff3d394f3ad66d233af1f147ba3c2e5ddde9f0ca0520365382021d33",
+  "path_base": "repository",
+  "input_length": 87,
+  "seed": 20260928,
+  "predictor_entry": "pr02.context87.m4_pipeline:predict_log10",
+  "details": {
+    "parameters": {
+      "k": 3,
+      "C": 0.1
+    },
+    "scaler_fit_subset": "train",
+    "selection": "validation MSE"
+  }
+}

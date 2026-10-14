@@ -1,0 +1,12 @@
+{
+  "condition": "C0",
+  "runs": {
+    "20260928": "runs/m4_complete_20261014_v1/cnn/C0_s20260928",
+    "20260929": "runs/m4_complete_20261014_v1/cnn/C0_s20260929",
+    "20260930": "runs/m4_complete_20261014_v1/cnn/C0_s20260930"
+  },
+  "representative_seed": 20260928,
+  "representative_run": "runs/m4_complete_20261014_v1/cnn/C0_s20260928",
+  "selection": "minimum mean validation log10 MSE over three seeds",
+  "length_policy": "87/61 bp explicit adaptive-average-pooling model instances, identical trained weights"
+}

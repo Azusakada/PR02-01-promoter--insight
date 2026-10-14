@@ -1,0 +1,54 @@
+{
+  "schema_version": "m4_interface_v1",
+  "run_id": "runs/m4_complete_20261014_v1/mutation",
+  "input_hashes": {
+    "data/03_Ecoli_strength87/samples.tsv": "a039b99467494c0e2bd76b654239005ff7076f6cc917809206f5d85b096eba32",
+    "data/03_Ecoli_strength87/split_manifest.tsv": "8ba07dce6dca9a33f0937561b8ddd5565e5fdf727411f83725f604785bfcf1cb",
+    "data/03_Ecoli_strength87/label_transform.json": "941706ea727addc436f92c8ffaa928ddf41460bd99f41c03e1f533ae90a24bcd"
+  },
+  "code_commit": "14458c15a4a3da98798ea455f13c76a26482833d",
+  "code_hashes": {
+    "pr02/context87/m4_ablation.py": "1984b976a9244812bf7a84ae5d8bb592bca1811643d14b846026db6523d87f8e",
+    "pr02/context87/m4_attribution.py": "83b1da32c36f1f2df47bca06c4b28ebb729cb89da40a6a76cc9ee47718cac09c",
+    "pr02/context87/m4_cnn.py": "b68c927d69619888de3781b853c97a64fa99707dba15dd13e39af74b34cf8598",
+    "pr02/context87/m4_data_eval.py": "075c384aaedf9cba9488a919cdab59928f53548ec472790753d02c499a505d67",
+    "pr02/context87/m4_dnalm_features.py": "b4ec62755f51953a1241cba4f6fbe488ff1dd38bdd2f729f8eb9a294c6d3b370",
+    "pr02/context87/m4_explanation_analysis.py": "b04734699a2f36aae4097952db3b867bfb492976f683dfbf84ad4516bcaebeba",
+    "pr02/context87/m4_ml_dnalm.py": "238c94afd00e3db4b3b9ae82ee2be6a05645148d31401f2effde5d53c4ee8c63",
+    "pr02/context87/m4_pipeline.py": "c48e9515d49a42e7b61dddc06e05db361598ce6389b01796e73573d84016afcc",
+    "pr02/context87/m4_reporting.py": "762106224012b0646610ae9070419b2f6e5f5c15e00f06c17a3e479cd6d47236",
+    "pr02/context87/m4_thermo_mutation.py": "aab346352baa8899a1ad256dfd07aa367bba1d5e35b8056f1cd26a8edec21247",
+    "pr02/context87/m4_transfer.py": "55f55045c74424006b1a08b1250d5fabbbd31cae83f38f142a9d5acfea5e9973"
+  },
+  "environment": {
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "scikit-learn": "1.9.1",
+    "torch": "2.14.1"
+  },
+  "source_test_evaluated": false,
+  "details": {
+    "n_parent": 64,
+    "n_mutants": 2880,
+    "fixed_tss": 67,
+    "direction_threshold_log10": 0.0001,
+    "interpretation": "local linear explanation consistency and cross-model comparison; no experimentally measured mutant outcome"
+  },
+  "upstream": {
+    "runs/m4_complete_20261014_v1/attribution/substitution_expectation.csv": "9e031df52814c332420e7d4bbf5f085e419f01faf80d479a9ae52450033853dd",
+    "runs/m4_complete_20261014_v1/attribution/attributions.tsv": "5c1baa11a168a11c912fe1b68b48ab00cad27e5ca7bbe1b95dc7053f0debf364",
+    "runs/m4_complete_20261014_v1/cnn/C0_s20260928/model.pt": "fdced9a235dda9ddccb6782c6ac778307d7004976226d6a9143788fc9554db69"
+  },
+  "artifacts": {
+    "design_frozen.json": "789041ecb9ed6491a6f961fd313358ff4728ffb38e63472706295e8b49044ad3",
+    "direction_parent_summary.csv": "5db58055efc49b7544c643baeb647564ef884ddcf829a6eb7dc3ac8f3cae3dae",
+    "direction_summary.csv": "92b6df6bc99c67ac9953890658dbe99357e096e3465c54a6dc1a2ad6f0ce7217",
+    "disagreement_cases.csv": "86248eff13e4f7befe6cb92c477208a531e5ac31a21822b3f7fdb892599cfda1",
+    "mutant_thermo_states.jsonl": "13a3638a5c6a72f2c136d1a4bfa08fdec09cd24bf233ae4271fa2b94874f93b2",
+    "mutation_design.csv": "4f09bff9142668dcdf09220012e30a0eb3a71e7f58e1222dad3fb266bc6788b0",
+    "mutation_parent_summary.csv": "35a673ac7a5f93864f37439c699e64ad0ea3b73a65c3d20a687c039899647b56",
+    "mutation_predictions.csv": "f93fd2dc694da72c529d0d4f953f7495dfc77253a3d25c201822eb2010631b1a",
+    "mutation_summary.csv": "86a1da8f527afd85a372b77e31fbd75f3ecc1615dc93627eb2755070a87b8daf",
+    "paired_amplitude.csv": "614dd69a74b58c8cce60de810ed3fc298697014f1f130db84632dbaecd9393cd"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "model_kind": "ridge",
+  "method_name": "ridge",
+  "run_id": "runs/m4_complete_20261014_v1/ml/ridge",
+  "checkpoint_path": "runs/m4_complete_20261014_v1/ml/ridge/model.joblib",
+  "checkpoint_sha256": "9931fcdf26bd55d5319e9b83eabff357d2a17b20070fc65396a4c3a7c2fc8b22",
+  "path_base": "repository",
+  "input_length": 87,
+  "seed": 20260928,
+  "predictor_entry": "pr02.context87.m4_pipeline:predict_log10",
+  "details": {
+    "parameters": {
+      "k": 4,
+      "alpha": 100.0
+    },
+    "scaler_fit_subset": "train",
+    "selection": "validation MSE"
+  }
+}

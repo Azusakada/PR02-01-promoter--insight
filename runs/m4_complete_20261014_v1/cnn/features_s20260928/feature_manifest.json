@@ -1,0 +1,23 @@
+{
+  "feature_kind": "supervised_cnn_pooled",
+  "n_rows": 11809,
+  "n_features": 320,
+  "dtype": "float32",
+  "sample_ids_sha256": "d34e5fecf9940e1054a6b2b6eadb9a18ab14a3fce9b1ede8c48a8883314ec366",
+  "ordered_ids_sha256": "d34e5fecf9940e1054a6b2b6eadb9a18ab14a3fce9b1ede8c48a8883314ec366",
+  "feature_sha256": "a8bcbc5a8bc11b08ca84bf488d4c7528d4377d33c0ea758270a4be8857de0202",
+  "input_hashes": {
+    "data/03_Ecoli_strength87/samples.tsv": "a039b99467494c0e2bd76b654239005ff7076f6cc917809206f5d85b096eba32",
+    "data/03_Ecoli_strength87/split_manifest.tsv": "8ba07dce6dca9a33f0937561b8ddd5565e5fdf727411f83725f604785bfcf1cb",
+    "data/03_Ecoli_strength87/label_transform.json": "941706ea727addc436f92c8ffaa928ddf41460bd99f41c03e1f533ae90a24bcd"
+  },
+  "data_version": "ecoli87_tss_verified_v1",
+  "split_id": "ecoli87_inherited_20260928_v1",
+  "details": {
+    "source_run": "runs/m4_complete_20261014_v1/cnn/C0_s20260928",
+    "checkpoint_sha256": "fdced9a235dda9ddccb6782c6ac778307d7004976226d6a9143788fc9554db69",
+    "fit_subset": "train",
+    "seed": 20260928,
+    "pooling": 5
+  }
+}

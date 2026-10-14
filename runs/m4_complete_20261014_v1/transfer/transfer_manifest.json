@@ -1,0 +1,17 @@
+{
+  "source_length": 87,
+  "target_length": 61,
+  "target_units": "unknown",
+  "target_tss": "unknown",
+  "target_orientation": "unknown",
+  "n_conditions": 8,
+  "representative_seed": 20260928,
+  "target_counts": {
+    "train": 354,
+    "val": 119,
+    "test": 118
+  },
+  "few_shot_policy": "nested seeded groups, train fit, val alpha selection, frozen source representation",
+  "scale_interpretation": "zero-shot Spearman primary; MAE/RMSE/R2 diagnostic because source/target assay units are not established",
+  "test_history": "Target test already used in earlier project experiments; extension of the same benchmark, not first blind evaluation"
+}

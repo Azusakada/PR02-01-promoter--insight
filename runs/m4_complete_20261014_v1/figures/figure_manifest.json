@@ -1,0 +1,96 @@
+{
+  "figures": [
+    {
+      "figure_id": "01_model_comparison",
+      "png": "01_model_comparison.png",
+      "svg": "01_model_comparison.svg",
+      "caption": "各模型使用同一1768条验证序列；CNN显示三个种子的均值及样本标准差。",
+      "source_tables": {
+        "runs/m4_complete_20261014_v1/evaluation/model_summary.csv": "ccd90bd38cc0fa3d24f1ce74a87e1739280d572a9279d4acbf9c58a2fb057721"
+      },
+      "sha256": "517f29e3e4e992fdce93899c3c351a42622b90674f05d7f37471150f4b1907e3",
+      "visual_review": "reviewed"
+    },
+    {
+      "figure_id": "02_cnn_stability",
+      "png": "02_cnn_stability.png",
+      "svg": "02_cnn_stability.svg",
+      "caption": "四配置均按预定三种子比较；代表模型固定采用20260928，未按最佳单种子挑选。",
+      "source_tables": {
+        "runs/m4_complete_20261014_v1/cnn/search.csv": "ca950171ad314fd292fb0b277aad95f00bb2ca473de31e09cc00e98c2a090800",
+        "runs/m4_complete_20261014_v1/cnn/C0_s20260928/training_history.csv": "d84cc51c0771d2416495cb3f111c517cab40337e0695ac4414a306106d8598cd",
+        "runs/m4_complete_20261014_v1/cnn/C0_s20260929/training_history.csv": "661bb4fc7303634c0221bb4b78a4594034887a1744d30f4073cbdd19abbdf8c1",
+        "runs/m4_complete_20261014_v1/cnn/C0_s20260930/training_history.csv": "4f8dfb33dc8ac58f09bb38d68ed9a392a112f82a065409d7aa3b396f95a7e159"
+      },
+      "sha256": "363fdc69ebad733b419792ce3efdf2c2ed1112072f834495b6061e032b2cad94",
+      "visual_review": "reviewed"
+    },
+    {
+      "figure_id": "03_topk_overlap",
+      "png": "03_topk_overlap.png",
+      "svg": "03_topk_overlap.svg",
+      "caption": "Top-5与区域的重合比例扣除区域长度/87。固定窗口与热力学推定窗口分别展示；区间未做多重比较校正。",
+      "source_tables": {
+        "runs/m4_complete_20261014_v1/explanation_analysis/overlap_summary.csv": "c5bae55d8c116d229a70c70ec17c064812bbf126184a5fdc61dd8aa36d9e0ba5"
+      },
+      "sha256": "0e46686c498d63b7eb6756e11ef205d6c7970fd1b370da8e6e8af48c18e966b7",
+      "visual_review": "reviewed"
+    },
+    {
+      "figure_id": "04_attribution_consistency",
+      "png": "04_attribution_consistency.png",
+      "svg": "04_attribution_consistency.svg",
+      "caption": "IG与ISM解释同一个CNN；一致性衡量模型解释方法的相似程度，不作为独立生物验证。",
+      "source_tables": {
+        "runs/m4_complete_20261014_v1/explanation_analysis/consistency.csv": "94b8a350107e26ab311644db9013cc27e2c5987aa2276896fb0f73c3d23b56ba"
+      },
+      "sha256": "45297d0b07b4edc422869b96c367ab595cca3cdf08de871d38f28f172327811e",
+      "visual_review": "reviewed"
+    },
+    {
+      "figure_id": "05_mutation_amplitude",
+      "png": "05_mutation_amplitude.png",
+      "svg": "05_mutation_amplitude.svg",
+      "caption": "High/Low/Random各640条变体，来自同一64条母序列。先按母序列汇总，区间按母序列重采样。",
+      "source_tables": {
+        "runs/m4_complete_20261014_v1/mutation/mutation_summary.csv": "86a1da8f527afd85a372b77e31fbd75f3ecc1615dc93627eb2755070a87b8daf"
+      },
+      "sha256": "7fa3c624021d9f42694d144e923c4d00ce6436116046fe42d51f5e9eb60898dd",
+      "visual_review": "reviewed"
+    },
+    {
+      "figure_id": "06_mutation_direction",
+      "png": "06_mutation_direction.png",
+      "svg": "06_mutation_direction.svg",
+      "caption": "预期方向来自野生型梯度一阶替换分数，随后与实际CNN变化及热力学变化比较；三者均为计算证据。",
+      "source_tables": {
+        "runs/m4_complete_20261014_v1/mutation/direction_summary.csv": "92b6df6bc99c67ac9953890658dbe99357e096e3465c54a6dc1a2ad6f0ce7217"
+      },
+      "sha256": "9fc0b3fa84831a3c893025c104bce6e5802acbfa9786300f5f0360236261fe59",
+      "visual_review": "reviewed"
+    },
+    {
+      "figure_id": "07_staged_ablation",
+      "png": "07_staged_ablation.png",
+      "svg": "07_staged_ablation.svg",
+      "caption": "各阶段统一使用训练集StandardScaler和Ridge头，alpha在验证集选择；A1至A3报告配对CNN种子均值及标准差。",
+      "source_tables": {
+        "runs/m4_complete_20261014_v1/ablation/stage_summary.csv": "467cf2ed18ee83b34bf8307ecaf736e46535fcb5fb8f2ba46dc9fb90bce489d6"
+      },
+      "sha256": "176ad72275435ba970550f39b7ec64750aeb48de5f226208f57fdf9874d9ae8e",
+      "visual_review": "reviewed"
+    },
+    {
+      "figure_id": "08_cross_species",
+      "png": "08_cross_species.png",
+      "svg": "08_cross_species.svg",
+      "caption": "目标域相同序列按组划分。few-shot只拟合目标train并在目标val选alpha；目标test已在旧实验中使用，本次为同基准扩展。",
+      "source_tables": {
+        "runs/m4_complete_20261014_v1/transfer/transfer_metrics.csv": "fe3855bf45e75372b8e5f6d287d1b00e624ccc133c1ce5ec4692bb16b9923756"
+      },
+      "sha256": "061b194b5c78dfd6b7961f087eeec23a5dce8739e67b779953d0860fa815680b",
+      "visual_review": "reviewed"
+    }
+  ],
+  "n_figures": 8
+}

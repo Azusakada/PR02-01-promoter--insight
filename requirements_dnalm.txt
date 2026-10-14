@@ -1,0 +1,6 @@
+# Install after requirements.txt. Encoder revision is pinned in m4_protocol_v1.json.
+transformers==4.44.2
+huggingface-hub==0.24.7
+tokenizers==0.19.1
+einops==0.8.0
+safetensors==0.4.5

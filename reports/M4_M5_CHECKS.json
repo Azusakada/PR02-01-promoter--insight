@@ -1,0 +1,101 @@
+{
+  "status": "passed",
+  "unit_tests": {
+    "root": 54,
+    "cnn": 17,
+    "contracts": 48,
+    "historical_analysis": 20,
+    "total": 139
+  },
+  "m4_reloads": {
+    "status": "passed",
+    "run_id": "runs/m4_complete_20261014_v1",
+    "checks": [
+      "all_manifest_artifact_upstream_and_executed_code_hashes",
+      "ridge_svr_dna_head_reload_and_training_only_scalers",
+      "all_12_cnn_runs_reloaded_and_mean_validation_selection_verified",
+      "10_fusion_runs_reloaded_and_training_attribution_recipes_verified",
+      "128_attribution_vectors_2880_mutations_and_sampled_PC_states_verified",
+      "mutation_direction_summaries_independently_recomputed",
+      "8_transfer_conditions_reloaded_frozen_group_split_scalers_and_metrics_verified",
+      "unified_metrics_independently_recomputed",
+      "figure_hashes_source_tables_and_visual_review",
+      "all_frozen_historical_artifacts_unchanged",
+      "original_M3_verification_passed"
+    ],
+    "n_source_val": 1768,
+    "n_attribution_parents": 64,
+    "n_mutants": 2880,
+    "n_transfer_conditions": 8,
+    "source_test_evaluated": false,
+    "visual_review_required": true
+  },
+  "clean_environment": {
+    "status": "passed",
+    "python": "3.12.14",
+    "created_new_venv": true,
+    "installed_from": [
+      "requirements.txt",
+      "requirements_dnalm.txt"
+    ],
+    "copy_contains_git": false,
+    "reproduction": "Independent checkout directory and freshly installed environment; reloaded exported models and recalculated metrics, not a second full CNN training grid"
+  },
+  "dna_cpu_reload": {
+    "status": "passed",
+    "n_sequences": 3,
+    "max_absolute_feature_difference": 1.1563301086425781e-05,
+    "atol": 0.0002,
+    "rtol": 0.0001,
+    "original_device": "mps",
+    "reload_device": "cpu",
+    "unused_missing_weights": [
+      "bert.pooler.dense.bias",
+      "bert.pooler.dense.weight"
+    ]
+  },
+  "dna_weight_identity": "runs/m4_complete_20261014_v1/dna_weight_identity_check.json",
+  "artifacts": "reports/M5_ARTIFACT_QA.json",
+  "logs": [
+    {
+      "log": "reports/m4_m5_checks/root_tests.log",
+      "sha256": "5989d3ef1f1f6c91155061b9769c551943f450c89a8cb8870648cb090eee2f87",
+      "status": "passed"
+    },
+    {
+      "log": "reports/m4_m5_checks/cnn_tests.log",
+      "sha256": "35e301270f5ec9d9a24a985ceadec3915ece157d35ba17a00df4644450ae8031",
+      "status": "passed"
+    },
+    {
+      "log": "reports/m4_m5_checks/contracts_tests.log",
+      "sha256": "325a9a91a85ee6694a3b510ecb47ec3cccfcf9fe014fd0dd6554e3ab08fc7971",
+      "status": "passed"
+    },
+    {
+      "log": "reports/m4_m5_checks/analysis_tests.log",
+      "sha256": "29d4d26484a39cf23e5692017be418bd041ed689bcd427e2d2fcbf39e139e221",
+      "status": "passed"
+    },
+    {
+      "log": "reports/m4_m5_checks/m4_verify.log",
+      "sha256": "bc251591f9fb6038b24b9d8d37ae4d439de3c33d1b37012176c48492ccdcb70d",
+      "status": "passed"
+    },
+    {
+      "log": "reports/m4_m5_checks/clean_environment_verify.log",
+      "sha256": "0a7b418c9012cf2a45407980755e95363e76f43a0fa2c0bc5842b146fa0143e8",
+      "status": "passed"
+    },
+    {
+      "log": "reports/m4_m5_checks/dna_cpu_reload.log",
+      "sha256": "fa81efd37acd9ee32c0238f7b72ed6f5b70ba301bd1db1e0abaebcd6a1bf0e35",
+      "status": "passed"
+    },
+    {
+      "log": "reports/m4_m5_checks/resume_all.log",
+      "sha256": "47d2c9bc69b2cbd4d30f6334395b2fc4c7c110563c8e4c5c186f0d158e4daafb",
+      "status": "passed"
+    }
+  ]
+}

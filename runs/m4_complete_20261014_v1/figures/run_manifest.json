@@ -1,0 +1,62 @@
+{
+  "schema_version": "m4_interface_v1",
+  "run_id": "runs/m4_complete_20261014_v1/figures",
+  "input_hashes": {
+    "data/03_Ecoli_strength87/samples.tsv": "a039b99467494c0e2bd76b654239005ff7076f6cc917809206f5d85b096eba32",
+    "data/03_Ecoli_strength87/split_manifest.tsv": "8ba07dce6dca9a33f0937561b8ddd5565e5fdf727411f83725f604785bfcf1cb",
+    "data/03_Ecoli_strength87/label_transform.json": "941706ea727addc436f92c8ffaa928ddf41460bd99f41c03e1f533ae90a24bcd"
+  },
+  "code_commit": "14458c15a4a3da98798ea455f13c76a26482833d",
+  "code_hashes": {
+    "pr02/context87/m4_ablation.py": "1984b976a9244812bf7a84ae5d8bb592bca1811643d14b846026db6523d87f8e",
+    "pr02/context87/m4_attribution.py": "83b1da32c36f1f2df47bca06c4b28ebb729cb89da40a6a76cc9ee47718cac09c",
+    "pr02/context87/m4_cnn.py": "b68c927d69619888de3781b853c97a64fa99707dba15dd13e39af74b34cf8598",
+    "pr02/context87/m4_data_eval.py": "075c384aaedf9cba9488a919cdab59928f53548ec472790753d02c499a505d67",
+    "pr02/context87/m4_dnalm_features.py": "b4ec62755f51953a1241cba4f6fbe488ff1dd38bdd2f729f8eb9a294c6d3b370",
+    "pr02/context87/m4_explanation_analysis.py": "b04734699a2f36aae4097952db3b867bfb492976f683dfbf84ad4516bcaebeba",
+    "pr02/context87/m4_ml_dnalm.py": "238c94afd00e3db4b3b9ae82ee2be6a05645148d31401f2effde5d53c4ee8c63",
+    "pr02/context87/m4_pipeline.py": "c48e9515d49a42e7b61dddc06e05db361598ce6389b01796e73573d84016afcc",
+    "pr02/context87/m4_reporting.py": "22c73036843313b8e5b32965c555c3d944ee170f1434644c9c7f8b3a8b8f91a5",
+    "pr02/context87/m4_thermo_mutation.py": "aab346352baa8899a1ad256dfd07aa367bba1d5e35b8056f1cd26a8edec21247",
+    "pr02/context87/m4_transfer.py": "55f55045c74424006b1a08b1250d5fabbbd31cae83f38f142a9d5acfea5e9973",
+    "pr02/context87/m4_verify.py": "d09ffa51d87f6710e315ccf7f51e0804c8dce68090b9a8a81eca0b2ec237f671"
+  },
+  "environment": {
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "scikit-learn": "1.9.1",
+    "torch": "2.14.1"
+  },
+  "source_test_evaluated": false,
+  "details": {
+    "n_figures": 8,
+    "visual_review": "reviewed",
+    "reviewer": "Codex visual inspection of all eight rendered PNGs",
+    "metadata_correction": "Added explicit learning-curve source-table hashes"
+  },
+  "upstream": {
+    "runs/m4_complete_20261014_v1/evaluation/model_summary.csv": "ccd90bd38cc0fa3d24f1ce74a87e1739280d572a9279d4acbf9c58a2fb057721",
+    "runs/m4_complete_20261014_v1/ablation/stage_summary.csv": "467cf2ed18ee83b34bf8307ecaf736e46535fcb5fb8f2ba46dc9fb90bce489d6",
+    "runs/m4_complete_20261014_v1/mutation/direction_summary.csv": "92b6df6bc99c67ac9953890658dbe99357e096e3465c54a6dc1a2ad6f0ce7217",
+    "runs/m4_complete_20261014_v1/transfer/transfer_metrics.csv": "fe3855bf45e75372b8e5f6d287d1b00e624ccc133c1ce5ec4692bb16b9923756"
+  },
+  "artifacts": {
+    "01_model_comparison.png": "517f29e3e4e992fdce93899c3c351a42622b90674f05d7f37471150f4b1907e3",
+    "01_model_comparison.svg": "ce7619eb66235842f610d3a75d2dcea18ebbd3a7458ee0977901ca1f928578c0",
+    "02_cnn_stability.png": "363fdc69ebad733b419792ce3efdf2c2ed1112072f834495b6061e032b2cad94",
+    "02_cnn_stability.svg": "b686cde2ce214f3df21af12779bd50315998ae0c0709b0868034132783b49cfe",
+    "03_topk_overlap.png": "0e46686c498d63b7eb6756e11ef205d6c7970fd1b370da8e6e8af48c18e966b7",
+    "03_topk_overlap.svg": "ff9826eac5bc376c0d73737872263714e467bfd7ca418346a9d823b091668505",
+    "04_attribution_consistency.png": "45297d0b07b4edc422869b96c367ab595cca3cdf08de871d38f28f172327811e",
+    "04_attribution_consistency.svg": "102e9794d93960a5f6a3694407e46601e0a4226e002084f62060a76376c5e014",
+    "05_mutation_amplitude.png": "7fa3c624021d9f42694d144e923c4d00ce6436116046fe42d51f5e9eb60898dd",
+    "05_mutation_amplitude.svg": "7bb729cd8eb5da487787666820241c6bccba285bf27cb00c2c8ea326dcd8a197",
+    "06_mutation_direction.png": "9fc0b3fa84831a3c893025c104bce6e5802acbfa9786300f5f0360236261fe59",
+    "06_mutation_direction.svg": "466bf13fb8da1a717c6c6afbbc0de1a96238f5bf8115aae50ff54f352fbc4ed6",
+    "07_staged_ablation.png": "176ad72275435ba970550f39b7ec64750aeb48de5f226208f57fdf9874d9ae8e",
+    "07_staged_ablation.svg": "1ce8ba7746707c54abe9a8fb786605c7e2fa1de1d6abf3fb99cb0e49e84dd493",
+    "08_cross_species.png": "061b194b5c78dfd6b7961f087eeec23a5dce8739e67b779953d0860fa815680b",
+    "08_cross_species.svg": "98f6896fd8ee423bef18818e926fb5082bb9c2e9af931057f937f0b18cff742d",
+    "figure_manifest.json": "60b7b20d46044b267258142abdfcc609d6b42461f49339190ea7b7836490981a"
+  }
+}

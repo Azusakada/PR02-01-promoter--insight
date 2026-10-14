@@ -1,0 +1,46 @@
+{
+  "interface_version": "m4_interface_v1",
+  "output": "runs/m4_complete_20261014_v1",
+  "seeds": [
+    20260928,
+    20260929,
+    20260930
+  ],
+  "bootstrap_repeats": 1000,
+  "bootstrap_seed": 20260928,
+  "confidence": 0.95,
+  "source_test_evaluated": false,
+  "cnn_configurations": [
+    "C0",
+    "C1",
+    "C2",
+    "C3"
+  ],
+  "ml_k": [
+    3,
+    4,
+    5
+  ],
+  "ridge_alpha": [
+    1.0,
+    10.0,
+    100.0
+  ],
+  "svr_C": [
+    0.1,
+    1.0,
+    10.0
+  ],
+  "top_k": [
+    5,
+    10
+  ],
+  "ig_steps": 64,
+  "attribution_train_n": 256,
+  "attribution_val_n": 64,
+  "mutation_direction_threshold_log10": 0.0001,
+  "dna_model": "zhihan1996/DNABERT-2-117M",
+  "dna_revision": "7bce263b15377fc15361f52cfab88f8b586abda0",
+  "target_policy": "reuse frozen grouped split; historical test already observed",
+  "plan_document": "PR02-01_M4_M5_五人分工与接口规范.docx"
+}

@@ -1,0 +1,18 @@
+{
+  "model_kind": "dnabert2_ridge",
+  "method_name": "dnabert2_ridge",
+  "run_id": "runs/m4_complete_20261014_v1/ml/dnabert2",
+  "checkpoint_path": "runs/m4_complete_20261014_v1/ml/dnabert2/model.joblib",
+  "checkpoint_sha256": "178a9139c371c6a11a5335f7619f414f8f08bc4196e6a65e41c9049a5537161e",
+  "path_base": "repository",
+  "input_length": 87,
+  "seed": 20260928,
+  "predictor_entry": "pr02.context87.m4_pipeline:predict_log10",
+  "details": {
+    "encoder": "zhihan1996/DNABERT-2-117M",
+    "revision": "7bce263b15377fc15361f52cfab88f8b586abda0",
+    "encoder_frozen": true,
+    "scaler_fit_subset": "train",
+    "feature_manifest": "runs/m4_complete_20261014_v1/dna_features/feature_manifest.json"
+  }
+}

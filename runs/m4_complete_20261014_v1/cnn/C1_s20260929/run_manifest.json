@@ -1,0 +1,44 @@
+{
+  "schema_version": "m4_interface_v1",
+  "run_id": "runs/m4_complete_20261014_v1/cnn/C1_s20260929",
+  "input_hashes": {
+    "data/03_Ecoli_strength87/samples.tsv": "a039b99467494c0e2bd76b654239005ff7076f6cc917809206f5d85b096eba32",
+    "data/03_Ecoli_strength87/split_manifest.tsv": "8ba07dce6dca9a33f0937561b8ddd5565e5fdf727411f83725f604785bfcf1cb",
+    "data/03_Ecoli_strength87/label_transform.json": "941706ea727addc436f92c8ffaa928ddf41460bd99f41c03e1f533ae90a24bcd"
+  },
+  "code_commit": "14458c15a4a3da98798ea455f13c76a26482833d",
+  "code_hashes": {
+    "pr02/context87/m4_cnn.py": "b68c927d69619888de3781b853c97a64fa99707dba15dd13e39af74b34cf8598",
+    "pr02/context87/m4_data_eval.py": "075c384aaedf9cba9488a919cdab59928f53548ec472790753d02c499a505d67",
+    "pr02/context87/m4_dnalm_features.py": "289220637173325d1052d225836b38ec8bfebd5db6e1e3eab7267d78c20e0545",
+    "pr02/context87/m4_ml_dnalm.py": "238c94afd00e3db4b3b9ae82ee2be6a05645148d31401f2effde5d53c4ee8c63"
+  },
+  "environment": {
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "scikit-learn": "1.9.1",
+    "torch": "2.14.1"
+  },
+  "source_test_evaluated": false,
+  "details": {
+    "condition": "C1",
+    "seed": 20260929,
+    "pooling": 20,
+    "dropout": 0.3,
+    "weight_decay": 0.001,
+    "val_mse_log10": 0.3441793605432264,
+    "best_epoch": 11,
+    "epochs": 26,
+    "reused_run": null
+  },
+  "upstream": {},
+  "artifacts": {
+    "config.json": "5f931c17e4fa4075eb1102fae2220b690c2fa0e75c4e6eea79a9dffb389637a6",
+    "metrics.csv": "3d194f488710892c4284b8975054da15b8d4fce89e869cc2edf0ca6384f50969",
+    "model.pt": "238053a5f2259e1cb89b240dbc0218c4426467d93b351059c31614f6621ece03",
+    "predictions_train.csv": "f9b45667b5a92bc46c2d0923844b0dbbbe731fdaa80846366994c8f65bef6b9f",
+    "predictions_val.csv": "1068c9b061b344b0ca4225f499b35eb6857ddc3635856e9bb40946554c5d601f",
+    "selection_record.json": "2869251faf163810ef8d372a66337d74cb37b5b3f9ff10696ce049acd51e8bdb",
+    "training_history.csv": "edb28571c6b4d17bea89e7608730fd2e98f7669ea0f13d74282d132907c071ab"
+  }
+}

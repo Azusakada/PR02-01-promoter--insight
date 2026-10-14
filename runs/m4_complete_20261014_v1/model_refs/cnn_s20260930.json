@@ -1,0 +1,21 @@
+{
+  "model_kind": "cnn",
+  "method_name": "cnn",
+  "run_id": "runs/m4_complete_20261014_v1/cnn/C0_s20260930",
+  "checkpoint_path": "runs/m4_complete_20261014_v1/cnn/C0_s20260930/model.pt",
+  "checkpoint_sha256": "b97fce67d036551125a09c17d95141fbfbf35a316b0984fd59b7c57dc4477c40",
+  "model_config_path": "runs/m4_complete_20261014_v1/cnn/C0_s20260930/config.json",
+  "transform_path": "data/03_Ecoli_strength87/label_transform.json",
+  "input_hashes": {
+    "data/03_Ecoli_strength87/samples.tsv": "a039b99467494c0e2bd76b654239005ff7076f6cc917809206f5d85b096eba32",
+    "data/03_Ecoli_strength87/split_manifest.tsv": "8ba07dce6dca9a33f0937561b8ddd5565e5fdf727411f83725f604785bfcf1cb",
+    "data/03_Ecoli_strength87/label_transform.json": "941706ea727addc436f92c8ffaa928ddf41460bd99f41c03e1f533ae90a24bcd"
+  },
+  "path_base": "repository",
+  "seed": 20260930,
+  "input_lengths": [
+    87,
+    61
+  ],
+  "predictor_entry": "pr02.context87.m4_pipeline:predict_log10"
+}

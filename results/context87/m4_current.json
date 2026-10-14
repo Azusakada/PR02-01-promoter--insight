@@ -1,0 +1,12 @@
+{
+  "interface_version": "m4_interface_v1",
+  "run_id": "runs/m4_complete_20261014_v1",
+  "protocol": "configs/m4_protocol_v1.json",
+  "metrics": "runs/m4_complete_20261014_v1/evaluation/model_summary.csv",
+  "ablation": "runs/m4_complete_20261014_v1/ablation/stage_summary.csv",
+  "source_test_evaluated": false,
+  "report": "reports/M5_FINAL_REPORT.md",
+  "word": "reports/M5_FINAL_REPORT.docx",
+  "slides": "reports/M5_DEFENSE_FINAL.pptx",
+  "checks": "reports/M4_M5_CHECKS.json"
+}

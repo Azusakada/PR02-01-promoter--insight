@@ -1,0 +1,7 @@
+{
+  "design_sha256": "4f09bff9142668dcdf09220012e30a0eb3a71e7f58e1222dad3fb266bc6788b0",
+  "n_mutants": 2880,
+  "amplitude_count": 1920,
+  "single_direction_count": 960,
+  "frozen_before_predictions": true
+}

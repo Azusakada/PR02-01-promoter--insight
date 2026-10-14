@@ -1,0 +1,65 @@
+{
+  "schema_version": "m4_interface_v1",
+  "run_id": "runs/m4_complete_20261014_v1/evaluation",
+  "input_hashes": {
+    "data/03_Ecoli_strength87/samples.tsv": "a039b99467494c0e2bd76b654239005ff7076f6cc917809206f5d85b096eba32",
+    "data/03_Ecoli_strength87/split_manifest.tsv": "8ba07dce6dca9a33f0937561b8ddd5565e5fdf727411f83725f604785bfcf1cb",
+    "data/03_Ecoli_strength87/label_transform.json": "941706ea727addc436f92c8ffaa928ddf41460bd99f41c03e1f533ae90a24bcd"
+  },
+  "code_commit": "14458c15a4a3da98798ea455f13c76a26482833d",
+  "code_hashes": {
+    "pr02/context87/m4_ablation.py": "1984b976a9244812bf7a84ae5d8bb592bca1811643d14b846026db6523d87f8e",
+    "pr02/context87/m4_attribution.py": "83b1da32c36f1f2df47bca06c4b28ebb729cb89da40a6a76cc9ee47718cac09c",
+    "pr02/context87/m4_cnn.py": "b68c927d69619888de3781b853c97a64fa99707dba15dd13e39af74b34cf8598",
+    "pr02/context87/m4_data_eval.py": "075c384aaedf9cba9488a919cdab59928f53548ec472790753d02c499a505d67",
+    "pr02/context87/m4_dnalm_features.py": "b4ec62755f51953a1241cba4f6fbe488ff1dd38bdd2f729f8eb9a294c6d3b370",
+    "pr02/context87/m4_explanation_analysis.py": "b04734699a2f36aae4097952db3b867bfb492976f683dfbf84ad4516bcaebeba",
+    "pr02/context87/m4_ml_dnalm.py": "238c94afd00e3db4b3b9ae82ee2be6a05645148d31401f2effde5d53c4ee8c63",
+    "pr02/context87/m4_pipeline.py": "c48e9515d49a42e7b61dddc06e05db361598ce6389b01796e73573d84016afcc",
+    "pr02/context87/m4_reporting.py": "762106224012b0646610ae9070419b2f6e5f5c15e00f06c17a3e479cd6d47236",
+    "pr02/context87/m4_thermo_mutation.py": "aab346352baa8899a1ad256dfd07aa367bba1d5e35b8056f1cd26a8edec21247",
+    "pr02/context87/m4_transfer.py": "55f55045c74424006b1a08b1250d5fabbbd31cae83f38f142a9d5acfea5e9973",
+    "pr02/context87/m4_verify.py": "d09ffa51d87f6710e315ccf7f51e0804c8dce68090b9a8a81eca0b2ec237f671"
+  },
+  "environment": {
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "scikit-learn": "1.9.1",
+    "torch": "2.14.1"
+  },
+  "source_test_evaluated": false,
+  "details": {
+    "intensity_thresholds_log10": [
+      1.9392695863387313,
+      2.3832586817081753
+    ],
+    "aggregation": "score each run first; sample SD across CNN seeds",
+    "comparison": "validation selected models; descriptive evaluation, not untouched external generalization"
+  },
+  "upstream": {
+    "runs/ecoli87_knn_20261013_v1/predictions_train.csv": "05fb7428dcd129cf86640b6faefa13b5c73a1f58dcdffdf22ff863797d64f5f9",
+    "runs/m4_complete_20261014_v1/ml/ridge/predictions_train.csv": "2106044f4adcf2631759e72f5bb25dc3f566fc371ea152b6468d0fe7ae7d6a5e",
+    "runs/m4_complete_20261014_v1/ml/svr/predictions_train.csv": "809648e0b814361f5b385fd7a09b42c68c1cc8c65fa219cd9850ad8fb47e12a9",
+    "runs/m4_complete_20261014_v1/ml/dnabert2/predictions_train.csv": "9091647bfdfd77735575408a0efa78efd8d4254b85fc28d67ad43cbf3f9ff819",
+    "runs/ecoli87_thermo_20261013_v1/predictions_train.csv": "a8f30daf4af465852dcf1840f30341c5362dcade2be9749a2aa1a37604107e83",
+    "runs/m4_complete_20261014_v1/cnn/C0_s20260928/predictions_train.csv": "4ef149d6caca976d96f0ba5a38b25c86e061224060c2137956b55959fa4bf4b6",
+    "runs/m4_complete_20261014_v1/cnn/C0_s20260929/predictions_train.csv": "91c826665b89440dda950bcb0d7058ea7044bc38d5835a9fcc233377546dd573",
+    "runs/m4_complete_20261014_v1/cnn/C0_s20260930/predictions_train.csv": "2e2dc211b66574dbb86c72235455d89299b5de339abd3ea2b742bf64e844a0ff",
+    "runs/ecoli87_knn_20261013_v1/predictions_val.csv": "7627eb0455492e29d44df8bc83b07974e9ca8adb800e44a229a3abc36c1c9d9d",
+    "runs/m4_complete_20261014_v1/ml/ridge/predictions_val.csv": "17eb5d8cd431727801466396b61fcce6c67c81505d4ceed4c6c0995bb267bb9a",
+    "runs/m4_complete_20261014_v1/ml/svr/predictions_val.csv": "251c0330f9b0417907b0ea425b0628384697f53dd0687962142a4556fe2b08d4",
+    "runs/m4_complete_20261014_v1/ml/dnabert2/predictions_val.csv": "bbc4485e0acf6d1216de2a744a2974349f04fb94c3db76cf52b7ae4053958542",
+    "runs/ecoli87_thermo_20261013_v1/predictions_val.csv": "4ce7c9e98e0970391b703430208b5fe1a1fcf3c037f18f6c0ffc75ecfaae4fec",
+    "runs/m4_complete_20261014_v1/cnn/C0_s20260928/predictions_val.csv": "1a6f321baea93867d9177bcd24364be891dbbe153c93455ce0e019b0c6eeb7f8",
+    "runs/m4_complete_20261014_v1/cnn/C0_s20260929/predictions_val.csv": "658dc118e006d838d37bdfc5d2fa767a2c2f88ef790cdd8b2517236aeebfd69f",
+    "runs/m4_complete_20261014_v1/cnn/C0_s20260930/predictions_val.csv": "36922631c62695d458b99d5ea0ec3dd27b347f72205b5521eab67cc347062289"
+  },
+  "artifacts": {
+    "coverage.csv": "5ed223b139f8d1dea815d58b9385cf2a5d46ee1e21b1983e3ef8d69d025b5bab",
+    "evaluation_ids.csv": "116931e3dfd383d456e8fef7251833d037261ac28376905ac27a6966e4491f0f",
+    "group_metrics.csv": "68544b7e69b8d2f448497eddeff7c1e5bc27d37f2ca9eb9f51244df4157042f5",
+    "metrics.csv": "a0baec92823f833b2c39b5abf3e9af2bad4fe252770acff8a28f120d907d0b70",
+    "model_summary.csv": "ccd90bd38cc0fa3d24f1ce74a87e1739280d572a9279d4acbf9c58a2fb057721",
+    "predictions.csv": "3678f42cfba9895c859a98d2634b80ea553714285b9ab8221ff8cb22d51d8810"
+  }
+}

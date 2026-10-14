@@ -1,0 +1,146 @@
+{
+  "schema_version": "3.0.0",
+  "dataset_id": "course_ecoli87_strength",
+  "data_version": "ecoli87_tss_verified_v1",
+  "split_id": "ecoli87_inherited_20260928_v1",
+  "samples": "data/03_Ecoli_strength87/samples.tsv",
+  "splits": "data/03_Ecoli_strength87/split_manifest.tsv",
+  "label_transform": "data/03_Ecoli_strength87/label_transform.json",
+  "expected_samples": 11809,
+  "sequence_length": 87,
+  "tss_index_0based": 67,
+  "seed": 20260929,
+  "num_threads": 4,
+  "test_metrics_enabled": false,
+  "runs": {
+    "knn": "ecoli87_knn_20261013_v1",
+    "ridge": "ecoli87_ridge_20261013_v1",
+    "svr": "ecoli87_svr_20261013_v1",
+    "cnn": "ecoli87_cnn_20261013_v1",
+    "thermo": "ecoli87_thermo_20261013_v1",
+    "comparison": "ecoli87_comparison_20261013_v1",
+    "analysis": "ecoli87_analysis_20261013_v1",
+    "explain": "ecoli87_explain_20261013_v1",
+    "mutate": "ecoli87_mutate_20261013_v1",
+    "ablate": "ecoli87_ablate_20261013_v1",
+    "transfer": "bsub61_transfer_20261013_v1"
+  },
+  "search": {
+    "knn": [
+      {
+        "k": 21
+      },
+      {
+        "k": 101
+      },
+      {
+        "k": 501
+      },
+      {
+        "k": 1501
+      }
+    ],
+    "ridge": [
+      {
+        "k": 3,
+        "alpha": 10
+      },
+      {
+        "k": 3,
+        "alpha": 100
+      },
+      {
+        "k": 4,
+        "alpha": 10
+      },
+      {
+        "k": 4,
+        "alpha": 100
+      },
+      {
+        "k": 5,
+        "alpha": 10
+      },
+      {
+        "k": 5,
+        "alpha": 100
+      }
+    ],
+    "svr": [
+      {
+        "k": 3,
+        "C": 0.1
+      },
+      {
+        "k": 3,
+        "C": 1
+      },
+      {
+        "k": 4,
+        "C": 0.1
+      },
+      {
+        "k": 4,
+        "C": 1
+      },
+      {
+        "k": 5,
+        "C": 0.1
+      },
+      {
+        "k": 5,
+        "C": 1
+      }
+    ]
+  },
+  "cnn": {
+    "model": {
+      "sequence_length": 87,
+      "channels": [
+        "A",
+        "C",
+        "G",
+        "T"
+      ],
+      "conv_channels": [
+        32,
+        64
+      ],
+      "kernel_sizes": [
+        7,
+        5
+      ],
+      "hidden_dim": 32,
+      "dropout": 0.3,
+      "pooling": "adaptive_avg",
+      "pooled_length": 20
+    },
+    "training": {
+      "batch_size": 128,
+      "max_epochs": 100,
+      "patience": 15,
+      "min_delta": 1e-05,
+      "learning_rate": 0.001,
+      "weight_decay": 0.001
+    }
+  },
+  "research": {
+    "explain_samples": 64,
+    "integrated_gradients_steps": 64,
+    "mutations_per_group": 5,
+    "mutation_random_repeats": 10
+  },
+  "transfer": {
+    "samples": "data/04_Bsub_strength61/samples.tsv",
+    "sequence_length": 61,
+    "test_fraction": 0.2,
+    "val_fraction": 0.2,
+    "few_shot_groups": [
+      20,
+      50,
+      100
+    ],
+    "primary_zero_shot_metric": "Spearman",
+    "label_units": "unknown"
+  }
+}

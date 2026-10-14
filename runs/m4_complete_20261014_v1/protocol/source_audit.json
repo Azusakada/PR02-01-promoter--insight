@@ -1,0 +1,31 @@
+{
+  "source_counts": {
+    "train": 8267,
+    "val": 1768,
+    "test": 1774
+  },
+  "source_length": 87,
+  "source_tss_index": 67,
+  "label_units": "unknown original RNA-expression scale",
+  "target_counts": {
+    "train": 354,
+    "val": 119,
+    "test": 118
+  },
+  "target_units": "unknown",
+  "target_tss": "unknown",
+  "target_orientation": "unknown",
+  "source_origin": "Deep_promoter natural E. coli 50bp labels; U00096.2 recovered context; original TSS map checked",
+  "target_origin": "teacher-provided CSV; bibliography and assay metadata unavailable",
+  "selection": "validation MSE; all new source test scores disabled",
+  "limitations": [
+    "Inherited random source split may share nearby genomic context",
+    "Historical source test and target test were previously reported; neither is a pristine blind benchmark"
+  ],
+  "input_hashes": {
+    "data/03_Ecoli_strength87/samples.tsv": "a039b99467494c0e2bd76b654239005ff7076f6cc917809206f5d85b096eba32",
+    "data/03_Ecoli_strength87/split_manifest.tsv": "8ba07dce6dca9a33f0937561b8ddd5565e5fdf727411f83725f604785bfcf1cb",
+    "data/03_Ecoli_strength87/label_transform.json": "941706ea727addc436f92c8ffaa928ddf41460bd99f41c03e1f533ae90a24bcd"
+  },
+  "target_sha256": "c951466e12740f1d32ade1c6aabddf40e8903d09038b942f7b308626b902d23c"
+}

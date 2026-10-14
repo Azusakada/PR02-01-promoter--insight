@@ -1,0 +1,27 @@
+$WORKSPACE/work/m4_release_venv/lib/python3.12/site-packages/openpyxl/worksheet/_reader.py:329: UserWarning: Unknown extension is not supported and will be removed
+  warn(msg)
+$WORKSPACE/work/m4_release_venv/lib/python3.12/site-packages/openpyxl/worksheet/_reader.py:329: UserWarning: Unknown extension is not supported and will be removed
+  warn(msg)
+{
+  "status": "passed",
+  "run_id": "runs/m4_complete_20261014_v1",
+  "checks": [
+    "all_manifest_artifact_upstream_and_executed_code_hashes",
+    "ridge_svr_dna_head_reload_and_training_only_scalers",
+    "all_12_cnn_runs_reloaded_and_mean_validation_selection_verified",
+    "10_fusion_runs_reloaded_and_training_attribution_recipes_verified",
+    "128_attribution_vectors_2880_mutations_and_sampled_PC_states_verified",
+    "mutation_direction_summaries_independently_recomputed",
+    "8_transfer_conditions_reloaded_frozen_group_split_scalers_and_metrics_verified",
+    "unified_metrics_independently_recomputed",
+    "figure_hashes_source_tables_and_visual_review",
+    "all_frozen_historical_artifacts_unchanged",
+    "original_M3_verification_passed"
+  ],
+  "n_source_val": 1768,
+  "n_attribution_parents": 64,
+  "n_mutants": 2880,
+  "n_transfer_conditions": 8,
+  "source_test_evaluated": false,
+  "visual_review_required": true
+}

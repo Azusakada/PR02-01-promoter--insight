@@ -1,0 +1,46 @@
+{
+  "schema_version": "m4_interface_v1",
+  "run_id": "runs/m4_complete_20261014_v1/cnn/C1_s20260930",
+  "input_hashes": {
+    "data/03_Ecoli_strength87/samples.tsv": "a039b99467494c0e2bd76b654239005ff7076f6cc917809206f5d85b096eba32",
+    "data/03_Ecoli_strength87/split_manifest.tsv": "8ba07dce6dca9a33f0937561b8ddd5565e5fdf727411f83725f604785bfcf1cb",
+    "data/03_Ecoli_strength87/label_transform.json": "941706ea727addc436f92c8ffaa928ddf41460bd99f41c03e1f533ae90a24bcd"
+  },
+  "code_commit": "14458c15a4a3da98798ea455f13c76a26482833d",
+  "code_hashes": {
+    "pr02/context87/m4_attribution.py": "83b1da32c36f1f2df47bca06c4b28ebb729cb89da40a6a76cc9ee47718cac09c",
+    "pr02/context87/m4_cnn.py": "b68c927d69619888de3781b853c97a64fa99707dba15dd13e39af74b34cf8598",
+    "pr02/context87/m4_data_eval.py": "075c384aaedf9cba9488a919cdab59928f53548ec472790753d02c499a505d67",
+    "pr02/context87/m4_dnalm_features.py": "b4ec62755f51953a1241cba4f6fbe488ff1dd38bdd2f729f8eb9a294c6d3b370",
+    "pr02/context87/m4_explanation_analysis.py": "b04734699a2f36aae4097952db3b867bfb492976f683dfbf84ad4516bcaebeba",
+    "pr02/context87/m4_ml_dnalm.py": "238c94afd00e3db4b3b9ae82ee2be6a05645148d31401f2effde5d53c4ee8c63"
+  },
+  "environment": {
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "scikit-learn": "1.9.1",
+    "torch": "2.14.1"
+  },
+  "source_test_evaluated": false,
+  "details": {
+    "condition": "C1",
+    "seed": 20260930,
+    "pooling": 20,
+    "dropout": 0.3,
+    "weight_decay": 0.001,
+    "val_mse_log10": 0.34524913251659367,
+    "best_epoch": 10,
+    "epochs": 25,
+    "reused_run": null
+  },
+  "upstream": {},
+  "artifacts": {
+    "config.json": "706331d8e1de1a096c18f43a491c2349de9cca1904b562906f4677bc2e311b1d",
+    "metrics.csv": "7b382acdd2aa3fb2990c0d82da305ec946bbd831d5cdb07ed929f72ef66f6d6f",
+    "model.pt": "63d74e9851eda3203745953eb5af2f5ff6e58fbb9ef4344973aff0315276695c",
+    "predictions_train.csv": "17ee66b048dd0476a2bf5621019338e72b601a7a03ff03482cb075644ceb885b",
+    "predictions_val.csv": "aecca4d43fe7f9a0c3ff1c27c48d9f00ae49730e96f5b6defbd765578546d911",
+    "selection_record.json": "3a42c98feb3460b0d2cf86784a5fe2c0aee145307de7532ffea6e51b5750e093",
+    "training_history.csv": "30ea512f8672fffb12c014fedc84552a83ac60f36859ef14ac06df09ee4d1d19"
+  }
+}

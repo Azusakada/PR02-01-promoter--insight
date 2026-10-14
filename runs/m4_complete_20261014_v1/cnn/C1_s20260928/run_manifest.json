@@ -1,0 +1,44 @@
+{
+  "schema_version": "m4_interface_v1",
+  "run_id": "runs/m4_complete_20261014_v1/cnn/C1_s20260928",
+  "input_hashes": {
+    "data/03_Ecoli_strength87/samples.tsv": "a039b99467494c0e2bd76b654239005ff7076f6cc917809206f5d85b096eba32",
+    "data/03_Ecoli_strength87/split_manifest.tsv": "8ba07dce6dca9a33f0937561b8ddd5565e5fdf727411f83725f604785bfcf1cb",
+    "data/03_Ecoli_strength87/label_transform.json": "941706ea727addc436f92c8ffaa928ddf41460bd99f41c03e1f533ae90a24bcd"
+  },
+  "code_commit": "14458c15a4a3da98798ea455f13c76a26482833d",
+  "code_hashes": {
+    "pr02/context87/m4_cnn.py": "b68c927d69619888de3781b853c97a64fa99707dba15dd13e39af74b34cf8598",
+    "pr02/context87/m4_data_eval.py": "075c384aaedf9cba9488a919cdab59928f53548ec472790753d02c499a505d67",
+    "pr02/context87/m4_dnalm_features.py": "289220637173325d1052d225836b38ec8bfebd5db6e1e3eab7267d78c20e0545",
+    "pr02/context87/m4_ml_dnalm.py": "238c94afd00e3db4b3b9ae82ee2be6a05645148d31401f2effde5d53c4ee8c63"
+  },
+  "environment": {
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "scikit-learn": "1.9.1",
+    "torch": "2.14.1"
+  },
+  "source_test_evaluated": false,
+  "details": {
+    "condition": "C1",
+    "seed": 20260928,
+    "pooling": 20,
+    "dropout": 0.3,
+    "weight_decay": 0.001,
+    "val_mse_log10": 0.33703495347535617,
+    "best_epoch": 13,
+    "epochs": 28,
+    "reused_run": null
+  },
+  "upstream": {},
+  "artifacts": {
+    "config.json": "c479717042aa3cfaa70914da8afdc74410b0598761f263060b3da1c9fb16ba40",
+    "metrics.csv": "5402f36f35ce6a7b041b16b73672baa845fecd71e44ae531a4ef5e6289b3eecb",
+    "model.pt": "a837af2a7f099c420650fe2f390bce5a7e7a8270e1f4953dfdc9be86409233c1",
+    "predictions_train.csv": "b3360404a5e18a0872eb33d9ace96d4edeb79e90403e3e4235a6a5ef2d259ab2",
+    "predictions_val.csv": "2c93184c387503c5a1306bc4d1350780b7e8d4e1066f5cd18d3d8dfccaa765ca",
+    "selection_record.json": "52a0d3ee481cea93e4df0a9771dc2060c7980e989a5c4a070cf73fa9a4b1c4d8",
+    "training_history.csv": "06598b005072fabce7bf0c46fcfc8b2200eb7517fbf7b2dbdfc3859d95ce0e2d"
+  }
+}

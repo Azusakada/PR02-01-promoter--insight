@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "n_sequences": 3,
+  "max_absolute_feature_difference": 1.1563301086425781e-05,
+  "atol": 0.0002,
+  "rtol": 0.0001,
+  "original_device": "mps",
+  "reload_device": "cpu",
+  "unused_missing_weights": [
+    "bert.pooler.dense.bias",
+    "bert.pooler.dense.weight"
+  ]
+}

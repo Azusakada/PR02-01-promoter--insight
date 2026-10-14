@@ -1,0 +1,21 @@
+{
+  "status": "passed",
+  "word": {
+    "path": "reports/M5_FINAL_REPORT.docx",
+    "pages": 14,
+    "all_pages_visually_reviewed": true,
+    "sha256": "39b1c18d2f8d35cab9abf832adc6f6b461b1a0d165090d8975c9bd519718b3a6"
+  },
+  "powerpoint": {
+    "path": "reports/M5_DEFENSE_FINAL.pptx",
+    "slides": 16,
+    "editable_charts": 8,
+    "editable_tables": 3,
+    "all_slides_visually_reviewed": true,
+    "sha256": "60ff45156f86a4734f777234d6789e793e03e179e3f663b96a4f838704e6c792",
+    "source_csv_values_checked": true,
+    "source_csv_absolute_tolerance": 5.1e-09
+  },
+  "review_method": "Rendered DOCX with bundled LibreOffice; imported finalized PPTX with Artifact Tool and rendered every slide. Final PPTX revision changes slides 6/9 only; other 14 page PNGs byte-identical to reviewed render.",
+  "native_powerpoint_application_tested": false
+}

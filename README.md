@@ -8,6 +8,47 @@
 当前配置是 [project_config.json](project_config.json)，当前结果在 `results/context87/`，
 数据契约见 [CONTEXT87_V3.md](contracts/CONTEXT87_V3.md)，迁移记录见 [报告](reports/ECOLI87_MIGRATION.md)。
 
+## M4与M5最终交付（2026年10月14日）
+
+正式实验位于 `runs/m4_complete_20261014_v1/`，协议为
+[m4_protocol_v1.json](configs/m4_protocol_v1.json)，接口见
+[M4_INTERFACE_V1.md](contracts/M4_INTERFACE_V1.md)。已完成四项必做实验，以及
+选做5跨物种迁移、选做6两种归因的一致性。
+
+- [完整报告（在线阅读）](reports/M5_FINAL_REPORT.md)
+- [可编辑Word报告](reports/M5_FINAL_REPORT.docx)
+- [可编辑答辩PPT](reports/M5_DEFENSE_FINAL.pptx)
+- [案例分析](reports/M4_CASE_ANALYSIS.md)、[实验说明](reports/M4_EXPERIMENT_NOTES.md)
+- [最终验收与复现说明](reports/M4_M5_RELEASE.md)
+
+CNN四配置各三种子，共12个候选记录，平均验证MSE选择原C0架构。
+在共同1768条验证序列上，CNN三种子R²为 **0.1160±0.0071**，Spearman为
+**0.3077±0.0143**。冻结DNABERT-2+Ridge的R²为0.0102；四阶段融合没有R²增益。
+−10窗口得到IG/ISM的描述性Top-k富集支持；高归因位点突变更敏感，但计算结果不等于湿实验因果。
+
+安装基础依赖后，直接复核已交付结果，无须下载DNA原始权重：
+
+```bash
+python -m pr02 m4 --stage verify
+```
+
+完整重跑先安装DNA依赖，并复制协议到新文件、将 `output` 改成新的 `runs/` 目录：
+
+```bash
+python -m pip install -r requirements_dnalm.txt
+python -m pr02 m4 --protocol configs/m4_protocol_my_run.json --stage all --device cpu
+```
+
+DNA模型固定为官方 `zhihan1996/DNABERT-2-117M` revision
+`7bce263b15377fc15361f52cfab88f8b586abda0`。可用 `--device mps` 或 `cuda` 加速DNA推理；
+也可通过 `--dna-model-dir` 提供该revision的本地完整快照。原始预训练权重约469MB，按引用下载，
+不存入Git。已完成阶段按摘要复用，不能通过修改同一协议来覆盖旧结果。
+
+可分别执行 `ml`、`dna`、`cnn`、`attribution`、`mutation`、`ablation`、`transfer`、
+`evaluate`、`figures`、`report` 阶段。`report` 从源表重建Markdown、案例说明和Word/PPT共用内容，
+Word构建入口为 `scripts/build_m5_docx.py`（另需python-docx）；PPT构建器为
+`scripts/build_m5_slides.mjs`（使用交付说明中的Artifact Tool运行时）。
+
 胡昊铭的新版 M2/M3 补充分析见 [交接与复现说明](reports/ECOLI87_M2M3_HANDOFF.md)：
 10张中文图、三种尺度的EDA、固定/推定区域分析、五方法分组误差和80条规则化案例记录。
 分析报告入口为 [新版报告](runs/ecoli87_m2m3_20261013_v1/analysis_report.md)，不沿用历史50/81bp结论。
@@ -71,7 +112,7 @@ CNN 显式使用 61 bp 自适应池化实例及冻结源权重。few-shot 对照
 
 归因、突变和消融属于计算实验；突变预测不是湿实验测量。此次 E. coli test 保持不评价。
 沿用的是历史随机划分，邻近参考上下文可能重叠，且旧项目曾报告 test 指标，不能称为全新盲测。
-多种子、严格基因组分组验证、DNA 语言模型和与 PR01-02 外部结果的比较仍可继续扩展。
+M4已补齐三种子与冻结DNA语言模型；严格基因组分组验证和与PR01-02外部结果比较仍属后续研究。
 
 ## 复核
 

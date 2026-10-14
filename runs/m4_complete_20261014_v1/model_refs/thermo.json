@@ -1,0 +1,19 @@
+{
+  "model_kind": "thermo",
+  "method_name": "thermo",
+  "run_id": "ecoli87_thermo_20261013_v1",
+  "checkpoint_path": "runs/ecoli87_thermo_20261013_v1/calibration.json",
+  "checkpoint_sha256": "702f41e6021c46eeff70cf70e29fa814ee2bb5de099f9186f938e272a1e93415",
+  "path_base": "repository",
+  "model_config_path": "project_config.json",
+  "transform_path": "runs/ecoli87_thermo_20261013_v1/calibration.json",
+  "input_hashes": {
+    "data/03_Ecoli_strength87/samples.tsv": "a039b99467494c0e2bd76b654239005ff7076f6cc917809206f5d85b096eba32",
+    "data/03_Ecoli_strength87/split_manifest.tsv": "8ba07dce6dca9a33f0937561b8ddd5565e5fdf727411f83725f604785bfcf1cb",
+    "data/03_Ecoli_strength87/label_transform.json": "941706ea727addc436f92c8ffaa928ddf41460bd99f41c03e1f533ae90a24bcd"
+  },
+  "input_length": 87,
+  "tss_index_0based": 67,
+  "seed": null,
+  "predictor_entry": "pr02.context87.m4_pipeline:predict_log10"
+}

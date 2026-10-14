@@ -1,0 +1,17 @@
+method,seed,subset,n_requested,n_success,coverage
+knn,,train,8267,8267,1.0
+ridge,,train,8267,8267,1.0
+linear_svr,,train,8267,8267,1.0
+dnabert2_ridge,,train,8267,8267,1.0
+thermo,,train,8267,8267,1.0
+cnn,20260928,train,8267,8267,1.0
+cnn,20260929,train,8267,8267,1.0
+cnn,20260930,train,8267,8267,1.0
+knn,,val,1768,1768,1.0
+ridge,,val,1768,1768,1.0
+linear_svr,,val,1768,1768,1.0
+dnabert2_ridge,,val,1768,1768,1.0
+thermo,,val,1768,1768,1.0
+cnn,20260928,val,1768,1768,1.0
+cnn,20260929,val,1768,1768,1.0
+cnn,20260930,val,1768,1768,1.0

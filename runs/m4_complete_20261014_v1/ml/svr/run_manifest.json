@@ -1,0 +1,42 @@
+{
+  "schema_version": "m4_interface_v1",
+  "run_id": "runs/m4_complete_20261014_v1/ml/svr",
+  "input_hashes": {
+    "data/03_Ecoli_strength87/samples.tsv": "a039b99467494c0e2bd76b654239005ff7076f6cc917809206f5d85b096eba32",
+    "data/03_Ecoli_strength87/split_manifest.tsv": "8ba07dce6dca9a33f0937561b8ddd5565e5fdf727411f83725f604785bfcf1cb",
+    "data/03_Ecoli_strength87/label_transform.json": "941706ea727addc436f92c8ffaa928ddf41460bd99f41c03e1f533ae90a24bcd"
+  },
+  "code_commit": "14458c15a4a3da98798ea455f13c76a26482833d",
+  "code_hashes": {
+    "pr02/context87/m4_cnn.py": "b68c927d69619888de3781b853c97a64fa99707dba15dd13e39af74b34cf8598",
+    "pr02/context87/m4_data_eval.py": "075c384aaedf9cba9488a919cdab59928f53548ec472790753d02c499a505d67",
+    "pr02/context87/m4_dnalm_features.py": "289220637173325d1052d225836b38ec8bfebd5db6e1e3eab7267d78c20e0545",
+    "pr02/context87/m4_ml_dnalm.py": "238c94afd00e3db4b3b9ae82ee2be6a05645148d31401f2effde5d53c4ee8c63"
+  },
+  "environment": {
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "scikit-learn": "1.9.1",
+    "torch": "2.14.1"
+  },
+  "source_test_evaluated": false,
+  "details": {
+    "parameters": {
+      "k": 3,
+      "C": 0.1
+    },
+    "convergence_checked": true,
+    "representation": "ACGT lexicographic kmer frequency"
+  },
+  "upstream": {},
+  "artifacts": {
+    "fit_ids.tsv": "129be016aa45fb423a97343765834dd2e198729868b91ae45c0ba36dc86c7b9c",
+    "hyperparameter_search.csv": "e20a125ac4e778f47727f65cf609cb26096d4211352d636e147d07443c5dadf6",
+    "metrics.csv": "9a6d2440bc69a9b64536f0435388151d05ed475d92a0ae386e3e9a84572578e4",
+    "model.joblib": "6453278dff3d394f3ad66d233af1f147ba3c2e5ddde9f0ca0520365382021d33",
+    "model_ref.json": "dad905052f6f10e1f5c62de121616c00a0febbf1b06eff7d3cbc55b73326ab48",
+    "predictions_train.csv": "809648e0b814361f5b385fd7a09b42c68c1cc8c65fa219cd9850ad8fb47e12a9",
+    "predictions_val.csv": "251c0330f9b0417907b0ea425b0628384697f53dd0687962142a4556fe2b08d4",
+    "selected_parameters.json": "d2b692442ab1868172ecc7a18ded04ef36e81305999aa586f0f7fbe5b8aa455c"
+  }
+}

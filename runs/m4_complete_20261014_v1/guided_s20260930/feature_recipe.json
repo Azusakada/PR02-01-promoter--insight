@@ -1,0 +1,42 @@
+{
+  "selected_regions": [
+    "-10",
+    "-35"
+  ],
+  "candidate_regions": [
+    "UP",
+    "-35",
+    "spacer",
+    "-10"
+  ],
+  "region_mean_absolute": {
+    "UP": 0.02021930180490017,
+    "-35": 0.020487718284130096,
+    "spacer": 0.01653071492910385,
+    "-10": 0.028903603553771973
+  },
+  "fit_subset": "train",
+  "n_selection": 256,
+  "selection_ids_sha256": "7723a596222a7eeabed9647521d0ea5343aa1541f81080339d54fabc94e56121",
+  "ranking": "mean absolute IG per base; ties UP,-35,spacer,-10",
+  "seed": 20260930,
+  "source_cnn_run": "runs/m4_complete_20261014_v1/cnn/C0_s20260930",
+  "windows": {
+    "UP": [
+      7,
+      31
+    ],
+    "-35": [
+      32,
+      38
+    ],
+    "spacer": [
+      38,
+      55
+    ],
+    "-10": [
+      55,
+      61
+    ]
+  }
+}

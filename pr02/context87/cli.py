@@ -19,6 +19,11 @@ def main(argv=None):
     cmd=sub.add_parser('run-all'); cmd.add_argument('--research',action='store_true',help='Also run attribution, mutations, retrained ablations and cross-species transfer')
     cmd=sub.add_parser('rebuild-data'); cmd.add_argument('--output',type=Path,required=True)
     cmd=sub.add_parser('new-run'); cmd.add_argument('--tag',required=True)
+    cmd=sub.add_parser('m4',help='Formal M4 experiments and verification, separate from frozen M3 runs')
+    cmd.add_argument('--protocol',type=Path,default=ROOT/'configs/m4_protocol_v1.json')
+    cmd.add_argument('--stage',choices=['all','ml','dna','cnn','attribution','mutation','ablation','transfer','evaluate','figures','report','verify'],default='all')
+    cmd.add_argument('--dna-model-dir',type=Path,default=None,help='Optional local snapshot of the pinned official model')
+    cmd.add_argument('--device',choices=['cpu','mps','cuda'],default='cpu',help='Frozen DNA encoder inference device')
     for command in ['analyze-m2m3', 'verify-m2m3', 'acknowledge-m2m3', 'publish-m2m3']:
         cmd=sub.add_parser(command)
         cmd.add_argument('--output',type=Path,default=Path('runs/ecoli87_m2m3_20261013_v1'))
@@ -32,7 +37,11 @@ def main(argv=None):
     args=parser.parse_args(argv); cfg=read_json(args.config)
     try:
         load(cfg)
-        if args.command=='new-run':
+        if args.command=='m4':
+            from .m4_pipeline import run
+            result=run(cfg,read_json(args.protocol),args.stage,args.dna_model_dir,args.device)
+            print(json.dumps(result,ensure_ascii=False,indent=2) if isinstance(result,dict) else result)
+        elif args.command=='new-run':
             require(bool(re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_-]{0,40}',args.tag)),'Invalid experiment tag')
             new=copy.deepcopy(cfg); new['runs']={k:f'ecoli87_{k}_{args.tag}' for k in cfg['runs']}
             dest=ROOT/'configs'/f'project_ecoli87_{args.tag}.json'

@@ -1,0 +1,59 @@
+{
+  "schema_version": "m4_interface_v1",
+  "run_id": "runs/m4_complete_20261014_v1/transfer",
+  "input_hashes": {
+    "data/03_Ecoli_strength87/samples.tsv": "a039b99467494c0e2bd76b654239005ff7076f6cc917809206f5d85b096eba32",
+    "data/03_Ecoli_strength87/split_manifest.tsv": "8ba07dce6dca9a33f0937561b8ddd5565e5fdf727411f83725f604785bfcf1cb",
+    "data/03_Ecoli_strength87/label_transform.json": "941706ea727addc436f92c8ffaa928ddf41460bd99f41c03e1f533ae90a24bcd"
+  },
+  "code_commit": "14458c15a4a3da98798ea455f13c76a26482833d",
+  "code_hashes": {
+    "pr02/context87/m4_ablation.py": "1984b976a9244812bf7a84ae5d8bb592bca1811643d14b846026db6523d87f8e",
+    "pr02/context87/m4_attribution.py": "83b1da32c36f1f2df47bca06c4b28ebb729cb89da40a6a76cc9ee47718cac09c",
+    "pr02/context87/m4_cnn.py": "b68c927d69619888de3781b853c97a64fa99707dba15dd13e39af74b34cf8598",
+    "pr02/context87/m4_data_eval.py": "075c384aaedf9cba9488a919cdab59928f53548ec472790753d02c499a505d67",
+    "pr02/context87/m4_dnalm_features.py": "b4ec62755f51953a1241cba4f6fbe488ff1dd38bdd2f729f8eb9a294c6d3b370",
+    "pr02/context87/m4_explanation_analysis.py": "b04734699a2f36aae4097952db3b867bfb492976f683dfbf84ad4516bcaebeba",
+    "pr02/context87/m4_ml_dnalm.py": "238c94afd00e3db4b3b9ae82ee2be6a05645148d31401f2effde5d53c4ee8c63",
+    "pr02/context87/m4_pipeline.py": "c48e9515d49a42e7b61dddc06e05db361598ce6389b01796e73573d84016afcc",
+    "pr02/context87/m4_reporting.py": "762106224012b0646610ae9070419b2f6e5f5c15e00f06c17a3e479cd6d47236",
+    "pr02/context87/m4_thermo_mutation.py": "aab346352baa8899a1ad256dfd07aa367bba1d5e35b8056f1cd26a8edec21247",
+    "pr02/context87/m4_transfer.py": "55f55045c74424006b1a08b1250d5fabbbd31cae83f38f142a9d5acfea5e9973"
+  },
+  "environment": {
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "scikit-learn": "1.9.1",
+    "torch": "2.14.1"
+  },
+  "source_test_evaluated": false,
+  "details": {
+    "n_conditions": 8,
+    "source_test_evaluated": false,
+    "target_test_evaluated": true
+  },
+  "upstream": {
+    "runs/m4_complete_20261014_v1/protocol/target_split.tsv": "3c04d63ea67545e516282cc53338ed91f783aac5468f94ade069eae12dd4ed7d",
+    "runs/m4_complete_20261014_v1/ml/ridge/model.joblib": "9931fcdf26bd55d5319e9b83eabff357d2a17b20070fc65396a4c3a7c2fc8b22",
+    "runs/m4_complete_20261014_v1/cnn/C0_s20260928/model.pt": "fdced9a235dda9ddccb6782c6ac778307d7004976226d6a9143788fc9554db69"
+  },
+  "artifacts": {
+    "few_shot_frozen_cnn_100_groups.joblib": "0ac5527d6268ca485fbe2f6f099a43eb47c00f7ecd4e1face8fd0fa5be667822",
+    "few_shot_frozen_cnn_100_groups_fit_ids.tsv": "899c15b1092b6c34755c3624dc9a0ef6d6a9b2fc8f6209e2d3373b1642d8d7f2",
+    "few_shot_frozen_cnn_20_groups.joblib": "5b36c51ef9dbc32f34b09204e6891bda6f6182db4a4b45cf4f6ca8cf464a0e4c",
+    "few_shot_frozen_cnn_20_groups_fit_ids.tsv": "6240a474d778473597c0e657a5f2b9fb2d2c9b1c2c74b0686c5f3cce98974e2f",
+    "few_shot_frozen_cnn_50_groups.joblib": "93c52e881690f026ad32912025fa0ebe28cbfa15027a0efd8d7b7b7707f849ad",
+    "few_shot_frozen_cnn_50_groups_fit_ids.tsv": "d070b8092603a33c563aec0fc0901b77656493be6774660fe12477cb94a3fe00",
+    "few_shot_kmer_100_groups.joblib": "be089aabc4ac9be478d83a4c9cd4257a6974a33767c430b82a023828d7763155",
+    "few_shot_kmer_100_groups_fit_ids.tsv": "899c15b1092b6c34755c3624dc9a0ef6d6a9b2fc8f6209e2d3373b1642d8d7f2",
+    "few_shot_kmer_20_groups.joblib": "b3d561a92970960840add5bd4854aac6296e69fc0e4978224320aeb330e8964c",
+    "few_shot_kmer_20_groups_fit_ids.tsv": "6240a474d778473597c0e657a5f2b9fb2d2c9b1c2c74b0686c5f3cce98974e2f",
+    "few_shot_kmer_50_groups.joblib": "31807b64555187daedf15ec7c04d970848d64588c9920358864ee8f1bd79f934",
+    "few_shot_kmer_50_groups_fit_ids.tsv": "d070b8092603a33c563aec0fc0901b77656493be6774660fe12477cb94a3fe00",
+    "predictions.csv": "9b2b223274035b7a6cc534987709efab134ec17191e181879e8282f58dc23049",
+    "search.csv": "2f73d987af9f503e697c88442c0cab1abd406284dff38993398f3b3aa8049746",
+    "target_split.tsv": "3c04d63ea67545e516282cc53338ed91f783aac5468f94ade069eae12dd4ed7d",
+    "transfer_manifest.json": "bd9f34e013e80c77e3c871ec319734af1a29759ae61ee8488ede3d46d0ceb14b",
+    "transfer_metrics.csv": "fe3855bf45e75372b8e5f6d287d1b00e624ccc133c1ce5ec4692bb16b9923756"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "condition": "C2",
+  "seed": 20260930,
+  "pooling": 20,
+  "dropout": 0.1,
+  "weight_decay": 0.001,
+  "val_mse_log10": 0.3447595821127989,
+  "best_epoch": 10,
+  "epochs": 25,
+  "reused_run": null
+}

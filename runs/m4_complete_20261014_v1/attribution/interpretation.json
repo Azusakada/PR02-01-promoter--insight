@@ -1,0 +1,13 @@
+{
+  "source_model": "runs/m4_complete_20261014_v1/cnn/C0_s20260928",
+  "explained_model": "pure CNN log10 predictor",
+  "n_val": 64,
+  "ig_baseline": "A/C/G/T=0.25 at every position",
+  "ig_steps": 64,
+  "integration": "trapezoid",
+  "max_absolute_completeness_error_log10": 0.0029946565628051758,
+  "mean_absolute_completeness_error_log10": 0.0009591199923306704,
+  "ism_definition": "mean absolute log10 output change across the three alternative nucleotides",
+  "expectation": "wild type first derivative alt-channel minus reference-channel; no mutant output used",
+  "legacy_saliency": "legacy research.py saliency is gradient times input difference, not plain absolute gradient"
+}

@@ -1,0 +1,42 @@
+{
+  "schema_version": "m4_interface_v1",
+  "run_id": "runs/m4_complete_20261014_v1/ml/ridge",
+  "input_hashes": {
+    "data/03_Ecoli_strength87/samples.tsv": "a039b99467494c0e2bd76b654239005ff7076f6cc917809206f5d85b096eba32",
+    "data/03_Ecoli_strength87/split_manifest.tsv": "8ba07dce6dca9a33f0937561b8ddd5565e5fdf727411f83725f604785bfcf1cb",
+    "data/03_Ecoli_strength87/label_transform.json": "941706ea727addc436f92c8ffaa928ddf41460bd99f41c03e1f533ae90a24bcd"
+  },
+  "code_commit": "14458c15a4a3da98798ea455f13c76a26482833d",
+  "code_hashes": {
+    "pr02/context87/m4_cnn.py": "b68c927d69619888de3781b853c97a64fa99707dba15dd13e39af74b34cf8598",
+    "pr02/context87/m4_data_eval.py": "075c384aaedf9cba9488a919cdab59928f53548ec472790753d02c499a505d67",
+    "pr02/context87/m4_dnalm_features.py": "289220637173325d1052d225836b38ec8bfebd5db6e1e3eab7267d78c20e0545",
+    "pr02/context87/m4_ml_dnalm.py": "238c94afd00e3db4b3b9ae82ee2be6a05645148d31401f2effde5d53c4ee8c63"
+  },
+  "environment": {
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "scikit-learn": "1.9.1",
+    "torch": "2.14.1"
+  },
+  "source_test_evaluated": false,
+  "details": {
+    "parameters": {
+      "k": 4,
+      "alpha": 100.0
+    },
+    "convergence_checked": true,
+    "representation": "ACGT lexicographic kmer frequency"
+  },
+  "upstream": {},
+  "artifacts": {
+    "fit_ids.tsv": "129be016aa45fb423a97343765834dd2e198729868b91ae45c0ba36dc86c7b9c",
+    "hyperparameter_search.csv": "f42f8f93b8bc85f36a6fac900e061d3f06aff228898682d95587a7c1de78cf29",
+    "metrics.csv": "97a384ac3abcc35726daf273da98838bca22f49be26916adbef83bcb8e388016",
+    "model.joblib": "9931fcdf26bd55d5319e9b83eabff357d2a17b20070fc65396a4c3a7c2fc8b22",
+    "model_ref.json": "d7b0fb19453e8d3ef1a366b522ac0ed27d1b7c9cd8e67a730f6d1cb935f85c86",
+    "predictions_train.csv": "2106044f4adcf2631759e72f5bb25dc3f566fc371ea152b6468d0fe7ae7d6a5e",
+    "predictions_val.csv": "17eb5d8cd431727801466396b61fcce6c67c81505d4ceed4c6c0995bb267bb9a",
+    "selected_parameters.json": "61fd2e1974c103c53fa3c19a9263d00407c1a29c483ffbaed5fff5228ee606d8"
+  }
+}

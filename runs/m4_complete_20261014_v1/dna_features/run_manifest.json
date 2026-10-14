@@ -1,0 +1,69 @@
+{
+  "schema_version": "m4_interface_v1",
+  "run_id": "runs/m4_complete_20261014_v1/dna_features",
+  "input_hashes": {
+    "data/03_Ecoli_strength87/samples.tsv": "a039b99467494c0e2bd76b654239005ff7076f6cc917809206f5d85b096eba32",
+    "data/03_Ecoli_strength87/split_manifest.tsv": "8ba07dce6dca9a33f0937561b8ddd5565e5fdf727411f83725f604785bfcf1cb",
+    "data/03_Ecoli_strength87/label_transform.json": "941706ea727addc436f92c8ffaa928ddf41460bd99f41c03e1f533ae90a24bcd"
+  },
+  "code_commit": "14458c15a4a3da98798ea455f13c76a26482833d",
+  "code_hashes": {
+    "pr02/context87/m4_attribution.py": "83b1da32c36f1f2df47bca06c4b28ebb729cb89da40a6a76cc9ee47718cac09c",
+    "pr02/context87/m4_cnn.py": "b68c927d69619888de3781b853c97a64fa99707dba15dd13e39af74b34cf8598",
+    "pr02/context87/m4_data_eval.py": "075c384aaedf9cba9488a919cdab59928f53548ec472790753d02c499a505d67",
+    "pr02/context87/m4_dnalm_features.py": "b4ec62755f51953a1241cba4f6fbe488ff1dd38bdd2f729f8eb9a294c6d3b370",
+    "pr02/context87/m4_explanation_analysis.py": "b04734699a2f36aae4097952db3b867bfb492976f683dfbf84ad4516bcaebeba",
+    "pr02/context87/m4_ml_dnalm.py": "238c94afd00e3db4b3b9ae82ee2be6a05645148d31401f2effde5d53c4ee8c63"
+  },
+  "environment": {
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "scikit-learn": "1.9.1",
+    "torch": "2.14.1"
+  },
+  "source_test_evaluated": false,
+  "details": {
+    "model": "zhihan1996/DNABERT-2-117M",
+    "revision": "7bce263b15377fc15361f52cfab88f8b586abda0",
+    "frozen": true,
+    "course_label_usage": "none",
+    "pooling": "mean sequence tokens, excluding padding and CLS/SEP",
+    "truncation": false,
+    "dtype": "float32",
+    "device": "mps",
+    "local_files": {
+      "configuration_bert.py": "95fc868641b87bbcd7a32d2cd7b9f4769c27592e129daf167d14b5b8c74ec4c5",
+      "tokenizer_config.json": "f9d18c81f4dd9dd7db02e9f27cc1203228147d890bfce9167c3af6465ff5b769",
+      "config.json": "ba9bdafaff0cc3e30556927474d4a179519a9864012bed2628e9f1bc23c84bfd",
+      "bert_layers.py": "317ad7e9667980ac724c07f0174ba265c8446ca5230f6b473068ff1b911edcf9",
+      "tokenizer.json": "5d178e8ce2ba55df97fff197f4b30f40133b95d7096be398c2df6b526c5d8cd3",
+      "bert_padding.py": "44d1c68afb1f585fdc66c150d4c60f1ed44a89c006abc57d50531d71940d7421",
+      "pytorch_model.bin": "7ff39ec77a484dd01070a41bfd6e95cdd7247bec80fe357ab43a4be33687aeba",
+      "flash_attn_triton.py": "568d1ac3beca0b5e1df528a1f136aa19b6489a616fcf3784f33336a50bb1de81"
+    },
+    "transformers_version": "4.44.2",
+    "loading_info": {
+      "missing_keys": [
+        "bert.pooler.dense.bias",
+        "bert.pooler.dense.weight"
+      ],
+      "unexpected_keys": [
+        "cls.predictions.decoder.bias",
+        "cls.predictions.decoder.weight",
+        "cls.predictions.transform.LayerNorm.bias",
+        "cls.predictions.transform.LayerNorm.weight",
+        "cls.predictions.transform.dense.bias",
+        "cls.predictions.transform.dense.weight"
+      ],
+      "mismatched_keys": [],
+      "error_msgs": []
+    },
+    "provenance": "https://huggingface.co/zhihan1996/DNABERT-2-117M/tree/7bce263b15377fc15361f52cfab88f8b586abda0"
+  },
+  "upstream": {},
+  "artifacts": {
+    "feature_manifest.json": "a4a23d7be607e77f1e0513521b1df626454c9f6f2258a7c70849460e7300f654",
+    "features.npz": "1fd7776ecee79fc5878e3432422459892f45fd5aaab989e372a634aa40a309e1",
+    "tokenization_audit.csv": "83162d534c913f72499d948f876da912da89851b385aa6ba7cb19fd60e5e3491"
+  }
+}

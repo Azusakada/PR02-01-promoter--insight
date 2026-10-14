@@ -1,0 +1,7 @@
+sample_id,top_k,spearman,top_k_jaccard,n_shared,evidence
+ecoli87_r000520,5,0.265874462345994,0.1111111111111111,1,"same fitted CNN, two explanation definitions"
+ecoli87_r001005,5,0.5617846467886564,0.1111111111111111,1,"same fitted CNN, two explanation definitions"
+ecoli87_r001467,5,0.7182693008675366,0.1111111111111111,1,"same fitted CNN, two explanation definitions"
+ecoli87_r009068,5,0.4045891958883137,0.6666666666666666,4,"same fitted CNN, two explanation definitions"
+ecoli87_r003604,5,0.547623387037982,1.0,5,"same fitted CNN, two explanation definitions"
+ecoli87_r007957,5,0.5262994823941095,1.0,5,"same fitted CNN, two explanation definitions"

@@ -1,0 +1,32 @@
+{
+  "schema_version": "m4_interface_v1",
+  "run_id": "runs/m4_complete_20261014_v1/protocol",
+  "input_hashes": {
+    "data/03_Ecoli_strength87/samples.tsv": "a039b99467494c0e2bd76b654239005ff7076f6cc917809206f5d85b096eba32",
+    "data/03_Ecoli_strength87/split_manifest.tsv": "8ba07dce6dca9a33f0937561b8ddd5565e5fdf727411f83725f604785bfcf1cb",
+    "data/03_Ecoli_strength87/label_transform.json": "941706ea727addc436f92c8ffaa928ddf41460bd99f41c03e1f533ae90a24bcd"
+  },
+  "code_commit": "14458c15a4a3da98798ea455f13c76a26482833d",
+  "code_hashes": {
+    "pr02/context87/m4_cnn.py": "b68c927d69619888de3781b853c97a64fa99707dba15dd13e39af74b34cf8598",
+    "pr02/context87/m4_data_eval.py": "075c384aaedf9cba9488a919cdab59928f53548ec472790753d02c499a505d67"
+  },
+  "environment": {
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "scikit-learn": "1.9.1",
+    "torch": "2.14.1"
+  },
+  "source_test_evaluated": false,
+  "details": {
+    "amendment": "Pinned DNA weight revision during setup, before feature extraction; scientific rules unchanged"
+  },
+  "upstream": {},
+  "artifacts": {
+    "attribution_train_ids.tsv": "71120770be4aeccb2516aba6a62c29835b610b6afab817965c69e36864b65c0d",
+    "attribution_val_ids.tsv": "54a350da8998061fef0812703f8dd648381e75368a4cda20d67319bff995cc72",
+    "protocol.json": "97d3d0021089a36e6fef684025dd2bcd0f6e5c6d6bb264e79a5af785b992969a",
+    "source_audit.json": "e3754b2005fbf6a003f4099397a565ac347fa5503e5ce745d794ecb443fad383",
+    "target_split.tsv": "3c04d63ea67545e516282cc53338ed91f783aac5468f94ade069eae12dd4ed7d"
+  }
+}

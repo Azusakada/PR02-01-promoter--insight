@@ -1,0 +1,8 @@
+{
+  "status": "passed",
+  "model": "zhihan1996/DNABERT-2-117M",
+  "revision": "7bce263b15377fc15361f52cfab88f8b586abda0",
+  "official_lfs_sha256": "7ff39ec77a484dd01070a41bfd6e95cdd7247bec80fe357ab43a4be33687aeba",
+  "local_weight_sha256": "7ff39ec77a484dd01070a41bfd6e95cdd7247bec80fe357ab43a4be33687aeba",
+  "source": "https://huggingface.co/api/models/zhihan1996/DNABERT-2-117M/revision/7bce263b15377fc15361f52cfab88f8b586abda0?blobs=true"
+}
